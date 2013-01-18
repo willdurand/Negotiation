@@ -1,8 +1,7 @@
 Negotiation
 ===========
 
-[![Build
-Status](https://travis-ci.org/willdurand/Negotiation.png)](http://travis-ci.org/willdurand/Negotiation)
+[![Build Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
 
 Yet another missing PHP library... about Content Negotiation!
 **Negotiation** is a standalone library without any dependencies that allows you
@@ -31,7 +30,19 @@ Usage
 ``` php
 <?php
 
-$negotiator   = new Negotiation\FormatNegotiator();
+$negotiator = new \Negotiation\Negotiator();
+
+$bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2');
+// $bestHeader = 'fu';
+```
+
+### Format Negotiation
+
+``` php
+<?php
+
+$negotiator   = new \Negotiation\FormatNegotiator();
+
 $acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
 $priorities   = array('html', 'json', '*/*');
 
@@ -43,11 +54,11 @@ $format = $negotiator->getBest($acceptHeader, $priorities);
 Unit Tests
 ----------
 
-Setup the project using Composer:
+Setup the test suite using Composer:
 
     $ composer install --dev
 
-And, run the test suite:
+And, run it with PHPUnit:
 
     $ phpunit
 
@@ -56,7 +67,8 @@ Credits
 -------
 
 * Some parts of this library come from the
-[Symfony](http://github.com/symfony/symfony) framework.
+[Symfony](http://github.com/symfony/symfony) framework and
+[FOSRest](http://github.com/FriendsOfSymfony/FOSRest).
 
 * William Durand <william.durand1@gmail.com>
 
