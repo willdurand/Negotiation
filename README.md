@@ -1,6 +1,9 @@
 Negotiation
 ===========
 
+[![Build
+Status](https://travis-ci.org/willdurand/Negotiation.png)](http://travis-ci.org/willdurand/Negotiation)
+
 Yet another missing PHP library... about Content Negotiation!
 **Negotiation** is a standalone library without any dependencies that allows you
 to implement [content
