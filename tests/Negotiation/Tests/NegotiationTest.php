@@ -70,7 +70,9 @@ class NegotiatorTest extends TestCase
      */
     public function testParseAcceptHeader($header, $expected)
     {
-        $this->assertEquals($expected, array_keys($this->negotiator->parseAcceptHeader($header)));
+        $negotiator = new TestableNegotiator();
+
+        $this->assertEquals($expected, array_keys($negotiator->parseAcceptHeader($header)));
     }
 
     public static function dataProviderForTestParseAcceptHeader()
@@ -83,5 +85,13 @@ class NegotiatorTest extends TestCase
             array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7',  array('ISO-8859-1', 'utf-8', '*')),
             array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7',  array('utf-8', 'ISO-8859-1', '*')),
         );
+    }
+}
+
+class TestableNegotiator extends Negotiator
+{
+    public function parseAcceptHeader($acceptHeader)
+    {
+        return parent::parseAcceptHeader($acceptHeader);
     }
 }

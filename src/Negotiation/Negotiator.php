@@ -36,7 +36,7 @@ class Negotiator implements NegotiatorInterface
      *
      * @return array
      */
-    public function parseAcceptHeader($acceptHeader)
+    protected function parseAcceptHeader($acceptHeader)
     {
         $acceptHeader = preg_replace('/\s+/', '', $acceptHeader);
         $acceptParts  = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/',
