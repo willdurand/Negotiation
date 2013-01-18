@@ -1,6 +1,7 @@
 {
     "name": "willdurand/negotiation",
     "description": "A Negotiation library",
+    "keywords": [ "content", "negotiation", "format" ],
     "license": "MIT",
     "authors": [
         {
@@ -13,5 +14,10 @@
     },
     "autoload": {
         "psr-0": { "Negotiation": "src/" }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
     }
 }
