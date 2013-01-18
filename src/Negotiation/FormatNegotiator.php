@@ -44,7 +44,11 @@ class FormatNegotiator extends Negotiator
      */
     public function getBest($acceptHeader, array $priorities = array())
     {
-        $mimeTypes       = $this->parseAcceptHeader($acceptHeader);
+        $mimeTypes = array();
+        foreach ($this->parseAcceptHeader($acceptHeader) as $accept) {
+            $mimeTypes[$accept->getValue()] = $accept;
+        }
+
         $catchAllEnabled = in_array('*/*', $priorities);
 
         return $this->guessBestFormat($mimeTypes, $priorities, $catchAllEnabled);

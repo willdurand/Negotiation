@@ -17,7 +17,7 @@ class FormatNegotiatorTest extends TestCase
     /**
      * @dataProvider dataProviderForGetBestFormat
      */
-    public function testGetBestFormat($acceptHeader, $priorities, $expected)
+    public function testGetBest($acceptHeader, $priorities, $expected)
     {
         $result = $this->negotiator->getBest($acceptHeader, $priorities);
 
@@ -50,7 +50,6 @@ class FormatNegotiatorTest extends TestCase
     {
         $this->assertNull($this->negotiator->getFormat('foo'));
     }
-
 
     public function testRegisterFormat()
     {

@@ -72,7 +72,27 @@ class NegotiatorTest extends TestCase
     {
         $negotiator = new TestableNegotiator();
 
-        $this->assertEquals($expected, array_keys($negotiator->parseAcceptHeader($header)));
+        $this->assertEquals($expected, array_map(function ($result) {
+            return $result->getValue();
+        }, $negotiator->parseAcceptHeader($header)));
+    }
+
+    /**
+     * @dataProvider dataProviderForTestParseAcceptHeaderWithQualities
+     */
+    public function testParseAcceptHeaderWithQualities($header, $expected)
+    {
+        $negotiator = new TestableNegotiator();
+        $accepts    = $negotiator->parseAcceptHeader($header);
+
+        $this->assertEquals(count($expected), count($accepts));
+
+        $i = 0;
+        foreach ($expected as $value => $quality) {
+            $this->assertEquals($value, $accepts[$i]->getValue());
+            $this->assertEquals($quality, $accepts[$i]->getQuality());
+            $i++;
+        }
     }
 
     public static function dataProviderForTestParseAcceptHeader()
@@ -84,6 +104,17 @@ class NegotiatorTest extends TestCase
             array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
             array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7',  array('ISO-8859-1', 'utf-8', '*')),
             array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7',  array('utf-8', 'ISO-8859-1', '*')),
+        );
+    }
+
+    public static function dataProviderForTestParseAcceptHeaderWithQualities()
+    {
+        return array(
+            array('text/html;q=0.8', array('text/html' => 0.8)),
+            array('text/html;foo=bar;q=0.8 ', array('text/html;foo=bar' => 0.8)),
+            array('text/html;charset=utf-8; q=0.8', array('text/html;charset=utf-8' => 0.8)),
+            array('text/html,application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html' => 1.0, 'application/xml' => 0.9, '*/*;charset=utf-8' => 0.8)),
+            array('text/html,application/xhtml+xml', array('text/html' => 1, 'application/xhtml+xml' => 1)),
         );
     }
 }
