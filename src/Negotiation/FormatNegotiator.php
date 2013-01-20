@@ -49,7 +49,7 @@ class FormatNegotiator extends Negotiator
             $mimeTypes[$accept->getValue()] = $accept;
         }
 
-        $catchAllEnabled = in_array('*/*', $priorities);
+        $catchAllEnabled = in_array('*/*', $priorities) || 0 === count($priorities);
 
         return $this->guessBestFormat($mimeTypes, $priorities, $catchAllEnabled);
     }

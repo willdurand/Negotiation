@@ -28,6 +28,7 @@ class FormatNegotiatorTest extends TestCase
     {
         return array(
             array(null, array('html', 'json', '*/*'), null),
+            array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array(), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('html', 'json', '*/*'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('html', 'json', '*/*'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('rss', '*/*'), 'html'),
