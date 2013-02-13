@@ -8,7 +8,7 @@ namespace Negotiation;
 class FormatNegotiator extends Negotiator
 {
     // https://github.com/symfony/symfony/blob/master/src/Symfony/Component/HttpFoundation/Request.php
-    private $formats = array(
+    protected $formats = array(
         'html' => array('text/html', 'application/xhtml+xml'),
         'txt'  => array('text/plain'),
         'js'   => array('application/javascript', 'application/x-javascript', 'text/javascript'),
