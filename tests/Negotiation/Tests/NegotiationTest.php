@@ -28,12 +28,12 @@ class NegotiatorTest extends TestCase
     }
 
     /**
-     * 'bu' has the highest quality rating, but is non-existant,
+     * 'bu' has the highest quality rating, but is non-existent,
      * so we expect the next highest rated 'fr' content to be returned.
      *
      * See: http://svn.apache.org/repos/asf/httpd/test/framework/trunk/t/modules/negotiation.t
      */
-    public function testGetBestIgnoresNonExistantContent()
+    public function testGetBestIgnoresNonExistentContent()
     {
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
 
