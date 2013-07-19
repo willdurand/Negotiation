@@ -13,12 +13,13 @@ application, whatever framework you use.
 Installation
 ------------
 
-The recommended way to install Negotiation is through composer:
+The recommended way to install Negotiation is through
+[Composer](http://getcomposer.org/):
 
 ``` json
 {
     "require": {
-        "willdurand/negotiation": "*"
+        "willdurand/negotiation": "@stable"
     }
 }
 ```
@@ -36,6 +37,10 @@ $bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2')
 // $bestHeader = 'fu';
 ```
 
+The `getBest()` method, part of the `NegotiatorInterface` returns either `null`
+or `AcceptHeader` instances.
+
+
 ### Format Negotiation
 
 ``` php
@@ -44,10 +49,10 @@ $bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2')
 $negotiator   = new \Negotiation\FormatNegotiator();
 
 $acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-$priorities   = array('html', 'json', '*/*');
+$priorities   = array('text/html', 'application/json', '*/*');
 
 $format = $negotiator->getBest($acceptHeader, $priorities);
-// $format = html
+// $format->getValue() = text/html
 ```
 
 
@@ -63,12 +68,20 @@ And, run it with PHPUnit:
     $ phpunit
 
 
+Contributing
+------------
+
+See CONTRIBUTING file.
+
+
 Credits
 -------
 
 * Some parts of this library come from the
-[Symfony](http://github.com/symfony/symfony) framework and
-[FOSRest](http://github.com/FriendsOfSymfony/FOSRest).
+
+    * [Symfony](http://github.com/symfony/symfony) framework;
+    * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
+    * [PEAR HTTP2](https://github.com/pear/HTTP2).
 
 * William Durand <william.durand1@gmail.com>
 
