@@ -44,8 +44,9 @@ class FormatNegotiator extends Negotiator
      */
     public function getBest($acceptHeader, array $priorities = array())
     {
-        $acceptHeaders = $this->parseAcceptHeader($acceptHeader);
-        $priorities    = array_map('strtolower', $priorities);
+        $acceptHeaders   = $this->parseAcceptHeader($acceptHeader);
+        $priorities      = array_map('strtolower', $priorities);
+        $catchAllEnabled = 0 === count($priorities) || in_array('*/*', $priorities);
 
         foreach ($acceptHeaders as $accept) {
             $mimeType = $accept->getValue();
@@ -58,27 +59,54 @@ class FormatNegotiator extends Negotiator
                 continue;
             }
 
-            if ('*/*' === $mimeType) {
-                return new AcceptHeader(array_shift($priorities), 1);
+            if (false === $catchAllEnabled &&
+                '*/*' === $mimeType &&
+                '*/*' !== $value = array_shift($priorities)
+            ) {
+                return new AcceptHeader($value, 1);
             }
 
             $parts = explode('/', $mimeType);
             $regex = '#^' . preg_quote($parts[0]) . '/#';
 
             foreach ($priorities as $priority) {
-                if (preg_match($regex, $priority)) {
+                if ('*/*' !== $priority && preg_match($regex, $priority)) {
                     return new AcceptHeader($priority, $accept->getQuality());
                 }
             }
         }
 
-        return reset($acceptHeaders) ?: null;
+        return array_shift($acceptHeaders) ?: null;
     }
 
     /**
      */
     public function getBestFormat($acceptHeader, array $priorities = array())
     {
+        $catchAllEnabled = 0 === count($priorities) || in_array('*/*', $priorities);
+
+        $mimeTypes = array();
+        foreach ($priorities as $priority) {
+            if (isset($this->formats[$priority])) {
+                foreach ($this->formats[$priority] as $mimeType) {
+                    $mimeTypes[] = $mimeType;
+                }
+            }
+        }
+
+        if ($catchAllEnabled) {
+            $mimeTypes[] = '*/*';
+        }
+
+        if (null !== $accept = $this->getBest($acceptHeader, $mimeTypes)) {
+            if (null !== $format = $this->getFormat($accept->getValue())) {
+                if (in_array($format, $priorities) || $catchAllEnabled) {
+                    return $format;
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

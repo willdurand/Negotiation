@@ -34,8 +34,6 @@ class FormatNegotiatorTest extends TestCase
      */
     public function testGetBestFormat($acceptHeader, $priorities, $expected)
     {
-        $this->markTestSkipped('Not yet implemented');
-
         $bestFormat = $this->negotiator->getBestFormat($acceptHeader, $priorities);
 
         $this->assertEquals($expected, $bestFormat);
@@ -123,6 +121,14 @@ class FormatNegotiatorTest extends TestCase
                     'audio/midi',
                 ),
                 'audio/midi'
+            ),
+            array(
+                'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                array(
+                    'application/rss+xml',
+                    '*/*',
+                ),
+                'text/html'
             ),
         );
     }
