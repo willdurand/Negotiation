@@ -144,7 +144,8 @@ class NegotiatorTest extends TestCase
 
     public static function dataProviderForTestGetBest()
     {
-        $pearCharsetHeader = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
 
         return array(
             array(
@@ -180,6 +181,33 @@ class NegotiatorTest extends TestCase
                     'shift-jis',
                 ),
                 'shift-jis'
+            ),
+            array(
+                $pearCharsetHeader2,
+                array(
+                    'utf-8',
+                    'big5',
+                    'iso-8859-1',
+                    'shift-jis',
+                ),
+                'ISO-8859-1'
+            ),
+            array(
+                $pearCharsetHeader2,
+                array(
+                    'utf-8',
+                    'big5',
+                    'shift-jis',
+                ),
+                'utf-8'
+            ),
+            array(
+                $pearCharsetHeader2,
+                array(
+                    'Big5',
+                    'shift-jis',
+                ),
+                'Big5'
             ),
         );
     }
