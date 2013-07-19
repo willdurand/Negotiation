@@ -115,7 +115,7 @@ See CONTRIBUTING file.
 Credits
 -------
 
-* Some parts of this library come from the
+* Some parts of this library are inspired by:
 
     * [Symfony](http://github.com/symfony/symfony) framework;
     * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
