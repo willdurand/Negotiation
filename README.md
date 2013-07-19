@@ -43,6 +43,9 @@ or `AcceptHeader` instances.
 
 ### Format Negotiation
 
+Basically, you can call the `getBest()` method in order to retrieve the best
+mime type:
+
 ``` php
 <?php
 
@@ -53,6 +56,22 @@ $priorities   = array('text/html', 'application/json', '*/*');
 
 $format = $negotiator->getBest($acceptHeader, $priorities);
 // $format->getValue() = text/html
+```
+
+The `FormatNegotiator` class also provides as `getBestFormat()` method that
+returns the best format given an accept header string, and a set of
+preferred/allowed formats:
+
+``` php
+<?php
+
+$negotiator   = new \Negotiation\FormatNegotiator();
+
+$acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+$priorities   = array('html', 'json', '*/*');
+
+$format = $negotiator->getBestFormat($acceptHeader, $priorities);
+// $format = html
 ```
 
 
