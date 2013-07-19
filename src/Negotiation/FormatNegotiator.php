@@ -63,7 +63,7 @@ class FormatNegotiator extends Negotiator
                 '*/*' === $mimeType &&
                 '*/*' !== $value = array_shift($priorities)
             ) {
-                return new AcceptHeader($value, 1);
+                return new AcceptHeader($value, $accept->getQuality());
             }
 
             $parts = explode('/', $mimeType);

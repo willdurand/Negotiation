@@ -79,6 +79,16 @@ class NegotiatorTest extends TestCase
     }
 
     /**
+     * @dataProvider dataProviderForTestGetBest
+     */
+    public function testGetBest($acceptHeader, $priorities, $expected)
+    {
+        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+
+        $this->assertEquals($expected, $acceptHeader->getValue());
+    }
+
+    /**
      * @dataProvider dataProviderForTestParseAcceptHeader
      */
     public function testParseAcceptHeader($header, $expected)
@@ -129,6 +139,48 @@ class NegotiatorTest extends TestCase
             array('text/html,application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html' => 1.0, 'application/xml' => 0.9, '*/*;charset=utf-8' => 0.8)),
             array('text/html,application/xhtml+xml', array('text/html' => 1, 'application/xhtml+xml' => 1)),
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html' => 1, 'application/json' => 0.8, 'text/csv' => 0.7)),
+        );
+    }
+
+    public static function dataProviderForTestGetBest()
+    {
+        $pearCharsetHeader = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+
+        return array(
+            array(
+                $pearCharsetHeader,
+                array(
+                    'utf-8',
+                    'big5',
+                    'iso-8859-1',
+                    'shift-jis',
+                ),
+                'ISO-8859-1'
+            ),
+            array(
+                $pearCharsetHeader,
+                array(
+                    'utf-8',
+                    'big5',
+                    'shift-jis',
+                ),
+                'utf-8'
+            ),
+            array(
+                $pearCharsetHeader,
+                array(
+                    'Big5',
+                    'shift-jis',
+                ),
+                'Big5'
+            ),
+            array(
+                $pearCharsetHeader,
+                array(
+                    'shift-jis',
+                ),
+                'shift-jis'
+            ),
         );
     }
 }

@@ -37,14 +37,33 @@ $bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2')
 // $bestHeader = 'fu';
 ```
 
-The `getBest()` method, part of the `NegotiatorInterface` returns either `null`
+The `getBest()` method, part of the `NegotiatorInterface`, returns either `null`
 or `AcceptHeader` instances.
+
+
+### Charset Negotiation
+
+Charset negotiation works out of the box using the `Negotiator` class:
+
+``` php
+<?php
+
+$negotiator = new \Negotiation\Negotiator();
+$priorities = array(
+    'utf-8',
+    'big5',
+    'shift-jis',
+);
+
+$bestHeader = $negotiator->getBest('ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5', $priorities);
+// $bestHeader = 'utf-8'
+```
 
 
 ### Format Negotiation
 
 Basically, you can call the `getBest()` method in order to retrieve the best
-mime type:
+**mime type**:
 
 ``` php
 <?php
@@ -58,7 +77,7 @@ $format = $negotiator->getBest($acceptHeader, $priorities);
 // $format->getValue() = text/html
 ```
 
-The `FormatNegotiator` class also provides as `getBestFormat()` method that
+The `FormatNegotiator` class also provides a `getBestFormat()` method that
 returns the best format given an accept header string, and a set of
 preferred/allowed formats:
 
@@ -82,7 +101,7 @@ Setup the test suite using Composer:
 
     $ composer install --dev
 
-And, run it with PHPUnit:
+Run it using PHPUnit:
 
     $ phpunit
 

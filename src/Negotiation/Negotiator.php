@@ -21,10 +21,19 @@ class Negotiator implements NegotiatorInterface
         if (0 !== count($priorities)) {
             $priorities = array_map('strtolower', $priorities);
 
+            $wildcardAccept = null;
             foreach ($accepts as $accept) {
                 if (in_array(strtolower($accept->getValue()), $priorities)) {
                     return $accept;
                 }
+
+                if ('*' === $accept->getValue()) {
+                    $wildcardAccept = $accept;
+                }
+            }
+
+            if (null !== $wildcardAccept) {
+                return new AcceptHeader(reset($priorities), $wildcardAccept->getQuality());
             }
         }
 
