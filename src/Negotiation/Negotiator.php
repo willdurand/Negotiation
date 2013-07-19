@@ -50,6 +50,12 @@ class Negotiator implements NegotiatorInterface
 
             if (false !== strpos($accept, ';q=')) {
                 list($accept, $quality) = explode(';q=', $accept);
+            } else {
+                if ('*/*' === $accept) {
+                    $quality = 0.01;
+                } elseif ('*' === substr($accept, -1)) {
+                    $quality = 0.02;
+                }
             }
 
             $accepts[] = array(
