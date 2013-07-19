@@ -11,7 +11,7 @@ interface NegotiatorInterface
      * @param string $acceptHeader
      * @param array  $priorities
      *
-     * @return string
+     * @return AcceptHeader
      */
     public function getBest($acceptHeader, array $priorities = array());
 }

@@ -44,54 +44,41 @@ class FormatNegotiator extends Negotiator
      */
     public function getBest($acceptHeader, array $priorities = array())
     {
-        $mimeTypes = array();
-        foreach ($this->parseAcceptHeader($acceptHeader) as $accept) {
-            $mimeTypes[$accept->getValue()] = $accept;
-        }
+        $acceptHeaders = $this->parseAcceptHeader($acceptHeader);
+        $priorities    = array_map('strtolower', $priorities);
 
-        $catchAllEnabled = in_array('*/*', $priorities) || 0 === count($priorities);
+        foreach ($acceptHeaders as $accept) {
+            $mimeType = $accept->getValue();
 
-        return $this->guessBestFormat($mimeTypes, $priorities, $catchAllEnabled);
-    }
+            if ('/*' !== substr($mimeType, -2)) {
+                if (in_array($mimeType, $priorities)) {
+                    return $accept;
+                }
 
-    /**
-     * Guess the best format based on a set of mime types.
-     *
-     * @param array   $mimeTypes
-     * @param array   $priorities
-     * @param boolean $catchAllEnabled
-     *
-     * @return string|null
-     */
-    public function guessBestFormat(array $mimeTypes, array $priorities = array(), $catchAllEnabled = false)
-    {
-        $max  = reset($mimeTypes);
-        $keys = array_keys($mimeTypes, $max);
-
-        $formats = array();
-        foreach ($keys as $mimeType) {
-            unset($mimeTypes[$mimeType]);
-
-            if ($mimeType === '*/*') {
-                return reset($priorities);
+                continue;
             }
 
-            if ($format = $this->getFormat($mimeType)) {
-                if (false !== $priority = array_search($format, $priorities)) {
-                    $formats[$format] = $priority;
-                } elseif ($catchAllEnabled) {
-                    $formats[$format] = count($priorities);
+            if ('*/*' === $mimeType) {
+                return new AcceptHeader(array_shift($priorities), 1);
+            }
+
+            $parts = explode('/', $mimeType);
+            $regex = '#^' . preg_quote($parts[0]) . '/#';
+
+            foreach ($priorities as $priority) {
+                if (preg_match($regex, $priority)) {
+                    return new AcceptHeader($priority, $accept->getQuality());
                 }
             }
         }
 
-        if (empty($formats) && !empty($mimeTypes)) {
-            return $this->guessBestFormat($mimeTypes, $priorities, $catchAllEnabled);
-        }
+        return reset($acceptHeaders) ?: null;
+    }
 
-        asort($formats);
-
-        return key($formats);
+    /**
+     */
+    public function getBestFormat($acceptHeader, array $priorities = array())
+    {
     }
 
     /**

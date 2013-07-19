@@ -23,8 +23,10 @@ class NegotiatorTest extends TestCase
     public function testGetBestUsesQuality()
     {
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
 
-        $this->assertEquals('fu', $this->negotiator->getBest($acceptLanguageHeader));
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('fu', $acceptHeader->getValue());
     }
 
     /**
@@ -36,8 +38,10 @@ class NegotiatorTest extends TestCase
     public function testGetBestIgnoresNonExistentContent()
     {
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
 
-        $this->assertEquals('fr', $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr')));
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('fr', $acceptHeader->getValue());
     }
 
     public function testGetBestReturnsNullWithNullHeader()
@@ -52,17 +56,26 @@ class NegotiatorTest extends TestCase
 
     public function testGetBestRespectsPriorities()
     {
-        $this->assertEquals('yo', $this->negotiator->getBest('foo, bar, yo', array('yo')));
+        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('yo'));
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('yo', $acceptHeader->getValue());
     }
 
     public function testGetBestInCaseInsensitive()
     {
-        $this->assertEquals('yo', $this->negotiator->getBest('foo, bar, yo', array('YO')));
+        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('YO'));
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('yo', $acceptHeader->getValue());
     }
 
     public function testGetBestWithQualities()
     {
-        $this->assertEquals('bar', $this->negotiator->getBest('foo;q=0.1, bar, yo;q=0.9'));
+        $acceptHeader = $this->negotiator->getBest('foo;q=0.1, bar, yo;q=0.9');
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('bar', $acceptHeader->getValue());
     }
 
     /**

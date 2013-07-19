@@ -23,12 +23,12 @@ class Negotiator implements NegotiatorInterface
 
             foreach ($accepts as $accept) {
                 if (in_array(strtolower($accept->getValue()), $priorities)) {
-                    return $accept->getValue();
+                    return $accept;
                 }
             }
         }
 
-        return $accepts[0]->getValue();
+        return reset($accepts);
     }
 
     /**
