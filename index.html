@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Negotiation by willdurand</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Negotiation</h1>
+        <p>Content Negotiation tools for PHP.</p>
+
+        <p class="view"><a href="https://github.com/willdurand/Negotiation">View the Project on GitHub <small>willdurand/Negotiation</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/willdurand/Negotiation/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/willdurand/Negotiation/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/willdurand/Negotiation">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="negotiation" class="anchor" href="#negotiation"><span class="octicon octicon-link"></span></a>Negotiation</h1>
+
+<p><a href="http://travis-ci.org/willdurand/Negotiation"><img src="https://travis-ci.org/willdurand/Negotiation.png?branch=master" alt="Build Status"></a></p>
+
+<p><strong>Negotiation</strong> is a standalone library without any dependencies that allows you
+to implement <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">content
+negotiation</a> in your
+application, whatever framework you use.
+This library is based on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">RFC
+2616</a>. It is easy to
+use, and extensively tested.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>The recommended way to install Negotiation is through
+<a href="http://getcomposer.org/">Composer</a>:</p>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"require"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">"willdurand/negotiation"</span><span class="p">:</span> <span class="s2">"@stable"</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h2>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="nv">$negotiator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\Negotiator</span><span class="p">();</span>
+
+<span class="nv">$bestHeader</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="s1">'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2'</span><span class="p">);</span>
+<span class="c1">// $bestHeader = 'fu';</span>
+</pre></div>
+
+<p>The <code>getBest()</code> method, part of the <code>NegotiatorInterface</code>, returns either <code>null</code>
+or <code>AcceptHeader</code> instances.</p>
+
+<h3>
+<a name="charset-negotiation" class="anchor" href="#charset-negotiation"><span class="octicon octicon-link"></span></a>Charset Negotiation</h3>
+
+<p>Charset negotiation works out of the box using the <code>Negotiator</code> class:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="nv">$negotiator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\Negotiator</span><span class="p">();</span>
+<span class="nv">$priorities</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'utf-8'</span><span class="p">,</span>
+    <span class="s1">'big5'</span><span class="p">,</span>
+    <span class="s1">'shift-jis'</span><span class="p">,</span>
+<span class="p">);</span>
+
+<span class="nv">$bestHeader</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="s1">'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5'</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
+<span class="c1">// $bestHeader = 'utf-8'</span>
+</pre></div>
+
+<h3>
+<a name="format-negotiation" class="anchor" href="#format-negotiation"><span class="octicon octicon-link"></span></a>Format Negotiation</h3>
+
+<p>Basically, you can call the <code>getBest()</code> method in order to retrieve the best
+<strong>mime type</strong>:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="nv">$negotiator</span>   <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\FormatNegotiator</span><span class="p">();</span>
+
+<span class="nv">$acceptHeader</span> <span class="o">=</span> <span class="s1">'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'</span><span class="p">;</span>
+<span class="nv">$priorities</span>   <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'text/html'</span><span class="p">,</span> <span class="s1">'application/json'</span><span class="p">,</span> <span class="s1">'*/*'</span><span class="p">);</span>
+
+<span class="nv">$format</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="nv">$acceptHeader</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
+<span class="c1">// $format-&gt;getValue() = text/html</span>
+</pre></div>
+
+<p>The <code>FormatNegotiator</code> class also provides a <code>getBestFormat()</code> method that
+returns the best format given an accept header string, and a set of
+preferred/allowed formats:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="nv">$negotiator</span>   <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\FormatNegotiator</span><span class="p">();</span>
+
+<span class="nv">$acceptHeader</span> <span class="o">=</span> <span class="s1">'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'</span><span class="p">;</span>
+<span class="nv">$priorities</span>   <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s1">'html'</span><span class="p">,</span> <span class="s1">'json'</span><span class="p">,</span> <span class="s1">'*/*'</span><span class="p">);</span>
+
+<span class="nv">$format</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBestFormat</span><span class="p">(</span><span class="nv">$acceptHeader</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
+<span class="c1">// $format = html</span>
+</pre></div>
+
+<h2>
+<a name="unit-tests" class="anchor" href="#unit-tests"><span class="octicon octicon-link"></span></a>Unit Tests</h2>
+
+<p>Setup the test suite using Composer:</p>
+
+<pre><code>$ composer install --dev
+</code></pre>
+
+<p>Run it using PHPUnit:</p>
+
+<pre><code>$ phpunit
+</code></pre>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<p>See CONTRIBUTING file.</p>
+
+<h2>
+<a name="credits" class="anchor" href="#credits"><span class="octicon octicon-link"></span></a>Credits</h2>
+
+<ul>
+<li>
+<p>Some parts of this library are inspired by:</p>
+
+<ul>
+<li>
+<a href="http://github.com/symfony/symfony">Symfony</a> framework;</li>
+<li>
+<a href="http://github.com/FriendsOfSymfony/FOSRest">FOSRest</a>;</li>
+<li>
+<a href="https://github.com/pear/HTTP2">PEAR HTTP2</a>.</li>
+</ul>
+</li>
+<li><p>William Durand <a href="mailto:william.durand1@gmail.com">william.durand1@gmail.com</a></p></li>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Negotiation is released under the MIT License. See the bundled LICENSE file for details.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/willdurand">willdurand</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
