@@ -3,13 +3,13 @@ Negotiation
 
 [![Build Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
 
-Yet another missing PHP library... about Content Negotiation!
 **Negotiation** is a standalone library without any dependencies that allows you
 to implement [content
 negotiation](http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html) in your
 application, whatever framework you use.
 This library is based on [RFC
-2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
+2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html). It is easy to
+use, and extensively tested.
 
 
 Installation
