@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Negotiation - Content Negotiation tools for PHP.</title>
+    <title>Negotiation by willdurand</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -18,8 +18,6 @@
         <h1>Negotiation</h1>
         <p>Content Negotiation tools for PHP.</p>
 
-        <p><a href="http://travis-ci.org/willdurand/Negotiation"><img src="https://travis-ci.org/willdurand/Negotiation.png?branch=master" alt="Build Status"></a></p>
-
         <p class="view"><a href="https://github.com/willdurand/Negotiation">View the Project on GitHub <small>willdurand/Negotiation</small></a></p>
 
 
@@ -33,13 +31,15 @@
         <h1>
 <a name="negotiation" class="anchor" href="#negotiation"><span class="octicon octicon-link"></span></a>Negotiation</h1>
 
+<p><a href="http://travis-ci.org/willdurand/Negotiation"><img src="https://travis-ci.org/willdurand/Negotiation.png?branch=master" alt="Build Status"></a></p>
+
 <p><strong>Negotiation</strong> is a standalone library without any dependencies that allows you
 to implement <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">content
 negotiation</a> in your
 application, whatever framework you use.
 This library is based on <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html">RFC
-2616</a>. It is easy to
-use, and extensively tested.</p>
+2616</a>. Negotiation is
+easy to use, and extensively unit tested.</p>
 
 <h2>
 <a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
@@ -57,40 +57,25 @@ use, and extensively tested.</p>
 <h2>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
 
+<p>In a nutshell:</p>
+
 <div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
 
 <span class="nv">$negotiator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\Negotiator</span><span class="p">();</span>
-
 <span class="nv">$bestHeader</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="s1">'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2'</span><span class="p">);</span>
 <span class="c1">// $bestHeader = 'fu';</span>
 </pre></div>
 
 <p>The <code>getBest()</code> method, part of the <code>NegotiatorInterface</code>, returns either <code>null</code>
-or <code>AcceptHeader</code> instances.</p>
-
-<h3>
-<a name="charset-negotiation" class="anchor" href="#charset-negotiation"><span class="octicon octicon-link"></span></a>Charset Negotiation</h3>
-
-<p>Charset negotiation works out of the box using the <code>Negotiator</code> class:</p>
-
-<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
-
-<span class="nv">$negotiator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\Negotiator</span><span class="p">();</span>
-<span class="nv">$priorities</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
-    <span class="s1">'utf-8'</span><span class="p">,</span>
-    <span class="s1">'big5'</span><span class="p">,</span>
-    <span class="s1">'shift-jis'</span><span class="p">,</span>
-<span class="p">);</span>
-
-<span class="nv">$bestHeader</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="s1">'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5'</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
-<span class="c1">// $bestHeader = 'utf-8'</span>
-</pre></div>
+or <code>AcceptHeader</code> instances. An <code>AcceptHeader</code> object owns a <code>value</code> and a
+<code>quality</code>.</p>
 
 <h3>
 <a name="format-negotiation" class="anchor" href="#format-negotiation"><span class="octicon octicon-link"></span></a>Format Negotiation</h3>
 
-<p>Basically, you can call the <code>getBest()</code> method in order to retrieve the best
-<strong>mime type</strong>:</p>
+<p>The <strong>Format Negotiation</strong> is handled by the <code>FormatNegotiator</code> class.
+Basically, pass an <code>Accept</code> header and optionally a set of preferred media types
+to the <code>getBest()</code> method in order to retrieve the best <strong>media type</strong>:</p>
 
 <div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
 
@@ -104,7 +89,7 @@ or <code>AcceptHeader</code> instances.</p>
 </pre></div>
 
 <p>The <code>FormatNegotiator</code> class also provides a <code>getBestFormat()</code> method that
-returns the best format given an accept header string, and a set of
+returns the best format given an <code>Accept</code> header string and a set of
 preferred/allowed formats:</p>
 
 <div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
@@ -116,6 +101,25 @@ preferred/allowed formats:</p>
 
 <span class="nv">$format</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBestFormat</span><span class="p">(</span><span class="nv">$acceptHeader</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
 <span class="c1">// $format = html</span>
+</pre></div>
+
+<h3>
+<a name="charsetencodinglanguage-negotiation" class="anchor" href="#charsetencodinglanguage-negotiation"><span class="octicon octicon-link"></span></a>Charset/Encoding/Language Negotiation</h3>
+
+<p>Charset/Encoding/Language negotiation works out of the box using the
+<code>Negotiator</code> class:</p>
+
+<div class="highlight"><pre><span class="o">&lt;?</span><span class="nx">php</span>
+
+<span class="nv">$negotiator</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">\Negotiation\Negotiator</span><span class="p">();</span>
+<span class="nv">$priorities</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span>
+    <span class="s1">'utf-8'</span><span class="p">,</span>
+    <span class="s1">'big5'</span><span class="p">,</span>
+    <span class="s1">'shift-jis'</span><span class="p">,</span>
+<span class="p">);</span>
+
+<span class="nv">$bestHeader</span> <span class="o">=</span> <span class="nv">$negotiator</span><span class="o">-&gt;</span><span class="na">getBest</span><span class="p">(</span><span class="s1">'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5'</span><span class="p">,</span> <span class="nv">$priorities</span><span class="p">);</span>
+<span class="c1">// $bestHeader = 'utf-8'</span>
 </pre></div>
 
 <h2>
@@ -164,6 +168,6 @@ preferred/allowed formats:</p>
       </footer>
     </div>
     <script src="javascripts/scale.fix.js"></script>
-
+    
   </body>
 </html>
