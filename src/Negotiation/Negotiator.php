@@ -7,6 +7,8 @@ namespace Negotiation;
  */
 class Negotiator implements NegotiatorInterface
 {
+    const CATCH_ALL_VALUE = '*/*';
+
     /**
      * {@inheritDoc}
      */
@@ -52,25 +54,30 @@ class Negotiator implements NegotiatorInterface
             $acceptHeader, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
         );
 
-        $index   = 0;
-        $accepts = array();
+        $index    = 0;
+        $accepts  = array();
+        $catchAll = null;
         foreach ($acceptParts as $accept) {
             $quality = 1;
 
             if (false !== strpos($accept, ';q=')) {
                 list($accept, $quality) = explode(';q=', $accept);
             } else {
-                if ('*/*' === $accept) {
+                if (self::CATCH_ALL_VALUE === $accept) {
                     $quality = 0.01;
                 } elseif ('*' === substr($accept, -1)) {
                     $quality = 0.02;
                 }
             }
 
-            $accepts[] = array(
-                'item'  => new AcceptHeader($accept, $quality),
-                'index' => $index
-            );
+            if (self::CATCH_ALL_VALUE === $accept) {
+                $catchAll = new AcceptHeader($accept, $quality);
+            } else {
+                $accepts[] = array(
+                    'item'  => new AcceptHeader($accept, $quality),
+                    'index' => $index
+                );
+            }
 
             $index++;
         }
@@ -79,12 +86,26 @@ class Negotiator implements NegotiatorInterface
             $qA = $a['item']->getQuality();
             $qB = $b['item']->getQuality();
 
+            $vA = $a['item']->getValue();
+            $vB = $b['item']->getValue();
+
+            // put specific media type before the classic one
+            // e.g. `text/html;level=1` first, then `text/html`
+            if (strstr($vA, $vB)) {
+                return -1;
+            }
+
             if ($qA === $qB) {
                 return $a['index'] > $b['index'] ? 1 : -1;
             }
 
             return $qA > $qB ? -1 : 1;
         });
+
+        // put the catch all header at the end if available
+        if (null !== $catchAll) {
+            array_push($accepts, array('item' => $catchAll));
+        }
 
         return array_map(function ($accept) {
             return $accept['item'];

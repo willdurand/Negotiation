@@ -94,10 +94,12 @@ class NegotiatorTest extends TestCase
     public function testParseAcceptHeader($header, $expected)
     {
         $negotiator = new TestableNegotiator();
+        $accepts    = $negotiator->parseAcceptHeader($header);
 
+        $this->assertCount(count($expected), $accepts);
         $this->assertEquals($expected, array_map(function ($result) {
             return $result->getValue();
-        }, $negotiator->parseAcceptHeader($header)));
+        }, $accepts));
     }
 
     /**
@@ -114,6 +116,25 @@ class NegotiatorTest extends TestCase
         foreach ($expected as $value => $quality) {
             $this->assertEquals($value, $accepts[$i]->getValue());
             $this->assertEquals($quality, $accepts[$i]->getQuality());
+            $i++;
+        }
+    }
+
+    /**
+     * @dataProvider dataProviderForTestParseAcceptHeaderEnsuresPrecedence
+     */
+    public function testParseAcceptHeaderEnsuresPrecedence($header, $expected)
+    {
+        $negotiator = new TestableNegotiator();
+        $accepts    = $negotiator->parseAcceptHeader($header);
+
+        $this->assertCount(count($expected), $accepts);
+
+        $i = 0;
+        foreach ($expected as $value => $quality) {
+            $this->assertEquals($value,   $accepts[$i]->getValue());
+            $this->assertEquals($quality, $accepts[$i]->getQuality());
+
             $i++;
         }
     }
@@ -208,6 +229,35 @@ class NegotiatorTest extends TestCase
                     'shift-jis',
                 ),
                 'Big5'
+            ),
+        );
+    }
+
+    public static function dataProviderForTestParseAcceptHeaderEnsuresPrecedence()
+    {
+        return array(
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/html;level=1' => 1,
+                    'text/html;level=2' => 0.4,
+                    'text/html'         => 0.7,
+                    'text/*'            => 0.3,
+                    '*/*'               => 0.5,
+                )
+            ),
+            array(
+                'text/html,application/xhtml+xml,application/xml;q=0.9,text/*;q=0.7,*/*,image/gif; q=0.8, image/jpeg; q=0.6, image/*',
+                array(
+                    'text/html'             => 1,
+                    'application/xhtml+xml' => 1,
+                    'application/xml'       => 0.9,
+                    'image/gif'             => 0.8,
+                    'text/*'                => 0.7,
+                    'image/jpeg'            => 0.6,
+                    'image/*'               => 0.02,
+                    '*/*'                   => 0.01,
+                )
             ),
         );
     }

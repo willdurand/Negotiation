@@ -56,6 +56,14 @@ class FormatNegotiator extends Negotiator
                     return $accept;
                 }
 
+                $regex = '#^' . preg_quote($mimeType) . '#';
+
+                foreach ($priorities as $priority) {
+                    if ('*/*' !== $priority && 1 === preg_match($regex, $priority)) {
+                        return new AcceptHeader($priority, $accept->getQuality());
+                    }
+                }
+
                 continue;
             }
 
@@ -66,11 +74,14 @@ class FormatNegotiator extends Negotiator
                 return new AcceptHeader($value, $accept->getQuality());
             }
 
-            $parts = explode('/', $mimeType);
-            $regex = '#^' . preg_quote($parts[0]) . '/#';
+            if (false === $pos = strpos($mimeType, ';')) {
+                $pos = strpos($mimeType, '/');
+            }
+
+            $regex = '#^' . preg_quote(substr($mimeType, 0, $pos)) . '/#';
 
             foreach ($priorities as $priority) {
-                if ('*/*' !== $priority && preg_match($regex, $priority)) {
+                if ('*/*' !== $priority && 1 === preg_match($regex, $priority)) {
                     return new AcceptHeader($priority, $accept->getQuality());
                 }
             }

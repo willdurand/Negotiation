@@ -25,7 +25,12 @@ class FormatNegotiatorTest extends TestCase
             $this->assertNull($acceptHeader);
         } else {
             $this->assertNotNull($acceptHeader);
-            $this->assertEquals($expected, $acceptHeader->getValue());
+            if (is_array($expected)) {
+                $this->assertEquals($expected['value'],   $acceptHeader->getValue());
+                $this->assertEquals($expected['quality'], $acceptHeader->getQuality());
+            } else {
+                $this->assertEquals($expected, $acceptHeader->getValue());
+            }
         }
     }
 
@@ -129,6 +134,65 @@ class FormatNegotiatorTest extends TestCase
                     '*/*',
                 ),
                 'text/html'
+            ),
+            // See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(),
+                array(
+                    'value'   => 'text/html;level=1',
+                    'quality' => 1,
+                )
+            ),
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/html'
+                ),
+                array(
+                    'value'   => 'text/html',
+                    'quality' => 0.7,
+                )
+            ),
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/plain'
+                ),
+                array(
+                    'value'   => 'text/plain',
+                    'quality' => 0.3,
+                )
+            ),
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'image/jpeg',
+                ),
+                array(
+                    'value'   => 'image/jpeg',
+                    'quality' => 0.5,
+                )
+            ),
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/html;level=2'
+                ),
+                array(
+                    'value'   => 'text/html;level=2',
+                    'quality' => 0.4,
+                )
+            ),
+            array(
+                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/html;level=3'
+                ),
+                array(
+                    'value'   => 'text/html;level=3',
+                    'quality' => 0.7,
+                )
             ),
         );
     }
