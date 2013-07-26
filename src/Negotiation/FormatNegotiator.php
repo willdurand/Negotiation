@@ -46,7 +46,7 @@ class FormatNegotiator extends Negotiator
     {
         $acceptHeaders   = $this->parseAcceptHeader($acceptHeader);
         $priorities      = array_map('strtolower', $priorities);
-        $catchAllEnabled = 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
+        $catchAllEnabled = $this->isCatchAllEnabled($priorities);
 
         foreach ($acceptHeaders as $accept) {
             $mimeType = $accept->getValue();
@@ -101,7 +101,7 @@ class FormatNegotiator extends Negotiator
      */
     public function getBestFormat($acceptHeader, array $priorities = array())
     {
-        $catchAllEnabled = 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
+        $catchAllEnabled = $this->isCatchAllEnabled($priorities);
 
         $mimeTypes = array();
         foreach ($priorities as $priority) {
@@ -144,5 +144,15 @@ class FormatNegotiator extends Negotiator
         }
 
         return null;
+    }
+
+    /**
+     * @param array $priorities
+     *
+     * return boolean
+     */
+    private function isCatchAllEnabled(array $priorities)
+    {
+        return 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
     }
 }
