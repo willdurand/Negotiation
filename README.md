@@ -8,8 +8,8 @@ to implement [content
 negotiation](http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html) in your
 application, whatever framework you use.
 This library is based on [RFC
-2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html). It is easy to
-use, and extensively tested.
+2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html). Negotiation is
+easy to use, and extensively unit tested.
 
 
 Installation
@@ -30,42 +30,26 @@ The recommended way to install Negotiation is through
 Usage
 -----
 
+In a nutshell:
+
 ``` php
 <?php
 
 $negotiator = new \Negotiation\Negotiator();
-
 $bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2');
 // $bestHeader = 'fu';
 ```
 
 The `getBest()` method, part of the `NegotiatorInterface`, returns either `null`
-or `AcceptHeader` instances.
-
-
-### Charset Negotiation
-
-Charset negotiation works out of the box using the `Negotiator` class:
-
-``` php
-<?php
-
-$negotiator = new \Negotiation\Negotiator();
-$priorities = array(
-    'utf-8',
-    'big5',
-    'shift-jis',
-);
-
-$bestHeader = $negotiator->getBest('ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5', $priorities);
-// $bestHeader = 'utf-8'
-```
+or `AcceptHeader` instances. An `AcceptHeader` object owns a `value` and a
+`quality`.
 
 
 ### Format Negotiation
 
-Basically, you can call the `getBest()` method in order to retrieve the best
-**mime type**:
+The **Format Negotiation** is handled by the `FormatNegotiator` class.
+Basically, pass an `Accept` header and optionally a set of preferred media types
+to the `getBest()` method in order to retrieve the best **media type**:
 
 ``` php
 <?php
@@ -80,7 +64,7 @@ $format = $negotiator->getBest($acceptHeader, $priorities);
 ```
 
 The `FormatNegotiator` class also provides a `getBestFormat()` method that
-returns the best format given an accept header string, and a set of
+returns the best format given an `Accept` header string and a set of
 preferred/allowed formats:
 
 ``` php
@@ -93,6 +77,25 @@ $priorities   = array('html', 'json', '*/*');
 
 $format = $negotiator->getBestFormat($acceptHeader, $priorities);
 // $format = html
+```
+
+### Charset/Encoding/Language Negotiation
+
+Charset/Encoding/Language negotiation works out of the box using the
+`Negotiator` class:
+
+``` php
+<?php
+
+$negotiator = new \Negotiation\Negotiator();
+$priorities = array(
+    'utf-8',
+    'big5',
+    'shift-jis',
+);
+
+$bestHeader = $negotiator->getBest('ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5', $priorities);
+// $bestHeader = 'utf-8'
 ```
 
 
