@@ -46,7 +46,7 @@ class FormatNegotiator extends Negotiator
     {
         $acceptHeaders   = $this->parseAcceptHeader($acceptHeader);
         $priorities      = array_map('strtolower', $priorities);
-        $catchAllEnabled = 0 === count($priorities) || in_array('*/*', $priorities);
+        $catchAllEnabled = 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
 
         foreach ($acceptHeaders as $accept) {
             $mimeType = $accept->getValue();
@@ -59,7 +59,7 @@ class FormatNegotiator extends Negotiator
                 $regex = '#^' . preg_quote($mimeType) . '#';
 
                 foreach ($priorities as $priority) {
-                    if ('*/*' !== $priority && 1 === preg_match($regex, $priority)) {
+                    if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
                         return new AcceptHeader($priority, $accept->getQuality());
                     }
                 }
@@ -68,8 +68,8 @@ class FormatNegotiator extends Negotiator
             }
 
             if (false === $catchAllEnabled &&
-                '*/*' === $mimeType &&
-                '*/*' !== $value = array_shift($priorities)
+                self::CATCH_ALL_VALUE === $mimeType &&
+                self::CATCH_ALL_VALUE !== $value = array_shift($priorities)
             ) {
                 return new AcceptHeader($value, $accept->getQuality());
             }
@@ -81,7 +81,7 @@ class FormatNegotiator extends Negotiator
             $regex = '#^' . preg_quote(substr($mimeType, 0, $pos)) . '/#';
 
             foreach ($priorities as $priority) {
-                if ('*/*' !== $priority && 1 === preg_match($regex, $priority)) {
+                if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
                     return new AcceptHeader($priority, $accept->getQuality());
                 }
             }
@@ -91,10 +91,17 @@ class FormatNegotiator extends Negotiator
     }
 
     /**
+     * Returns the best format (as astring) based on a given `Accept` header,
+     * and a set of priorities.
+     *
+     * @param string $acceptHeader
+     * @param array  $priorities
+     *
+     * @return string
      */
     public function getBestFormat($acceptHeader, array $priorities = array())
     {
-        $catchAllEnabled = 0 === count($priorities) || in_array('*/*', $priorities);
+        $catchAllEnabled = 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
 
         $mimeTypes = array();
         foreach ($priorities as $priority) {
@@ -106,7 +113,7 @@ class FormatNegotiator extends Negotiator
         }
 
         if ($catchAllEnabled) {
-            $mimeTypes[] = '*/*';
+            $mimeTypes[] = self::CATCH_ALL_VALUE;
         }
 
         if (null !== $accept = $this->getBest($acceptHeader, $mimeTypes)) {
