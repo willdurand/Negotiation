@@ -8,6 +8,8 @@ Yet another missing PHP library... about Content Negotiation!
 to implement [content
 negotiation](http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html) in your
 application, whatever framework you use.
+This library is based on [RFC
+2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
 
 
 Installation
