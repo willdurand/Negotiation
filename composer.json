@@ -1,11 +1,12 @@
 {
     "name": "willdurand/negotiation",
-    "description": "A Negotiation library",
-    "keywords": [ "content", "negotiation", "format" ],
+    "description": "Content Negotiation tools for PHP provided as a standalone library.",
+    "keywords": [ "content", "negotiation", "format", "accept", "header" ],
     "license": "MIT",
+    "homepage": "http://williamdurand.fr/Negotiation/",
     "authors": [
         {
-            "name": "William DURAND",
+            "name": "William Durand",
             "email": "william.durand1@gmail.com"
         }
     ],
