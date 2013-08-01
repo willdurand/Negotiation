@@ -21,7 +21,7 @@ class Negotiator implements NegotiatorInterface
         }
 
         if (0 !== count($priorities)) {
-            $priorities = array_map('strtolower', $priorities);
+            $priorities = $this->sanitizePriorities($priorities);
 
             $wildcardAccept = null;
             foreach ($accepts as $accept) {
@@ -59,9 +59,11 @@ class Negotiator implements NegotiatorInterface
         $catchAll = null;
         foreach ($acceptParts as $accept) {
             $quality = 1;
+            $parts   = preg_split('/;\s*q=/i', $accept, 0, PREG_SPLIT_NO_EMPTY);
 
-            if (false !== strpos($accept, ';q=')) {
-                list($accept, $quality) = explode(';q=', $accept);
+            if (2 === count($parts)) {
+                $accept  = $parts[0];
+                $quality = $parts[1];
             } else {
                 if (self::CATCH_ALL_VALUE === $accept) {
                     $quality = 0.01;
@@ -110,5 +112,17 @@ class Negotiator implements NegotiatorInterface
         return array_map(function ($accept) {
             return $accept['item'];
         }, array_values($accepts));
+    }
+
+    /**
+     * @param array $priorities
+     *
+     * @return array
+     */
+    protected function sanitizePriorities(array $priorities)
+    {
+        return array_map(function ($priority) {
+            return preg_replace('/\s+/', '', strtolower($priority));
+        }, $priorities);
     }
 }

@@ -194,6 +194,27 @@ class FormatNegotiatorTest extends TestCase
                     'quality' => 0.7,
                 )
             ),
+            // LWS / case sensitivity
+            array(
+                'text/* ; q=0.3, text/html ;Q=0.7, text/html ; level=1, text/html ;level = 2 ;q=0.4, */* ; q=0.5',
+                array(
+                    'text/html; level=2'
+                ),
+                array(
+                    'value'   => 'text/html;level=2',
+                    'quality' => 0.4,
+                )
+            ),
+            array(
+                'text/* ; q=0.3, text/html;Q=0.7, text/html ;level=1, text/html; level=2;q=0.4, */*;q=0.5',
+                array(
+                    'text/html; level=3'
+                ),
+                array(
+                    'value'   => 'text/html;level=3',
+                    'quality' => 0.7,
+                )
+            ),
         );
     }
 
