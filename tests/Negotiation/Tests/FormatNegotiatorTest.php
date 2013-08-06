@@ -9,6 +9,8 @@ use Negotiation\FormatNegotiator;
  */
 class FormatNegotiatorTest extends TestCase
 {
+    private $negotiator;
+
     protected function setUp()
     {
         $this->negotiator = new FormatNegotiator();

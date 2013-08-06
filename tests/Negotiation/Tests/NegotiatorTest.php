@@ -9,6 +9,8 @@ use Negotiation\Negotiator;
  */
 class NegotiatorTest extends TestCase
 {
+    private $negotiator;
+
     protected function setUp()
     {
         $this->negotiator = new Negotiator();
