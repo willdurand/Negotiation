@@ -21,30 +21,11 @@ class FormatNegotiator extends Negotiator
     );
 
     /**
-     * Register a new format with its mime types.
-     *
-     * @param string  $format
-     * @param array   $mimeTypes
-     * @param boolean $override
-     */
-    public function registerFormat($format, array $mimeTypes, $override = false)
-    {
-        if (isset($this->formats[$format]) && false === $override) {
-            throw new \InvalidArgumentException(sprintf(
-                'Format "%s" already registered, and override was set to "false".',
-                $format
-            ));
-        }
-
-        $this->formats[$format] = $mimeTypes;
-    }
-
-    /**
      * {@inheritDoc}
      */
     public function getBest($acceptHeader, array $priorities = array())
     {
-        $acceptHeaders   = $this->parseAcceptHeader($acceptHeader);
+        $acceptHeaders   = $this->parseHeader($acceptHeader);
         $priorities      = $this->sanitizePriorities($priorities);
         $catchAllEnabled = $this->isCatchAllEnabled($priorities);
 
@@ -126,6 +107,25 @@ class FormatNegotiator extends Negotiator
         }
 
         return null;
+    }
+
+    /**
+     * Register a new format with its mime types.
+     *
+     * @param string  $format
+     * @param array   $mimeTypes
+     * @param boolean $override
+     */
+    public function registerFormat($format, array $mimeTypes, $override = false)
+    {
+        if (isset($this->formats[$format]) && false === $override) {
+            throw new \InvalidArgumentException(sprintf(
+                'Format "%s" already registered, and override was set to "false".',
+                $format
+            ));
+        }
+
+        $this->formats[$format] = $mimeTypes;
     }
 
     /**

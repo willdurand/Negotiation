@@ -16,36 +16,6 @@ class NegotiatorTest extends TestCase
         $this->negotiator = new Negotiator();
     }
 
-    /**
-     * 'fu' has a quality rating of 0.9 which is higher than the rest
-     * we expect Negotiator to return the 'fu' content.
-     *
-     * See: http://svn.apache.org/repos/asf/httpd/test/framework/trunk/t/modules/negotiation.t
-     */
-    public function testGetBestUsesQuality()
-    {
-        $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('fu', $acceptHeader->getValue());
-    }
-
-    /**
-     * 'bu' has the highest quality rating, but is non-existent,
-     * so we expect the next highest rated 'fr' content to be returned.
-     *
-     * See: http://svn.apache.org/repos/asf/httpd/test/framework/trunk/t/modules/negotiation.t
-     */
-    public function testGetBestIgnoresNonExistentContent()
-    {
-        $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('fr', $acceptHeader->getValue());
-    }
-
     public function testGetBestReturnsNullWithNullHeader()
     {
         $this->assertNull($this->negotiator->getBest(null));
@@ -96,7 +66,7 @@ class NegotiatorTest extends TestCase
     public function testParseAcceptHeader($header, $expected)
     {
         $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseAcceptHeader($header);
+        $accepts    = $negotiator->parseHeader($header);
 
         $this->assertCount(count($expected), $accepts);
         $this->assertEquals($expected, array_map(function ($result) {
@@ -110,7 +80,7 @@ class NegotiatorTest extends TestCase
     public function testParseAcceptHeaderWithQualities($header, $expected)
     {
         $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseAcceptHeader($header);
+        $accepts    = $negotiator->parseHeader($header);
 
         $this->assertEquals(count($expected), count($accepts));
 
@@ -128,7 +98,7 @@ class NegotiatorTest extends TestCase
     public function testParseAcceptHeaderEnsuresPrecedence($header, $expected)
     {
         $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseAcceptHeader($header);
+        $accepts    = $negotiator->parseHeader($header);
 
         $this->assertCount(count($expected), $accepts);
 
@@ -269,8 +239,8 @@ class NegotiatorTest extends TestCase
 
 class TestableNegotiator extends Negotiator
 {
-    public function parseAcceptHeader($acceptHeader)
+    public function parseHeader($acceptHeader)
     {
-        return parent::parseAcceptHeader($acceptHeader);
+        return parent::parseHeader($acceptHeader);
     }
 }
