@@ -79,10 +79,22 @@ $format = $negotiator->getBestFormat($acceptHeader, $priorities);
 // $format = html
 ```
 
-### Charset/Encoding/Language Negotiation
+### Language Negotiation
 
-Charset/Encoding/Language negotiation works out of the box using the
-`Negotiator` class:
+Language negotiation is handled by the `LanguageNegotiator` class:
+
+``` php
+<?php
+
+$negotiator = new \Negotiation\LanguageNegotiator();
+$language   = $negotiator->getBest('da, en-gb;q=0.8, en;q=0.7');
+// $language = da
+```
+
+
+### Charset/Encoding Negotiation
+
+Charset/Encoding negotiation works out of the box using the `Negotiator` class:
 
 ``` php
 <?php
