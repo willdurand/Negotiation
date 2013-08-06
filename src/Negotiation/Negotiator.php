@@ -59,12 +59,12 @@ class Negotiator implements NegotiatorInterface
         $index    = 0;
         $catchAll = null;
         foreach ($acceptParts as $acceptPart) {
-            $quality = 1;
+            $quality = 1.0;
             $parts   = preg_split('/;\s*q=/i', $acceptPart, 0, PREG_SPLIT_NO_EMPTY);
 
             if (2 === count($parts)) {
                 $value   = $parts[0];
-                $quality = $parts[1];
+                $quality = (float) $parts[1];
             } else {
                 $value = $acceptPart;
 

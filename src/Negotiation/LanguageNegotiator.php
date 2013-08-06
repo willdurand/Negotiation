@@ -18,19 +18,17 @@ class LanguageNegotiator extends Negotiator
         $acceptParts = array();
 
         preg_match_all(
-            '/\s*([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0.[0-9]+))?,*\s*/i',
+            '/(?<=[, ]|^)([a-zA-Z-]+|\*)(?:;q=([0-9.]+))?(?:$|\s*,\s*)/i',
             $header,
-            $acceptParts
+            $acceptParts,
+            PREG_SET_ORDER
         );
-
-        if (!isset($acceptParts[1]) && !isset($acceptParts[4])) {
-            return array();
-        }
 
         $index    = 0;
         $catchAll = null;
-        foreach (array_combine($acceptParts[1], $acceptParts[4]) as $value => $quality) {
-            $quality = empty($quality) ? 1 : $quality;
+        foreach ($acceptParts as $acceptPart) {
+            $value   = $acceptPart[1];
+            $quality = isset($acceptPart[2]) ? (float) $acceptPart[2] : 1.0;
 
             if ('*' === $value) {
                 $catchAll = new AcceptHeader($value, $quality);
