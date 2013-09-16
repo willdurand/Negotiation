@@ -37,7 +37,7 @@ class FormatNegotiator extends Negotiator
                     return $accept;
                 }
 
-                $regex = '#^' . preg_quote($mimeType) . '#';
+                $regex = '#^' . preg_quote($mimeType) . '$#';
 
                 foreach ($priorities as $priority) {
                     if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
