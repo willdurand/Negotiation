@@ -28,6 +28,10 @@ The recommended way to install Negotiation is through
 }
 ```
 
+**Protip:** you should browse the
+[`willdurand/negotiation`](https://packagist.org/packages/willdurand/negotiation)
+page to choose a stable version to use, avoid the `@stable` meta constraint.
+
 
 Usage
 -----
