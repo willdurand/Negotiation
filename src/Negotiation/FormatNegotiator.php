@@ -72,7 +72,7 @@ class FormatNegotiator extends Negotiator
     }
 
     /**
-     * Returns the best format (as astring) based on a given `Accept` header,
+     * Returns the best format (as a string) based on a given `Accept` header,
      * and a set of priorities.
      *
      * @param string $acceptHeader
