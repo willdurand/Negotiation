@@ -34,7 +34,7 @@ class LanguageNegotiator extends Negotiator
                 $catchAll = new AcceptHeader($value, $quality);
             } else {
                 $acceptHeaders[] = array(
-                    'item'  => new AcceptHeader($value, $quality, $this->parseParameters($value)),
+                    'item'  => new AcceptHeader($value, $quality),
                     'index' => $index
                 );
             }
