@@ -48,6 +48,7 @@ class NegotiatorTest extends TestCase
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
         $this->assertEquals('bar', $acceptHeader->getValue());
+        $this->assertFalse($acceptHeader->hasParameter('q'));
     }
 
     /**
@@ -108,6 +109,21 @@ class NegotiatorTest extends TestCase
             $this->assertEquals($quality, $accepts[$i]->getQuality());
 
             $i++;
+        }
+    }
+
+    /**
+     * @dataProvider dataProviderForParseParameters
+     */
+    public function testParseParameters($header, $expected)
+    {
+        $acceptHeader = $this->negotiator->getBest($header);
+
+        $this->assertCount(count($expected), $acceptHeader->getParameters());
+
+        foreach ($expected as $key => $value) {
+            $this->assertTrue($acceptHeader->hasParameter($key));
+            $this->assertEquals($value, $acceptHeader->getParameter($key));
         }
     }
 
@@ -232,6 +248,30 @@ class NegotiatorTest extends TestCase
                     'image/*'               => 0.02,
                     '*/*'                   => 0.01,
                 )
+            ),
+        );
+    }
+
+    public static function dataProviderForParseParameters()
+    {
+        return array(
+            array(
+                'application/json ;q=1.0; level=2;foo= bar',
+                array(
+                    'level' => 2,
+                    'foo'   => 'bar',
+                ),
+            ),
+            array(
+                'application/json ;q = 1.0; level = 2;     foo  = bar',
+                array(
+                    'level' => 2,
+                    'foo'   => 'bar',
+                ),
+            ),
+            array(
+                'application/json;q=1.0',
+                array(),
             ),
         );
     }

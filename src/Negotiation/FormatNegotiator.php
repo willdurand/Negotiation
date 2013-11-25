@@ -41,7 +41,7 @@ class FormatNegotiator extends Negotiator
 
                 foreach ($priorities as $priority) {
                     if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
-                        return new AcceptHeader($priority, $accept->getQuality());
+                        return new AcceptHeader($priority, $accept->getQuality(), $this->parseParameters($priority));
                     }
                 }
 
@@ -52,7 +52,7 @@ class FormatNegotiator extends Negotiator
                 self::CATCH_ALL_VALUE === $mimeType &&
                 self::CATCH_ALL_VALUE !== $value = array_shift($priorities)
             ) {
-                return new AcceptHeader($value, $accept->getQuality());
+                return new AcceptHeader($value, $accept->getQuality(), $this->parseParameters($value));
             }
 
             if (false === $pos = strpos($mimeType, ';')) {
@@ -63,7 +63,7 @@ class FormatNegotiator extends Negotiator
 
             foreach ($priorities as $priority) {
                 if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
-                    return new AcceptHeader($priority, $accept->getQuality());
+                    return new AcceptHeader($priority, $accept->getQuality(), $this->parseParameters($priority));
                 }
             }
         }

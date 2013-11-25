@@ -30,6 +30,15 @@ class FormatNegotiatorTest extends TestCase
             if (is_array($expected)) {
                 $this->assertEquals($expected['value'],   $acceptHeader->getValue());
                 $this->assertEquals($expected['quality'], $acceptHeader->getQuality());
+
+                if (isset($expected['parameters'])) {
+                    foreach ($expected['parameters'] as $key => $value) {
+                        $this->assertTrue($acceptHeader->hasParameter($key));
+                        $this->assertEquals($value, $acceptHeader->getParameter($key));
+                    }
+
+                    $this->assertCount(count($expected['parameters']), $acceptHeader->getParameters());
+                }
             } else {
                 $this->assertEquals($expected, $acceptHeader->getValue());
             }
@@ -192,8 +201,11 @@ class FormatNegotiatorTest extends TestCase
                     'text/html;level=3'
                 ),
                 array(
-                    'value'   => 'text/html;level=3',
-                    'quality' => 0.7,
+                    'value'      => 'text/html;level=3',
+                    'quality'    => 0.7,
+                    'parameters' => array(
+                        'level' => 3,
+                    ),
                 )
             ),
             // LWS / case sensitivity
@@ -203,8 +215,11 @@ class FormatNegotiatorTest extends TestCase
                     'text/html; level=2'
                 ),
                 array(
-                    'value'   => 'text/html;level=2',
-                    'quality' => 0.4,
+                    'value'      => 'text/html;level=2',
+                    'quality'    => 0.4,
+                    'parameters' => array(
+                        'level' => 2,
+                    ),
                 )
             ),
             array(
@@ -213,8 +228,11 @@ class FormatNegotiatorTest extends TestCase
                     'text/html; level=3'
                 ),
                 array(
-                    'value'   => 'text/html;level=3',
-                    'quality' => 0.7,
+                    'value'      => 'text/html;level=3',
+                    'quality'    => 0.7,
+                    'parameters' => array(
+                        'level' => 3,
+                    ),
                 )
             ),
         );
