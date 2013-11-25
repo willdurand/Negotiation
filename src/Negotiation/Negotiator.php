@@ -144,15 +144,15 @@ class Negotiator implements NegotiatorInterface
      */
     protected function parseParameters($value)
     {
-        $parts = explode(';', preg_replace('/\s+/', '', strtolower($value)));
+        $parts = explode(';', preg_replace('/\s+/', '', $value));
         array_shift($parts);
 
         $parameters = array();
         foreach ($parts as $part) {
             $part = explode('=', $part);
 
-            if ('q' !== $part[0]) {
-                $parameters[$part[0]] = $part[1];
+            if ('q' !== $key = strtolower($part[0])) {
+                $parameters[$key] = $part[1];
             }
         }
 
