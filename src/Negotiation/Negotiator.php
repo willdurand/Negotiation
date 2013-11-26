@@ -93,6 +93,12 @@ class Negotiator implements NegotiatorInterface
         return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
     }
 
+    /**
+     * @param array        $acceptHeaders A set of AcceptHeader objects to sort.
+     * @param AcceptHeader $catchAll      A special AcceptHeader that represents the "catch all".
+     *
+     * @return array[AcceptHeader]
+     */
     protected function sortAcceptHeaders(array $acceptHeaders, AcceptHeader $catchAll = null)
     {
         uasort($acceptHeaders, function ($a, $b) {

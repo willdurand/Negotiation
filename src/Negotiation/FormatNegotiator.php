@@ -23,9 +23,9 @@ class FormatNegotiator extends Negotiator
     /**
      * {@inheritDoc}
      */
-    public function getBest($acceptHeader, array $priorities = array())
+    public function getBest($header, array $priorities = array())
     {
-        $acceptHeaders   = $this->parseHeader($acceptHeader);
+        $acceptHeaders   = $this->parseHeader($header);
         $priorities      = $this->sanitizePriorities($priorities);
         $catchAllEnabled = $this->isCatchAllEnabled($priorities);
 

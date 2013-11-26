@@ -8,10 +8,10 @@ namespace Negotiation;
 interface NegotiatorInterface
 {
     /**
-     * @param string $acceptHeader
-     * @param array  $priorities
+     * @param string $header     A string containing an `Accept|Accept-*` header.
+     * @param array  $priorities A set of priorities.
      *
      * @return AcceptHeader
      */
-    public function getBest($acceptHeader, array $priorities = array());
+    public function getBest($header, array $priorities = array());
 }
