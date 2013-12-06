@@ -284,4 +284,23 @@ class FormatNegotiatorTest extends TestCase
     {
         $this->negotiator->registerFormat('html', array());
     }
+
+    /**
+     * @dataProvider dataProviderForNormalizePriorities
+     */
+    public function testNormalizePriorities($priorities, $expected)
+    {
+        $priorities = $this->negotiator->normalizePriorities($priorities);
+
+        $this->assertEquals($expected, $priorities);
+    }
+
+    public static function dataProviderForNormalizePriorities()
+    {
+        return array(
+            array(array('application/json', 'application/xml'), array('application/json', 'application/xml')),
+            array(array('json', 'application/xml', 'text/*', 'rdf', '*/*'), array('application/json', 'application/x-json', 'application/xml', 'text/*', 'application/rdf+xml', '*/*')),
+            array(array('json', 'html', '*/*'), array('application/json', 'application/x-json', 'text/html', 'application/xhtml+xml', '*/*')),
+        );
+    }
 }
