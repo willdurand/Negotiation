@@ -83,12 +83,11 @@ class FormatNegotiator extends Negotiator
      */
     public function getBestFormat($acceptHeader, array $priorities = array())
     {
-        $mimeTypes       = $this->getMimeTypes($priorities);
-        $catchAllEnabled = $this->isCatchAllEnabled($priorities);
+        $mimeTypes = $this->normalizePriorities($priorities);
 
         if (null !== $accept = $this->getBest($acceptHeader, $mimeTypes)) {
             if (null !== $format = $this->getFormat($accept->getValue())) {
-                if (in_array($format, $priorities) || $catchAllEnabled) {
+                if (in_array($format, $priorities) || $this->isCatchAllEnabled($priorities)) {
                     return $format;
                 }
             }
@@ -158,6 +157,33 @@ class FormatNegotiator extends Negotiator
 
         if ($catchAllEnabled) {
             $mimeTypes[] = self::CATCH_ALL_VALUE;
+        }
+
+        return $mimeTypes;
+    }
+
+    /**
+     * Ensure that any formats are converted to mime types.
+     *
+     * @param  array $priorities
+     * @return array
+     */
+    public function normalizePriorities($priorities)
+    {
+        $priorities = $this->sanitize($priorities);
+
+        $mimeTypes = array();
+        foreach ($priorities as $priority) {
+            if (strpos($priority, '/')) {
+                $mimeTypes[] = $priority;
+                continue;
+            }
+
+            if (isset($this->formats[$priority])) {
+                foreach ($this->formats[$priority] as $mimeType) {
+                    $mimeTypes[] = $mimeType;
+                }
+            }
         }
 
         return $mimeTypes;
