@@ -72,7 +72,7 @@ class FormatNegotiator extends Negotiator
     }
 
     /**
-     * Returns the best format (as a string) based on a given `Accept` header,
+     * Return the best format (as a string) based on a given `Accept` header,
      * and a set of priorities. Priorities are "formats" such as `json`, `xml`,
      * etc. or "mime types" such as `application/json`, `application/xml`, etc.
      *
@@ -116,7 +116,7 @@ class FormatNegotiator extends Negotiator
     }
 
     /**
-     * Returns the format for a given mime type, or null
+     * Return the format for a given mime type, or null
      * if not found.
      *
      * @param string $mimeType
@@ -135,7 +135,7 @@ class FormatNegotiator extends Negotiator
     }
 
     /**
-     * Returns an array of mime types for the given set of formats.
+     * Return an array of mime types for the given set of formats.
      *
      * @param array $formats A set of formats.
      *
