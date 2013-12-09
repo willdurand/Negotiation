@@ -71,7 +71,7 @@ $format = $negotiator->getBest($acceptHeader, $priorities);
 
 The `FormatNegotiator` class also provides a `getBestFormat()` method that
 returns the best format given an `Accept` header string and a set of
-preferred/allowed formats:
+preferred/allowed formats or mime types:
 
 ``` php
 <?php
@@ -79,11 +79,22 @@ preferred/allowed formats:
 $negotiator   = new \Negotiation\FormatNegotiator();
 
 $acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-$priorities   = array('html', 'json', '*/*');
+$priorities   = array('html', 'application/json', '*/*');
 
 $format = $negotiator->getBestFormat($acceptHeader, $priorities);
 // $format = html
 ```
+
+#### Other Methods
+
+* `registerFormat($format, array $mimeTypes, $override = false)`: registers a new
+  format with its mime types;
+* `getFormat($mimeType)`: returns the format for a given mime type, or null if
+not found;
+* `getMimeTypes(array $formats)`: returns an array of mime types for the given
+  set of formats;
+* `normalizePriorities($priorities)`: ensures that any formats are converted to
+  mime types.
 
 ### Language Negotiation
 
