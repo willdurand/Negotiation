@@ -24,4 +24,23 @@ class AcceptHeaderTest extends TestCase
         $this->assertNull($this->acceptHeader->getParameter('unknown'));
         $this->assertFalse($this->acceptHeader->getParameter('unknown', false));
     }
+
+    /**
+     * @dataProvider dataProviderForTestIsMediaRange
+     */
+    public function testIsMediaRange($value, $expected)
+    {
+        $header = new AcceptHeader($value, 1.0);
+
+        $this->assertEquals($expected, $header->isMediaRange());
+    }
+
+    public static function dataProviderForTestIsMediaRange()
+    {
+        return array(
+            array('text/*', true),
+            array('*/*', true),
+            array('application/json', false),
+        );
+    }
 }

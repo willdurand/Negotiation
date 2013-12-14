@@ -235,6 +235,15 @@ class FormatNegotiatorTest extends TestCase
                     ),
                 )
             ),
+            array(
+                '*/*',
+                array(),
+                array(
+                    'value'      => '*/*',
+                    'quality'    => 0.01,
+                    'parameters' => array(),
+                ),
+            ),
         );
     }
 
