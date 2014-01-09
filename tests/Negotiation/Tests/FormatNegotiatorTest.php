@@ -244,6 +244,14 @@ class FormatNegotiatorTest extends TestCase
                     'parameters' => array(),
                 ),
             ),
+            // Incompatible
+            array(
+                'text/html',
+                array(
+                    'application/rss'
+                ),
+                null
+            ),
         );
     }
 
@@ -263,6 +271,7 @@ class FormatNegotiatorTest extends TestCase
             array('text/html,application/xhtml+xml,application/xml', array('json'), null),
             array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', array('*/*'), 'html'),
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array(), 'html'),
+            array('text/html', array('text/xml'), null),
         );
     }
 
