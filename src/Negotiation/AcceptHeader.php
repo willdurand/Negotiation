@@ -24,8 +24,8 @@ class AcceptHeader
 
     public function __construct($value, $quality, array $parameters = array())
     {
-        $this->value      = $value;
-        $this->quality    = $quality;
+        $this->value = $value;
+        $this->quality = $quality;
         $this->parameters = $parameters;
     }
 
@@ -37,6 +37,16 @@ class AcceptHeader
     public function getQuality()
     {
         return $this->quality;
+    }
+
+    public function getVersion()
+    {
+        return $this->getParameter('version');
+    }
+
+    public function hasVersion()
+    {
+        return !is_null($this->getVersion());
     }
 
     public function getParameters()
