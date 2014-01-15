@@ -22,6 +22,11 @@ class AcceptHeader
      */
     private $parameters;
 
+    /**
+     * @param string $value
+     * @param float  $quality
+     * @param array  $parameters
+     */
     public function __construct($value, $quality, array $parameters = array())
     {
         $this->value      = $value;
@@ -29,31 +34,54 @@ class AcceptHeader
         $this->parameters = $parameters;
     }
 
+    /**
+      @return string
+     */
     public function getValue()
     {
         return $this->value;
     }
 
+    /**
+     * @return float
+     */
     public function getQuality()
     {
         return $this->quality;
     }
 
+    /**
+     * @return array
+     */
     public function getParameters()
     {
         return $this->parameters;
     }
 
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return string|null
+     */
     public function getParameter($key, $default = null)
     {
         return $this->hasParameter($key) ? $this->parameters[$key] : $default;
     }
 
+    /**
+     * @param string $key
+     *
+     * @return boolean
+     */
     public function hasParameter($key)
     {
         return isset($this->parameters[$key]);
     }
 
+    /**
+     * @return boolean
+     */
     public function isMediaRange()
     {
         return false !== strpos($this->value, '*');
