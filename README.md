@@ -96,6 +96,62 @@ not found;
 * `normalizePriorities($priorities)`: ensures that any formats are converted to
   mime types.
 
+### API Format Negotiation
+
+This negotiation takes possible version preferences of the client into account.
+The priorities can be used to specify which particular media/types are supported
+in which API versions:
+
+``` php
+<?php
+
+$negotiator   = new \Negotiation\ApiFormatNegotiator();
+
+$acceptHeader = 'application/xml;version=1,application/json;version=2';
+$priorities   = array('application/json', 'application/xml');
+
+$format = $negotiator->getBest($acceptHeader, $priorities);
+// $format->getValue() = application/xml
+// $format->getVersion() = 1
+```
+
+A more realistic scenario would be:
+
+``` php
+<?php
+
+$negotiator   = new \Negotiation\ApiFormatNegotiator();
+
+// Client wants to use version 1.0, no matter the response format
+$acceptHeader =  'application/json;version=1.0,application/xml;version=1.0';
+$priorities   = array(
+    'application/json' => array('1.0', '1.1', '1.2', '1.3', '2.0'),
+    'application/xml' => array('1.0', '1.1', '1.2', '1.3', '2.0')
+);
+
+$format = $negotiator->getBest($acceptHeader, $priorities);
+// $format->getValue() = application/json
+// $format->getVersion() = 1.0
+```
+
+Let's say a bug was found in a particular API version, but only the JSON part.
+If the client also accepts XML, this will be used for the particular version.
+ ``` php
+$negotiator   = new \Negotiation\ApiFormatNegotiator();
+
+// Client wants to use version 1.1, no matter the response format
+$acceptHeader =  'application/json;version=1.1,application/xml;version=1.1';
+// Note that version 1.1 is removed!
+$priorities   = array(
+    'application/json' => array('1.0', '1.2', '1.3', '2.0'),
+    'application/xml' => array('1.0', '1.1', '1.2', '1.3', '2.0')
+);
+
+$format = $negotiator->getBest($acceptHeader, $priorities);
+// $format->getValue() = application/xml
+// $format->getVersion() = 1.1.
+ ```
+
 ### Language Negotiation
 
 Language negotiation is handled by the `LanguageNegotiator` class:
