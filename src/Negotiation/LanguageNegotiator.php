@@ -47,55 +47,19 @@ class LanguageNegotiator extends Negotiator
 
     /**
      * {@inheritDoc}
-     */
-    public function getBest($header, array $priorities = array())
-    {
-        $acceptHeaders = $this->parseHeader($header);
-
-        if (0 === count($acceptHeaders)) {
-            return null;
-        }
-
-        if (0 !== count($priorities)) {
-            $priorities = $this->sanitize($priorities);
-
-            $wildcardAccept = null;
-            foreach ($acceptHeaders as $accept) {
-                if ($this->matchHeaderInPriorities($accept, $priorities)) {
-                    return $accept;
-                }
-
-                if ('*' === $accept->getValue()) {
-                    $wildcardAccept = $accept;
-                }
-            }
-
-            if (null !== $wildcardAccept) {
-                $value = reset($priorities);
-
-                return new AcceptHeader($value, $wildcardAccept->getQuality(), $this->parseParameters($value));
-            }
-        }
-
-        return reset($acceptHeaders);
-    }
-
-    /**
-     * Checks whether an AcceptHeader is contained in priorities.  This implementation provide
-     * matching between generic Accept-Language and localized priorities.
+     *
+     * This implementation provide matching between generic Accept-Language and localized
+     * priorities.
      * For instance, 'en' can be matched to 'en-US'.
-     *
-     * @param AcceptHeader $accept
-     * @param array        $priorities
-     *
-     * @return boolean
      */
     protected function matchHeaderInPriorities($accept, $priorities)
     {
         $needle = strtolower($accept->getValue());
 
         $trimedPriorities = array_map(
-            function($value){ return strtok($value, '-'); },
+            function($value){
+                return strtok($value, '-');
+            },
             $priorities
         );
 
