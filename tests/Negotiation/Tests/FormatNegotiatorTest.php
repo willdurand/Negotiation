@@ -264,6 +264,8 @@ class FormatNegotiatorTest extends TestCase
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('html', 'json', '*/*'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('rss', '*/*'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('xml'), 'xml'),
+            // This shows clearly that the acceptheader is leading over server priorities
+            array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('xml', 'html'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('json', 'xml'), 'xml'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('json'), 'json'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*', array('json'), 'json'),
