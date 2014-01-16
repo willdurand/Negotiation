@@ -44,4 +44,17 @@ class LanguageNegotiator extends Negotiator
 
         return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function matchPriorities(AcceptHeader $acceptHeader, array $priorities = array())
+    {
+        $value            = strtolower($acceptHeader->getValue());
+        $trimedPriorities = array_map(function ($priority) {
+            return strtok($priority, '-');
+        }, $priorities);
+
+        return in_array($value, $priorities) || in_array($value, $trimedPriorities);
+    }
 }

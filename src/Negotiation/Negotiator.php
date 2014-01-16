@@ -25,7 +25,7 @@ class Negotiator implements NegotiatorInterface
 
             $wildcardAccept = null;
             foreach ($acceptHeaders as $accept) {
-                if (in_array(strtolower($accept->getValue()), $priorities)) {
+                if ($this->matchPriorities($accept, $priorities)) {
                     return $accept;
                 }
 
@@ -163,5 +163,16 @@ class Negotiator implements NegotiatorInterface
         }
 
         return $parameters;
+    }
+
+    /**
+     * @param AcceptHeader $acceptHeader
+     * @param array        $priorities
+     *
+     * @return boolean
+     */
+    protected function matchPriorities(AcceptHeader $acceptHeader, array $priorities = array())
+    {
+        return in_array(strtolower($acceptHeader->getValue()), $priorities);
     }
 }
