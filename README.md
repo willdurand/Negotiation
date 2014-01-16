@@ -91,8 +91,6 @@ $format = $negotiator->getBestFormat($acceptHeader, $priorities);
   format with its mime types;
 * `getFormat($mimeType)`: returns the format for a given mime type, or null if
 not found;
-* `getMimeTypes(array $formats)`: returns an array of mime types for the given
-  set of formats;
 * `normalizePriorities($priorities)`: ensures that any formats are converted to
   mime types.
 

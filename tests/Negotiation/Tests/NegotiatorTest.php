@@ -54,11 +54,19 @@ class NegotiatorTest extends TestCase
     /**
      * @dataProvider dataProviderForTestGetBest
      */
-    public function testGetBest($acceptHeader, $priorities, $expected)
+    public function testGetBest($acceptHeader, $priorities, $expected, $parameters = array())
     {
         $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
 
-        $this->assertEquals($expected, $acceptHeader->getValue());
+        if (null === $expected) {
+            $this->assertNull($acceptHeader);
+        } else {
+            $this->assertEquals($expected, $acceptHeader->getValue());
+
+            foreach ($parameters as $k => $v) {
+                $this->assertEquals($v, $acceptHeader->getParameter($k));
+            }
+        }
     }
 
     /**
@@ -220,6 +228,27 @@ class NegotiatorTest extends TestCase
                     'shift-jis',
                 ),
                 'Big5'
+            ),
+            array(
+                'utf-8;q=0.6,iso-8859-5;q=0.9',
+                array(
+                    'iso-8859-5',
+                    'utf-8',
+                ),
+                'iso-8859-5'
+            ),
+            array(
+                '',
+                array(
+                    'iso-8859-5',
+                    'utf-8',
+                ),
+                null
+            ),
+            array(
+                'audio/*; q=0.2, audio/basic',
+                array(),
+                'audio/basic',
             ),
         );
     }
