@@ -252,6 +252,31 @@ class FormatNegotiatorTest extends TestCase
                 ),
                 null
             ),
+            array(
+                'text/rdf+n3; q=0.8, application/rdf+json; q=0.8, text/turtle; q=1.0, text/n3; q=0.8, application/ld+json; q=0.5, application/rdf+xml; q=0.8',
+                array(),
+                'text/turtle'
+            ),
+            array(
+                'application/rdf+xml;q=0.5,text/html;q=.3',
+                array(),
+                'application/rdf+xml'
+            ),
+            array(
+                'application/xhtml+xml;q=0.5',
+                array(),
+                'application/xhtml+xml'
+            ),
+            array(
+                'application/rdf+xml;q=0.5,text/html;q=.5',
+                array(),
+                'application/rdf+xml'
+            ),
+            array(
+                'text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c',
+                array(),
+                'text/html',
+            ),
         );
     }
 
@@ -274,6 +299,7 @@ class FormatNegotiatorTest extends TestCase
             array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', array('*/*'), 'html'),
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array(), 'html'),
             array('text/html', array('text/xml'), null),
+            array('text/*, text/html, text/html;level=1, */*', array(), 'html'),
         );
     }
 

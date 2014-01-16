@@ -62,6 +62,7 @@ class LanguageNegotiatorTest extends TestCase
     {
         return array(
             array('da, en-gb;q=0.8, en;q=0.7', 'da'),
+            array('da, en-gb;q=0.8, en;q=0.7, *', 'da'),
             array('es-ES;q=0.7, es; q=0.6 ,fr; q=1.0, en; q=0.5,dk , fr-CH', 'fr-CH'),
             array('fr-FR,fr;q=0.1,en-US;q=0.6,en;q=0.4', 'fr-FR'),
             array('', null),
