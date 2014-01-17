@@ -48,13 +48,31 @@ class LanguageNegotiator extends Negotiator
     /**
      * {@inheritDoc}
      */
-    protected function matchPriorities(AcceptHeader $acceptHeader, array $priorities = array())
+    protected function match(array $acceptHeaders, array $priorities = array())
     {
-        $value            = strtolower($acceptHeader->getValue());
-        $trimedPriorities = array_map(function ($priority) {
+        $prioritiesSet[] = $priorities;
+        $prioritiesSet[] = array_map(function ($priority) {
             return strtok($priority, '-');
         }, $priorities);
 
-        return in_array($value, $priorities) || in_array($value, $trimedPriorities);
+        foreach ($acceptHeaders as $accept) {
+            foreach ($prioritiesSet as $availablePriorities) {
+                $sanitizedPriorities = $this->sanitize($availablePriorities);
+                $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities);
+                if (false !== $found) {
+                    return $priorities[$found];
+                }
+
+                if ('*' === $accept->getValue()) {
+                    $wildcardAccept = $accept;
+                }
+            }
+        }
+
+        if (null !== $wildcardAccept) {
+            $value = reset($priorities);
+
+            return $value;
+        }
     }
 }
