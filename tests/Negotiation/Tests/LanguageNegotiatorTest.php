@@ -71,7 +71,7 @@ class LanguageNegotiatorTest extends TestCase
         $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('en', $acceptHeader->getValue());
+        $this->assertEquals('en-US', $acceptHeader->getValue());
     }
 
     public static function dataProviderForGetBest()

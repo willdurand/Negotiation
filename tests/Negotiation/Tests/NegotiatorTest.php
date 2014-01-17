@@ -39,7 +39,7 @@ class NegotiatorTest extends TestCase
         $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('YO'));
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('yo', $acceptHeader->getValue());
+        $this->assertEquals('YO', $acceptHeader->getValue());
     }
 
     public function testGetBestWithQualities()
@@ -176,7 +176,7 @@ class NegotiatorTest extends TestCase
                     'iso-8859-1',
                     'shift-jis',
                 ),
-                'ISO-8859-1'
+                'iso-8859-1'
             ),
             array(
                 $pearCharsetHeader,
@@ -210,7 +210,7 @@ class NegotiatorTest extends TestCase
                     'iso-8859-1',
                     'shift-jis',
                 ),
-                'ISO-8859-1'
+                'iso-8859-1'
             ),
             array(
                 $pearCharsetHeader2,

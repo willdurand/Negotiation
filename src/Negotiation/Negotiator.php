@@ -15,33 +15,21 @@ class Negotiator implements NegotiatorInterface
     public function getBest($header, array $priorities = array())
     {
         $acceptHeaders = $this->parseHeader($header);
+        $best = reset($acceptHeaders);
 
         if (0 === count($acceptHeaders)) {
             return null;
         }
 
         if (0 !== count($priorities)) {
-            $priorities = $this->sanitize($priorities);
+            $value = $this->match($acceptHeaders, $priorities);
 
-            $wildcardAccept = null;
-            foreach ($acceptHeaders as $accept) {
-                if ($this->matchPriorities($accept, $priorities)) {
-                    return $accept;
-                }
-
-                if ('*' === $accept->getValue()) {
-                    $wildcardAccept = $accept;
-                }
-            }
-
-            if (null !== $wildcardAccept) {
-                $value = reset($priorities);
-
-                return new AcceptHeader($value, $wildcardAccept->getQuality(), $this->parseParameters($value));
+            if (!empty($value)) {
+                $best = new AcceptHeader($value, 1.0, $this->parseParameters($value));
             }
         }
 
-        return reset($acceptHeaders);
+        return $best;
     }
 
     /**
@@ -166,13 +154,30 @@ class Negotiator implements NegotiatorInterface
     }
 
     /**
-     * @param AcceptHeader $acceptHeader
-     * @param array        $priorities
+     * @param array[AcceptHeader] $acceptHeaders Sorted by quality
+     * @param array               $priorities    Configured priorities
      *
-     * @return boolean
+     * @return string|null Header string matched
      */
-    protected function matchPriorities(AcceptHeader $acceptHeader, array $priorities = array())
+    protected function match(array $acceptHeaders, array $priorities  = array())
     {
-        return in_array(strtolower($acceptHeader->getValue()), $priorities);
+        $sanitizedPriorities = $this->sanitize($priorities);
+
+        foreach ($acceptHeaders as $accept) {
+            $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities);
+            if (false !== $found) {
+                return $priorities[$found];
+            }
+
+            if ('*' === $accept->getValue()) {
+                $wildcardAccept = $accept;
+            }
+        }
+
+        if (null !== $wildcardAccept) {
+            $value = reset($priorities);
+
+            return $value;
+        }
     }
 }
