@@ -75,7 +75,5 @@ class LanguageNegotiator extends Negotiator
         if (null !== $wildcardAccept) {
             return reset($priorities);
         }
-
-        return null;
     }
 }
