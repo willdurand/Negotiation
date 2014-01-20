@@ -50,6 +50,8 @@ class LanguageNegotiator extends Negotiator
      */
     protected function match(array $acceptHeaders, array $priorities = array())
     {
+        $wildcardAccept  = null;
+
         $prioritiesSet   = array();
         $prioritiesSet[] = $priorities;
         $prioritiesSet[] = array_map(function ($priority) {

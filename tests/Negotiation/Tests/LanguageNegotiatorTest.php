@@ -74,6 +74,28 @@ class LanguageNegotiatorTest extends TestCase
         $this->assertEquals('en-US', $acceptHeader->getValue());
     }
 
+    public function testGetBestWithWildcard()
+    {
+        $acceptLanguageHeader = 'en, *;q=0.9';
+        $priorities           = array('fr');
+
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('fr', $acceptHeader->getValue());
+    }
+
+    public function testGetBestDoesNotMatchPriorities()
+    {
+        $acceptLanguageHeader = 'en, de';
+        $priorities           = array('fr');
+
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('en', $acceptHeader->getValue());
+    }
+
     public static function dataProviderForGetBest()
     {
         return array(
