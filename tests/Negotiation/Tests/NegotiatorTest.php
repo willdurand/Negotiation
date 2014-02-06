@@ -303,6 +303,10 @@ class NegotiatorTest extends TestCase
                 'application/json;q=1.0',
                 array(),
             ),
+            array(
+                'application/json;foo',
+                array(),
+            ),
         );
     }
 }

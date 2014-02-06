@@ -145,6 +145,10 @@ class Negotiator implements NegotiatorInterface
         foreach ($parts as $part) {
             $part = explode('=', $part);
 
+            if (2 !== count($part)) {
+                continue;
+            }
+
             if ('q' !== $key = strtolower($part[0])) {
                 $parameters[$key] = $part[1];
             }
