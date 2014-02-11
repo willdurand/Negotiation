@@ -279,9 +279,7 @@ class FormatNegotiatorTest extends TestCase
             ),
             // IE8 Accept header
             array(
-                // @codingStandardsIgnoreStart
                 'image/jpeg, application/x-ms-application, image/gif, application/xaml+xml, image/pjpeg, application/x-ms-xbap, */*',
-                // @codingStandardsIgnoreEnd
                 array(
                     'text/html',
                     'application/xhtml+xml',
