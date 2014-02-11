@@ -68,7 +68,7 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
             }
         }
 
-        // If $priorities is empty or contains a catch-all mime type
+        // if `$priorities` is empty or contains a catch-all mime type
         if ($catchAllEnabled) {
             return array_shift($acceptHeaders) ?: null;
         }

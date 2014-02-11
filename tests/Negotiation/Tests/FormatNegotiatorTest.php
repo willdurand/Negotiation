@@ -277,6 +277,16 @@ class FormatNegotiatorTest extends TestCase
                 array(),
                 'text/html',
             ),
+            // IE8 Accept header
+            array(
+                'image/jpeg, application/x-ms-application, image/gif, application/xaml+xml, image/pjpeg, application/x-ms-xbap, */*',
+                array(
+                    'text/html',
+                    'application/xhtml+xml',
+                    '*/*'
+                ),
+                'text/html',
+            ),
         );
     }
 
