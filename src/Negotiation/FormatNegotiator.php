@@ -154,7 +154,7 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
     /**
      * @param array $priorities
      *
-     * return boolean
+     * @return boolean
      */
     private function isCatchAllEnabled(array $priorities)
     {
