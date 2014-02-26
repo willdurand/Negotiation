@@ -144,7 +144,7 @@ class FormatNegotiatorTest extends TestCase
                     'application/rss+xml',
                     '*/*',
                 ),
-                'text/html'
+                'application/rss+xml'
             ),
             // See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             array(
@@ -297,7 +297,7 @@ class FormatNegotiatorTest extends TestCase
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array(), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('html', 'json', '*/*'), 'html'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('html', 'json', '*/*'), 'html'),
-            array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('rss', '*/*'), 'html'),
+            array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('rss', '*/*'), 'rss'),
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('xml'), 'xml'),
             // This shows clearly that the acceptheader is leading over server priorities
             array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array('xml', 'html'), 'html'),

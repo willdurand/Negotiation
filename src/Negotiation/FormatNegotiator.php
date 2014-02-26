@@ -28,9 +28,14 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
         $acceptHeaders   = $this->parseHeader($header);
         $priorities      = $this->sanitize($priorities);
         $catchAllEnabled = $this->isCatchAllEnabled($priorities);
+        $catchAllHeader  = null;
 
         foreach ($acceptHeaders as $accept) {
             $mimeType = $accept->getValue();
+
+            if (self::CATCH_ALL_VALUE === $mimeType) {
+                $catchAllHeader = $accept;
+            }
 
             if ('/*' !== substr($mimeType, -2)) {
                 if (in_array($mimeType, $priorities)) {
@@ -65,6 +70,20 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
                 if (self::CATCH_ALL_VALUE !== $priority && 1 === preg_match($regex, $priority)) {
                     return new AcceptHeader($priority, $accept->getQuality(), $this->parseParameters($priority));
                 }
+            }
+        }
+
+        // if client sends `*/*` in Accept header, and nothing has been negotiated before
+        // then, return the first priority value if available
+        if (null !== $catchAllHeader) {
+            $value = array_shift($priorities);
+
+            if (null !== $value && self::CATCH_ALL_VALUE !== $value) {
+                return new AcceptHeader(
+                    $value,
+                    $catchAllHeader->getQuality(),
+                    $this->parseParameters($catchAllHeader->getValue())
+                );
             }
         }
 
