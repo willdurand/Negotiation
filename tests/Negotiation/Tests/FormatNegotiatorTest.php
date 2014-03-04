@@ -28,7 +28,7 @@ class FormatNegotiatorTest extends TestCase
         } else {
             $this->assertNotNull($acceptHeader);
             if (is_array($expected)) {
-                $this->assertEquals($expected['value'],   $acceptHeader->getValue());
+                $this->assertEquals($expected['value'], $acceptHeader->getValue());
                 $this->assertEquals($expected['quality'], $acceptHeader->getQuality());
 
                 if (isset($expected['parameters'])) {
@@ -60,6 +60,11 @@ class FormatNegotiatorTest extends TestCase
         $pearAcceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,text/*;q=0.7,*/*,image/gif; q=0.8, image/jpeg; q=0.6, image/*';
 
         return array(
+            array(
+                '*/*,text/css; q=2.0',
+                array('text/html', 'application/xhtml+xml', '*/*'),
+                'text/css'
+            ),
             // PEAR HTTP2 tests
             array(
                 $pearAcceptHeader,
