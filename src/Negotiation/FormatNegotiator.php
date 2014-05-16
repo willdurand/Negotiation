@@ -87,7 +87,9 @@ class FormatNegotiator extends Negotiator
         $catchAllEnabled = $this->isCatchAllEnabled($priorities);
 
         if (null !== $accept = $this->getBest($acceptHeader, $mimeTypes)) {
-            if (null !== $format = $this->getFormat($accept->getValue())) {
+            if (0.0 < $accept->getQuality() &&
+                null !== $format = $this->getFormat($accept->getValue())
+            ) {
                 if (in_array($format, $priorities) || $catchAllEnabled) {
                     return $format;
                 }
