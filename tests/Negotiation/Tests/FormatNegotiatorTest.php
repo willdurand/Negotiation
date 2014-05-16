@@ -307,6 +307,7 @@ class FormatNegotiatorTest extends TestCase
             array('text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c', array('*/*'), 'html'),
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array(), 'html'),
             array('text/html', array('text/xml'), null),
+            array('text/html; q=0.0', array(), null),
         );
     }
 
