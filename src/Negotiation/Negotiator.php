@@ -35,7 +35,7 @@ class Negotiator implements NegotiatorInterface
     /**
      * @param string $header A string that contains an `Accept|Accept-*` header.
      *
-     * @return array[AcceptHeader]
+     * @return AcceptHeader[]
      */
     protected function parseHeader($header)
     {
@@ -85,7 +85,7 @@ class Negotiator implements NegotiatorInterface
      * @param array        $acceptHeaders A set of AcceptHeader objects to sort.
      * @param AcceptHeader $catchAll      A special AcceptHeader that represents the "catch all".
      *
-     * @return array[AcceptHeader]
+     * @return AcceptHeader[]
      */
     protected function sortAcceptHeaders(array $acceptHeaders, AcceptHeader $catchAll = null)
     {
