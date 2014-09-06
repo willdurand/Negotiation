@@ -121,6 +121,23 @@ class NegotiatorTest extends TestCase
     }
 
     /**
+     * @dataProvider dataProviderForTestParseAcceptHeaderForBrowserBugs
+     */
+    public function testParseAcceptHeaderForBrowserBugs($header)
+    {
+        $negotiator = new TestableNegotiator();
+        $accepts = $negotiator->parseHeader($header);
+
+        $pass = FALSE;
+        foreach ($accepts as $accept)
+        {
+            $value = $accept->getValue();
+            $pass = $pass || in_array($value, array('text/html', 'application/xhtml+xml'));
+        }
+        $this->assertTrue($pass);
+    }
+
+    /**
      * @dataProvider dataProviderForParseParameters
      */
     public function testParseParameters($value, $expected)
@@ -279,6 +296,35 @@ class NegotiatorTest extends TestCase
                     '*/*'                   => 0.01,
                 )
             ),
+        );
+    }
+
+    public static function dataProviderForTestParseAcceptHeaderForBrowserBugs()
+    {
+        return array(
+            // @see https://bugs.webkit.org/show_bug.cgi?id=27267
+            // Firefox 3.5 (2009)
+          array('text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'),
+            // IE8 (2009)
+          array('image/gif, image/jpeg, image/pjpeg, image/pjpeg, application/x-shockwave-flash, application/xaml+xml, application/vnd.ms-xpsdocument, application/x-ms-xbap, application/x-ms-application, application/vnd.ms-excel, application/vnd.ms-powerpoint, application/msword, application/x-silverlight, */*'),
+            // Opera (2009)
+          array('text/html, application/xml;q=0.9, application/xhtml+xml, image/png, image/jpeg, image/gif, image/x-xbitmap, */*;q=0.1'),
+            // Chrome (2009)
+          array('application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'),
+            // @see https://github.com/symfony/symfony/pull/564
+            // Firefox 3.6 (2010)
+          array('text/html,application/xhtml+xml,application/json,application/xml;q=0.9,*/*;q=0.8'),
+            // Safari (2010)
+          array('*/*'),
+            // Opera (2010)
+          array('image/jpeg,image/gif,image/x-xbitmap,text/html,image/webp,image/png,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.1'),
+            // @see http://drupal.org/node/1716790
+            // Safari (2010), iOS 4.2.1 (2012)
+          array('application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'),
+            // Android #1 (2012)
+          array('application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,*/*;q=0.5'),
+            // Android #2 (2012)
+          array('text/xml,text/html,application/xhtml+xml,image/png,text/plain,*/*;q=0.8'),
         );
     }
 
