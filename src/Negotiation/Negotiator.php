@@ -15,21 +15,16 @@ class Negotiator implements NegotiatorInterface
     public function getBest($header, array $priorities = array())
     {
         $acceptHeaders = $this->parseHeader($header);
-        $best          = reset($acceptHeaders);
 
-        if (0 === count($acceptHeaders)) {
+        if (empty($acceptHeaders)) {
             return null;
+        } elseif (empty($priorities)) {
+            return reset($acceptHeaders);
         }
 
-        if (0 !== count($priorities)) {
-            $value = $this->match($acceptHeaders, $priorities);
+        $value = $this->match($acceptHeaders, $priorities);
 
-            if (!empty($value)) {
-                $best = new AcceptHeader($value, 1.0, $this->parseParameters($value));
-            }
-        }
-
-        return $best;
+        return empty($value) ? null : new AcceptHeader($value, 1.0, $this->parseParameters($value));
     }
 
     /**
@@ -163,7 +158,7 @@ class Negotiator implements NegotiatorInterface
      *
      * @return string|null Header string matched
      */
-    protected function match(array $acceptHeaders, array $priorities  = array())
+    protected function match(array $acceptHeaders, array $priorities = array())
     {
         $sanitizedPriorities = $this->sanitize($priorities);
 
@@ -177,7 +172,7 @@ class Negotiator implements NegotiatorInterface
             }
         }
 
-        if (null !== $wildcardAccept) {
+        if (isset($wildcardAccept)) {
             return reset($priorities);
         }
 
