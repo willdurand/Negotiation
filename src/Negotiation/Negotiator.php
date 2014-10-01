@@ -20,28 +20,13 @@ class Negotiator implements NegotiatorInterface
             return null;
         }
 
-        if (0 !== count($priorities)) {
-            $priorities = $this->sanitize($priorities);
-
-            $wildcardAccept = null;
-            foreach ($acceptHeaders as $accept) {
-                if (in_array(strtolower($accept->getValue()), $priorities)) {
-                    return $accept;
-                }
-
-                if ('*' === $accept->getValue()) {
-                    $wildcardAccept = $accept;
-                }
-            }
-
-            if (null !== $wildcardAccept) {
-                $value = reset($priorities);
-
-                return new AcceptHeader($value, $wildcardAccept->getQuality(), $this->parseParameters($value));
-            }
+        if (0 === count($priorities)) {
+            return reset($acceptHeaders);
         }
 
-        return reset($acceptHeaders);
+        $value = $this->match($acceptHeaders, $priorities);
+
+        return empty($value) ? null : new AcceptHeader($value, 1.0, $this->parseParameters($value));
     }
 
     /**
@@ -167,5 +152,33 @@ class Negotiator implements NegotiatorInterface
         }
 
         return $parameters;
+    }
+
+    /**
+     * @param AcceptHeader[] $acceptHeaders Sorted by quality
+     * @param array          $priorities    Configured priorities
+     *
+     * @return string|null Header string matched
+     */
+    protected function match(array $acceptHeaders, array $priorities = array())
+    {
+        $wildcardAccept      = null;
+        $sanitizedPriorities = $this->sanitize($priorities);
+
+        foreach ($acceptHeaders as $accept) {
+            if (false !== $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities)) {
+                return $priorities[$found];
+            }
+
+            if ('*' === $accept->getValue()) {
+                $wildcardAccept = $accept;
+            }
+        }
+
+        if (null !== $wildcardAccept) {
+            return reset($priorities);
+        }
+
+        return null;
     }
 }

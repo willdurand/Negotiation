@@ -9,6 +9,10 @@ use Negotiation\FormatNegotiator;
  */
 class FormatNegotiatorTest extends TestCase
 {
+
+    /**
+     * @var FormatNegotiator
+     */
     private $negotiator;
 
     protected function setUp()
@@ -28,7 +32,7 @@ class FormatNegotiatorTest extends TestCase
         } else {
             $this->assertNotNull($acceptHeader);
             if (is_array($expected)) {
-                $this->assertEquals($expected['value'],   $acceptHeader->getValue());
+                $this->assertEquals($expected['value'], $acceptHeader->getValue());
                 $this->assertEquals($expected['quality'], $acceptHeader->getQuality());
 
                 if (isset($expected['parameters'])) {
@@ -331,7 +335,7 @@ class FormatNegotiatorTest extends TestCase
     }
 
     /**
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage Format "html" already registered, and override was set to "false".
      */
     public function testRegisterFormatWithExistingFormat()
@@ -352,9 +356,18 @@ class FormatNegotiatorTest extends TestCase
     public static function dataProviderForNormalizePriorities()
     {
         return array(
-            array(array('application/json', 'application/xml'), array('application/json', 'application/xml')),
-            array(array('json', 'application/xml', 'text/*', 'rdf', '*/*'), array('application/json', 'application/x-json', 'application/xml', 'text/*', 'application/rdf+xml', '*/*')),
-            array(array('json', 'html', '*/*'), array('application/json', 'application/x-json', 'text/html', 'application/xhtml+xml', '*/*')),
+            array(
+                array('application/json', 'application/xml'),
+                array('application/json', 'application/xml')
+            ),
+            array(
+                array('json', 'application/xml', 'text/*', 'rdf', '*/*'),
+                array('application/json', 'application/x-json', 'application/xml', 'text/*', 'application/rdf+xml', '*/*')
+            ),
+            array(
+                array('json', 'html', '*/*'),
+                array('application/json', 'application/x-json', 'text/html', 'application/xhtml+xml', '*/*')
+            ),
         );
     }
 }

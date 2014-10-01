@@ -44,4 +44,36 @@ class LanguageNegotiator extends Negotiator
 
         return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function match(array $acceptHeaders, array $priorities = array())
+    {
+        $wildcardAccept  = null;
+
+        $prioritiesSet   = array();
+        $prioritiesSet[] = $priorities;
+        $prioritiesSet[] = array_map(function ($priority) {
+            return strtok($priority, '-');
+        }, $priorities);
+
+        foreach ($acceptHeaders as $accept) {
+            foreach ($prioritiesSet as $availablePriorities) {
+                $sanitizedPriorities = $this->sanitize($availablePriorities);
+
+                if (false !== $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities)) {
+                    return $priorities[$found];
+                }
+
+                if ('*' === $accept->getValue()) {
+                    $wildcardAccept = $accept;
+                }
+            }
+        }
+
+        if (null !== $wildcardAccept) {
+            return reset($priorities);
+        }
+    }
 }
