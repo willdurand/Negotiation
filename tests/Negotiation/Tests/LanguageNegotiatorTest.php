@@ -6,6 +6,10 @@ use Negotiation\LanguageNegotiator;
 
 class LanguageNegotiatorTest extends TestCase
 {
+
+    /**
+     * @var LanguageNegotiator
+     */
     private $negotiator;
 
     protected function setUp()
@@ -22,7 +26,7 @@ class LanguageNegotiatorTest extends TestCase
     public function testGetBestUsesQuality()
     {
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
+        $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader);
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
         $this->assertEquals('fu', $acceptHeader->getValue());
@@ -37,7 +41,7 @@ class LanguageNegotiatorTest extends TestCase
     public function testGetBestIgnoresNonExistentContent()
     {
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
+        $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
         $this->assertEquals('fr', $acceptHeader->getValue());
@@ -90,10 +94,7 @@ class LanguageNegotiatorTest extends TestCase
         $acceptLanguageHeader = 'en, de';
         $priorities           = array('fr');
 
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('en', $acceptHeader->getValue());
+        $this->assertNull($this->negotiator->getBest($acceptLanguageHeader, $priorities));
     }
 
     public static function dataProviderForGetBest()

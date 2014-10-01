@@ -9,6 +9,10 @@ use Negotiation\Negotiator;
  */
 class NegotiatorTest extends TestCase
 {
+
+    /**
+     * @var Negotiator
+     */
     private $negotiator;
 
     protected function setUp()
@@ -24,6 +28,11 @@ class NegotiatorTest extends TestCase
     public function testGetBestReturnsNullWithEmptyHeader()
     {
         $this->assertNull($this->negotiator->getBest(''));
+    }
+
+    public function testGetBestReturnsNullWithUnmatchedHeader()
+    {
+        $this->assertNull($this->negotiator->getBest('foo, bar, yo', array('baz')));
     }
 
     public function testGetBestRespectsPriorities()
@@ -113,7 +122,7 @@ class NegotiatorTest extends TestCase
 
         $i = 0;
         foreach ($expected as $value => $quality) {
-            $this->assertEquals($value,   $accepts[$i]->getValue());
+            $this->assertEquals($value, $accepts[$i]->getValue());
             $this->assertEquals($quality, $accepts[$i]->getQuality());
 
             $i++;
@@ -143,8 +152,8 @@ class NegotiatorTest extends TestCase
             array("gzip, deflate\t,sdch", array('gzip', 'deflate', 'sdch')),
             array('"this;should,not=matter"', array('"this;should,not=matter"')),
             array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
-            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7',  array('ISO-8859-1', 'utf-8', '*')),
-            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7',  array('utf-8', 'ISO-8859-1', '*')),
+            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
+            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('utf-8', 'ISO-8859-1', '*')),
         );
     }
 

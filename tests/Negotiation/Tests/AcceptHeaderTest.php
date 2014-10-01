@@ -6,6 +6,10 @@ use Negotiation\AcceptHeader;
 
 class AcceptHeaderTest extends TestCase
 {
+
+    /**
+     * @var AcceptHeader
+     */
     private $acceptHeader;
 
     protected function setUp()
