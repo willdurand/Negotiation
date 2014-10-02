@@ -16,11 +16,9 @@ class Negotiator implements NegotiatorInterface
     {
         $acceptHeaders = $this->parseHeader($header);
 
-        if (0 === count($acceptHeaders)) {
+        if (empty($acceptHeaders)) {
             return null;
-        }
-
-        if (0 === count($priorities)) {
+        } elseif (empty($priorities)) {
             return reset($acceptHeaders);
         }
 
@@ -166,11 +164,9 @@ class Negotiator implements NegotiatorInterface
         $sanitizedPriorities = $this->sanitize($priorities);
 
         foreach ($acceptHeaders as $accept) {
-            if (false !== $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities)) {
+            if (false !== $found = array_search($value = strtolower($accept->getValue()), $sanitizedPriorities)) {
                 return $priorities[$found];
-            }
-
-            if ('*' === $accept->getValue()) {
+            } elseif ('*' === $value) {
                 $wildcardAccept = $accept;
             }
         }

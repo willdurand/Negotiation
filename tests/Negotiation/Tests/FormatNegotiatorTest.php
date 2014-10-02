@@ -248,6 +248,15 @@ class FormatNegotiatorTest extends TestCase
                     'parameters' => array(),
                 ),
             ),
+            array(
+                '*/*',
+                array('foo', 'bar', 'baz'),
+                array(
+                    'value'      => 'foo',
+                    'quality'    => 0.01,
+                    'parameters' => array(),
+                ),
+            ),
             // Incompatible
             array(
                 'text/html',
