@@ -35,7 +35,7 @@ class AcceptHeader
     }
 
     /**
-      @return string
+     * @return string
      */
     public function getValue()
     {
