@@ -14,7 +14,7 @@ class AcceptHeaderTest extends TestCase
 
     protected function setUp()
     {
-        $this->acceptHeader = new AcceptHeader('foo', 1.0, array(
+        $this->acceptHeader = new AcceptHeader('foo/bar', 1.0, array(
             'hello' => 'world',
         ));
     }
@@ -46,5 +46,11 @@ class AcceptHeaderTest extends TestCase
             array('*/*', true),
             array('application/json', false),
         );
+    }
+
+    public function testGetMediaType() {
+        $mt = $this->acceptHeader->getMediaType();
+
+        $this->assertEquals($mt, 'foo/bar');
     }
 }
