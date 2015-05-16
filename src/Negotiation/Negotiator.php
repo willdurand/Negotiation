@@ -22,9 +22,9 @@ class Negotiator implements NegotiatorInterface
             return reset($acceptHeaders);
         }
 
-        $value = $this->match($acceptHeaders, $priorities);
+        $priorities = array_map($priorities, function($p) { return new AcceptHeader($p); });
 
-        return empty($value) ? null : new AcceptHeader($value, 1.0, $this->parseParameters($value));
+        return $this->match($acceptHeaders, $priorities);
     }
 
     /**
@@ -44,28 +44,13 @@ class Negotiator implements NegotiatorInterface
         $index    = 0;
         $catchAll = null;
         foreach ($acceptParts as $acceptPart) {
-            $quality    = 1.0;
-            $parts      = preg_split('/;\s*q=/i', $acceptPart, 0, PREG_SPLIT_NO_EMPTY);
-            $parameters = $this->parseParameters($acceptPart);
+            $acceptHeader = new AcceptHeader($acceptPart);
 
-            if (2 === count($parts)) {
-                $value   = $parts[0];
-                $quality = (float) $parts[1];
-            } else {
-                $value = $acceptPart;
-
-                if (self::CATCH_ALL_VALUE === $value) {
-                    $quality = 0.01;
-                } elseif ('*' === substr($value, -1)) {
-                    $quality = 0.02;
-                }
-            }
-
-            if (self::CATCH_ALL_VALUE === $value) {
-                $catchAll = new AcceptHeader($value, $quality, $parameters);
+            if (self::CATCH_ALL_VALUE === $acceptHeaders->getValue()) {
+                $catchAll = $acceptHeader;
             } else {
                 $acceptHeaders[] = array(
-                    'item'  => new AcceptHeader($value, $quality, $parameters),
+                    'item'  => new $acceptHeader;
                     'index' => $index
                 );
             }
@@ -115,44 +100,6 @@ class Negotiator implements NegotiatorInterface
     }
 
     /**
-     * @param array $values
-     *
-     * @return array
-     */
-    protected function sanitize(array $values)
-    {
-        return array_map(function ($value) {
-            return preg_replace('/\s+/', '', strtolower($value));
-        }, $values);
-    }
-
-    /**
-     * @param string $value
-     *
-     * @return array
-     */
-    protected function parseParameters($value)
-    {
-        $parts = explode(';', preg_replace('/\s+/', '', $value));
-        array_shift($parts);
-
-        $parameters = array();
-        foreach ($parts as $part) {
-            $part = explode('=', $part);
-
-            if (2 !== count($part)) {
-                continue;
-            }
-
-            if ('q' !== $key = strtolower($part[0])) {
-                $parameters[$key] = $part[1];
-            }
-        }
-
-        return $parameters;
-    }
-
-    /**
      * @param AcceptHeader[] $acceptHeaders Sorted by quality
      * @param array          $priorities    Configured priorities
      *
@@ -164,7 +111,10 @@ class Negotiator implements NegotiatorInterface
         $sanitizedPriorities = $this->sanitize($priorities);
 
         foreach ($acceptHeaders as $accept) {
-            if (false !== $found = array_search($value = strtolower($accept->getValue()), $sanitizedPriorities)) {
+            $value = strtolower($accept->getValue());
+            $found = array_search($value), $sanitizedPriorities);
+
+            if (false !== $found) {
                 return $priorities[$found];
             } elseif ('*' === $value) {
                 $wildcardAccept = $accept;
