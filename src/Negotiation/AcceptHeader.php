@@ -13,6 +13,11 @@ class AcceptHeader
     private $value;
 
     /**
+     * @var string
+     */
+    private $mediaType;
+
+    /**
      * @var float
      */
     private $quality;
@@ -22,16 +27,59 @@ class AcceptHeader
      */
     private $parameters;
 
+    const CATCH_ALL_VALUE = '*/*';
+
     /**
-     * @param string $value
+     * @param string $mediaType
      * @param float  $quality
      * @param array  $parameters
      */
-    public function __construct($value, $quality, array $parameters = array())
+    public function __construct($acceptPart)
     {
-        $this->value      = $value;
+        list($mediaType, $parameters) = $this->parseParameters($acceptPart);
+
+        $quality = 1.0;
+        if (isset($parameters['q'])) {
+            $quality = $parameters['q'];
+            unset($parameters['q']);
+        } else {
+            if (self::CATCH_ALL_VALUE === $mediaType) {
+                $quality = 0.01;
+            } elseif ('*' === substr($mediaType, -1)) {
+                $quality = 0.02;
+            }
+        }
+
+        $this->value      = $mediaType . ";" . http_build_query($parameters, null, ';');
+        $this->mediaType  = $mediaType;
         $this->quality    = $quality;
         $this->parameters = $parameters;
+    }
+
+    /**
+     * @param string $mediaType
+     *
+     * @return array
+     */
+
+    private static function parseParameters($acceptPart)
+    {
+        $parts = explode(';', preg_replace('/\s+/', '', $acceptPart));
+
+        $mediaType = array_shift($parts));
+
+        foreach ($parts as $part) {
+            $part = explode('=', $part);
+
+            if (2 !== count($part)) {
+                continue;
+            }
+
+            $key = strtolower($part[0]);
+            $parameters[$key] = $part[1];
+        }
+
+        return array($mediaType, $parameters);
     }
 
     /**
@@ -84,6 +132,6 @@ class AcceptHeader
      */
     public function isMediaRange()
     {
-        return false !== strpos($this->value, '*');
+        return false !== strpos($this->mediaType, '*');
     }
 }
