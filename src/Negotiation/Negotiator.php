@@ -22,9 +22,9 @@ class Negotiator implements NegotiatorInterface
             return reset($acceptHeaders);
         }
 
-        $priorities = array_map($priorities, function($p) { return new AcceptHeader($p); });
+        $value = $this->match($acceptHeaders, $priorities);
 
-        return $this->match($acceptHeaders, $priorities);
+        return empty($value) ? null : new AcceptHeader($value);
     }
 
     /**
@@ -46,11 +46,11 @@ class Negotiator implements NegotiatorInterface
         foreach ($acceptParts as $acceptPart) {
             $acceptHeader = new AcceptHeader($acceptPart);
 
-            if (self::CATCH_ALL_VALUE === $acceptHeaders->getValue()) {
+            if (self::CATCH_ALL_VALUE === $acceptHeader->getValue()) {
                 $catchAll = $acceptHeader;
             } else {
                 $acceptHeaders[] = array(
-                    'item'  => new $acceptHeader;
+                    'item'  => $acceptHeader,
                     'index' => $index
                 );
             }
@@ -100,6 +100,18 @@ class Negotiator implements NegotiatorInterface
     }
 
     /**
+     * @param array $values
+     *
+     * @return array
+     */
+    protected function sanitize(array $values)
+    {
+        return array_map(function ($value) {
+            return preg_replace('/\s+/', '', strtolower($value));
+        }, $values);
+    }
+
+    /**
      * @param AcceptHeader[] $acceptHeaders Sorted by quality
      * @param array          $priorities    Configured priorities
      *
@@ -111,10 +123,7 @@ class Negotiator implements NegotiatorInterface
         $sanitizedPriorities = $this->sanitize($priorities);
 
         foreach ($acceptHeaders as $accept) {
-            $value = strtolower($accept->getValue());
-            $found = array_search($value), $sanitizedPriorities);
-
-            if (false !== $found) {
+            if (false !== $found = array_search($value = strtolower($accept->getValue()), $sanitizedPriorities)) {
                 return $priorities[$found];
             } elseif ('*' === $value) {
                 $wildcardAccept = $accept;
@@ -127,4 +136,5 @@ class Negotiator implements NegotiatorInterface
 
         return null;
     }
+
 }

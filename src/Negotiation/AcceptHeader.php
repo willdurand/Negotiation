@@ -50,10 +50,26 @@ class AcceptHeader
             }
         }
 
-        $this->value      = $mediaType . ";" . http_build_query($parameters, null, ';');
+        $this->value      = $mediaType . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
         $this->mediaType  = $mediaType;
         $this->quality    = $quality;
         $this->parameters = $parameters;
+    }
+
+    /**
+     * @param string $parameters
+     *
+     * @return string
+     */
+
+    private static function buildParametersString($params) {
+        $parts = array();
+
+        foreach ($params as $key => $val) {
+            $parts[] = "$key=$val";
+        }
+
+        return implode(";", $parts);
     }
 
     /**
@@ -66,7 +82,9 @@ class AcceptHeader
     {
         $parts = explode(';', preg_replace('/\s+/', '', $acceptPart));
 
-        $mediaType = array_shift($parts));
+        $mediaType = array_shift($parts);
+
+        $parameters = array();
 
         foreach ($parts as $part) {
             $part = explode('=', $part);

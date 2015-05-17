@@ -15,26 +15,21 @@ class LanguageNegotiator extends Negotiator
         $acceptHeaders = array();
 
         $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = array();
-
-        preg_match_all(
-            '/(?<=[, ]|^)([a-zA-Z-]+|\*)(?:;q=([0-9.]+))?(?:$|\s*,\s*)/i',
-            $header,
-            $acceptParts,
-            PREG_SET_ORDER
-        );
+        $acceptParts = explode(',', $header);
 
         $index    = 0;
         $catchAll = null;
         foreach ($acceptParts as $acceptPart) {
-            $value   = $acceptPart[1];
-            $quality = isset($acceptPart[2]) ? (float) $acceptPart[2] : 1.0;
+            if (!$acceptPart)
+                continue;
 
-            if ('*' === $value) {
-                $catchAll = new AcceptHeader($value, $quality);
+            $acceptHeader = new AcceptHeader($acceptPart);
+
+            if ('*' === $acceptHeader->getValue()) {
+                $catchAll = $acceptHeader;
             } else {
                 $acceptHeaders[] = array(
-                    'item'  => new AcceptHeader($value, $quality),
+                    'item'  => $acceptHeader,
                     'index' => $index
                 );
             }

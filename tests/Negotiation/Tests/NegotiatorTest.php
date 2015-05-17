@@ -129,22 +129,6 @@ class NegotiatorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider dataProviderForParseParameters
-     */
-    public function testParseParameters($value, $expected)
-    {
-        $negotiator = new TestableNegotiator();
-        $parameters = $negotiator->parseParameters($value);
-
-        $this->assertCount(count($expected), $parameters);
-
-        foreach ($expected as $key => $value) {
-            $this->assertArrayHasKey($key, $parameters);
-            $this->assertEquals($value, $parameters[$key]);
-        }
-    }
-
     public static function dataProviderForTestParseAcceptHeader()
     {
         return array(
@@ -291,33 +275,6 @@ class NegotiatorTest extends TestCase
         );
     }
 
-    public static function dataProviderForParseParameters()
-    {
-        return array(
-            array(
-                'application/json ;q=1.0; level=2;foo= bar',
-                array(
-                    'level' => 2,
-                    'foo'   => 'bar',
-                ),
-            ),
-            array(
-                'application/json ;q = 1.0; level = 2;     FOO  = bAr',
-                array(
-                    'level' => 2,
-                    'foo'   => 'bAr',
-                ),
-            ),
-            array(
-                'application/json;q=1.0',
-                array(),
-            ),
-            array(
-                'application/json;foo',
-                array(),
-            ),
-        );
-    }
 }
 
 class TestableNegotiator extends Negotiator
@@ -327,8 +284,4 @@ class TestableNegotiator extends Negotiator
         return parent::parseHeader($acceptHeader);
     }
 
-    public function parseParameters($value)
-    {
-        return parent::parseParameters($value);
-    }
 }
