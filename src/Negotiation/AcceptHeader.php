@@ -44,11 +44,10 @@ class AcceptHeader
      * @param float  $quality
      * @param array  $parameters
      */
-    public function __construct($acceptPart)
+    public function __construct($acceptPart, $quality = 1.0)
     {
         list($mediaType, $parameters) = $this->parseParameters($acceptPart);
 
-        $quality = 1.0;
         if (isset($parameters['q'])) {
             $quality = $parameters['q'];
             unset($parameters['q']);
