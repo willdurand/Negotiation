@@ -76,10 +76,10 @@ class Negotiator implements NegotiatorInterface
      */
     private static function findMatches(array $acceptHeaders, array $priorities) {
         $matches = array();
+        $index = 0;
 
-        foreach ($acceptHeaders as $a) {
-
-            foreach ($priorities as $p) {
+        foreach ($priorities as $p) {
+            foreach ($acceptHeaders as $a) {
                 $ab = $a->getBaseType();
                 $pb = $p->getBaseType();
 
@@ -88,12 +88,18 @@ class Negotiator implements NegotiatorInterface
 
                 $intersection = array_intersect_assoc($a->getParameters(), $p->getParameters());
 
-                if (($ab == '*' || !strcasecmp($ab, $pb)) && ($as == '*' || !strcasecmp($as, $ps)) && count($intersection) == count($a->getParameters())) {
-                    $score = 100 * ($ab == $pb) + 10 * ($as == $ps) + count($intersection);
+                $baseEqual = !strcasecmp($ab, $pb);
+                $subEqual = !strcasecmp($as, $ps);
 
-                    $matches[] = array($p, $a->getQuality(), $score);
+                $score = 0;
+                if (($ab == '*' || $baseEqual) && ($as === null || $as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
+                    $score = 100 * $baseEqual + 10 * ($as !== null && $subEqual) + count($intersection);
+
+                    $matches[] = array($p, $a->getQuality(), $score, $index);
                 }
             }
+
+            $index++;
         }
 
         return $matches;
@@ -109,27 +115,31 @@ class Negotiator implements NegotiatorInterface
         # TODO should we order first according to the more specific match or by the higher q value?
         # TODO unit tests from rfc https://tools.ietf.org/html/rfc7231#section-5.3.2. call usort() in test case.
 
-        list($acceptHeaderA, $matchedQualityA, $scoreA) = $a;
-        list($acceptHeaderB, $matchedQualityB, $scoreB) = $b;
-
-        if ($matchedQualityA < $matchedQualityB) {
-            return -1;
-        }
+        list($acceptHeaderA, $matchedQualityA, $scoreA, $indexA) = $a;
+        list($acceptHeaderB, $matchedQualityB, $scoreB, $indexB) = $b;
 
         if ($matchedQualityA > $matchedQualityB) {
+            return -1;
+        } else if ($matchedQualityA < $matchedQualityB) {
             return 1;
         }
 
         # priority to more specific match
         if ($acceptHeaderA->getMediaType() == $acceptHeaderB->getMediaType()) {
-            if ($scoreA > $scoreB) {
+            if ($scoreA < $scoreB) {
                 return 1;
-            } else if ($scoreA < $scoreB) {
+            } else if ($scoreA > $scoreB) {
                 return -1;
             }
         }
             
-        return 0;
+        if ($indexA < $indexB) {
+            return 1;
+        } else if ($indexA > $indexB) {
+            return -1;
+        }
+
+        return 0; # should not occur.
     }
 
 }

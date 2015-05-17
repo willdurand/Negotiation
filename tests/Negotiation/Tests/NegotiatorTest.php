@@ -225,11 +225,12 @@ class NegotiatorTest extends TestCase
                 ),
                 null
             ),
-            array(
-                'audio/*; q=0.2, audio/basic',
-                array(),
-                'audio/basic',
-            ),
+# removed. no priorities makes no sense...
+#            array(
+#                'audio/*; q=0.2, audio/basic',
+#                array(),
+#                'audio/basic',
+#            ),
         );
     }
 
