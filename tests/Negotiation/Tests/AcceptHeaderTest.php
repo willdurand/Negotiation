@@ -116,5 +116,16 @@ class AcceptHeaderTest extends TestCase
                 'q=1.0;level=2;foo=bar',
             ),
         );
+
+    public function testGetMediaType() {
+        # with param
+        $acceptHeader = new AcceptHeader('text/html;hello=world', 1.0, array( 'hello' => 'world',));
+        $mt = $acceptHeader->getMediaType();
+        $this->assertEquals($mt, 'text/html');
+
+        # without param
+        $acceptHeader = new AcceptHeader('application/pdf', 1.0, array());
+        $mt = $acceptHeader->getMediaType();
+        $this->assertEquals($mt, 'application/pdf');
     }
 }
