@@ -116,6 +116,7 @@ class AcceptHeaderTest extends TestCase
                 'q=1.0;level=2;foo=bar',
             ),
         );
+    }
 
     public function testGetMediaType() {
         # with param
