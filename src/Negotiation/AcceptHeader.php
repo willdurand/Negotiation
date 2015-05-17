@@ -27,6 +27,16 @@ class AcceptHeader
      */
     private $parameters;
 
+    /**
+     * @var string|null
+     */
+    private $baseType = null;
+
+    /**
+     * @var string|null
+     */
+    private $subType = null;
+
     const CATCH_ALL_VALUE = '*/*';
 
     /**
@@ -54,6 +64,13 @@ class AcceptHeader
         $this->mediaType  = $mediaType;
         $this->quality    = $quality;
         $this->parameters = $parameters;
+
+        $parts = explode('/', $mediaType);
+
+        if (count($parts) == 2) {
+            $this->baseType   = $parts[0];
+            $this->subType    = $parts[1];
+        }
     }
 
     /**
@@ -131,6 +148,22 @@ class AcceptHeader
     public function getParameters()
     {
         return $this->parameters;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubType()
+    {
+        return $this->subType;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBaseType()
+    {
+        return $this->baseType;
     }
 
     /**
