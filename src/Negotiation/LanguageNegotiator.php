@@ -7,38 +7,38 @@ namespace Negotiation;
  */
 class LanguageNegotiator extends Negotiator
 {
-    /**
-     * {@inheritDoc}
-     */
-    protected function parseHeader($header)
-    {
-        $acceptHeaders = array();
+    #/**
+    # * {@inheritDoc}
+    # */
+    #protected function parseHeader($header)
+    #{
+    #    $acceptHeaders = array();
 
-        $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = explode(',', $header);
+    #    $header      = preg_replace('/\s+/', '', $header);
+    #    $acceptParts = explode(',', $header);
 
-        $index    = 0;
-        $catchAll = null;
-        foreach ($acceptParts as $acceptPart) {
-            if (!$acceptPart)
-                continue;
+    #    $index    = 0;
+    #    $catchAll = null;
+    #    foreach ($acceptParts as $acceptPart) {
+    #        if (!$acceptPart)
+    #            continue;
 
-            $acceptHeader = new AcceptHeader($acceptPart);
+    #        $acceptHeader = new AcceptHeader($acceptPart);
 
-            if ('*' === $acceptHeader->getValue()) {
-                $catchAll = $acceptHeader;
-            } else {
-                $acceptHeaders[] = array(
-                    'item'  => $acceptHeader,
-                    'index' => $index
-                );
-            }
+    #        if ('*' === $acceptHeader->getValue()) {
+    #            $catchAll = $acceptHeader;
+    #        } else {
+    #            $acceptHeaders[] = array(
+    #                'item'  => $acceptHeader,
+    #                'index' => $index
+    #            );
+    #        }
 
-            $index++;
-        }
+    #        $index++;
+    #    }
 
-        return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
-    }
+    #    return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
+    #}
 
     /**
      * {@inheritDoc}

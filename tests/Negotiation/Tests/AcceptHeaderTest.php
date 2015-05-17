@@ -120,12 +120,12 @@ class AcceptHeaderTest extends TestCase
 
     public function testGetMediaType() {
         # with param
-        $acceptHeader = new AcceptHeader('text/html;hello=world', 1.0, array( 'hello' => 'world',));
+        $acceptHeader = new AcceptHeader('text/html;hello=world');
         $mt = $acceptHeader->getMediaType();
         $this->assertEquals($mt, 'text/html');
 
         # without param
-        $acceptHeader = new AcceptHeader('application/pdf', 1.0, array());
+        $acceptHeader = new AcceptHeader('application/pdf');
         $mt = $acceptHeader->getMediaType();
         $this->assertEquals($mt, 'application/pdf');
     }
