@@ -22,9 +22,17 @@ class Negotiator implements NegotiatorInterface
             return reset($acceptHeaders);
         }
 
-        $value = $this->match($acceptHeaders, $priorities);
+        $priorities = array_map(function($p) { return new AcceptHeader($p); }, $priorities);
 
-        return empty($value) ? null : new AcceptHeader($value);
+        $matches = $this->findMatches($acceptHeaders, $priorities);
+
+        usort($matches, array($this, 'compare'));
+
+        if (count($matches)) {
+            return $matches[0][0];
+        }
+
+        return null;
     }
 
     /**
@@ -32,7 +40,7 @@ class Negotiator implements NegotiatorInterface
      *
      * @return AcceptHeader[]
      */
-    protected function parseHeader($header)
+    private static function parseHeader($header)
     {
         $acceptHeaders = array();
 
@@ -41,62 +49,11 @@ class Negotiator implements NegotiatorInterface
             $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
         );
 
-        $index    = 0;
-        $catchAll = null;
         foreach ($acceptParts as $acceptPart) {
-            $acceptHeader = new AcceptHeader($acceptPart);
-
-            if (self::CATCH_ALL_VALUE === $acceptHeader->getValue()) {
-                $catchAll = $acceptHeader;
-            } else {
-                $acceptHeaders[] = array(
-                    'item'  => $acceptHeader,
-                    'index' => $index
-                );
-            }
-
-            $index++;
+            $acceptHeaders[] = new AcceptHeader($acceptPart);
         }
 
-        return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
-    }
-
-    /**
-     * @param array        $acceptHeaders A set of AcceptHeader objects to sort.
-     * @param AcceptHeader $catchAll      A special AcceptHeader that represents the "catch all".
-     *
-     * @return AcceptHeader[]
-     */
-    protected function sortAcceptHeaders(array $acceptHeaders, AcceptHeader $catchAll = null)
-    {
-        uasort($acceptHeaders, function ($a, $b) {
-            $qA = $a['item']->getQuality();
-            $qB = $b['item']->getQuality();
-
-            $vA = $a['item']->getValue();
-            $vB = $b['item']->getValue();
-
-            // put specific media type before the classic one
-            // e.g. `text/html;level=1` first, then `text/html`
-            if (strstr($vA, $vB)) {
-                return -1;
-            }
-
-            if ($qA === $qB) {
-                return $a['index'] > $b['index'] ? 1 : -1;
-            }
-
-            return $qA > $qB ? -1 : 1;
-        });
-
-        // put the catch all header at the end if available
-        if (null !== $catchAll) {
-            array_push($acceptHeaders, array('item' => $catchAll));
-        }
-
-        return array_map(function ($accept) {
-            return $accept['item'];
-        }, array_values($acceptHeaders));
+        return $acceptHeaders;
     }
 
     /**
@@ -113,28 +70,66 @@ class Negotiator implements NegotiatorInterface
 
     /**
      * @param AcceptHeader[] $acceptHeaders Sorted by quality
-     * @param array          $priorities    Configured priorities
+     * @param AcceptHeader[] $priorities    Configured priorities
      *
-     * @return string|null Header string matched
+     * @return AcceptHeader[] Headers matched
      */
-    protected function match(array $acceptHeaders, array $priorities = array())
-    {
-        $wildcardAccept      = null;
-        $sanitizedPriorities = $this->sanitize($priorities);
+    private static function findMatches(array $acceptHeaders, array $priorities) {
+        $matches = array();
 
-        foreach ($acceptHeaders as $accept) {
-            if (false !== $found = array_search($value = strtolower($accept->getValue()), $sanitizedPriorities)) {
-                return $priorities[$found];
-            } elseif ('*' === $value) {
-                $wildcardAccept = $accept;
+        foreach ($acceptHeaders as $a) {
+
+            foreach ($priorities as $p) {
+                $ab = $a->getBaseType();
+                $pb = $p->getBaseType();
+
+                $as = $a->getSubType();
+                $ps = $p->getSubType();
+
+                $intersection = array_intersect_assoc($a->getParameters(), $p->getParameters());
+
+                if (($ab == '*' || !strcasecmp($ab, $pb)) && ($as == '*' || !strcasecmp($as, $ps)) && count($intersection) == count($a->getParameters())) {
+                    $score = 100 * ($ab == $pb) + 10 * ($as == $ps) + count($intersection);
+
+                    $matches[] = array($p, $a->getQuality(), $score);
+                }
             }
         }
 
-        if (null !== $wildcardAccept) {
-            return reset($priorities);
+        return $matches;
+    }
+
+    /**
+     * @param array $a array(accept header, number of matched params) 
+     * @param array $b array(accept header, number of matched params) 
+     *
+     * @return int
+     */
+    private static function compare(array $a, array $b) {
+        # TODO should we order first according to the more specific match or by the higher q value?
+        # TODO unit tests from rfc https://tools.ietf.org/html/rfc7231#section-5.3.2. call usort() in test case.
+
+        list($acceptHeaderA, $matchedQualityA, $scoreA) = $a;
+        list($acceptHeaderB, $matchedQualityB, $scoreB) = $b;
+
+        if ($matchedQualityA < $matchedQualityB) {
+            return -1;
         }
 
-        return null;
+        if ($matchedQualityA > $matchedQualityB) {
+            return 1;
+        }
+
+        # priority to more specific match
+        if ($acceptHeaderA->getMediaType() == $acceptHeaderB->getMediaType()) {
+            if ($scoreA > $scoreB) {
+                return 1;
+            } else if ($scoreA < $scoreB) {
+                return -1;
+            }
+        }
+            
+        return 0;
     }
 
 }

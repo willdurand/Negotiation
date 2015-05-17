@@ -10,6 +10,14 @@ use Negotiation\Negotiator;
 class NegotiatorTest extends TestCase
 {
 
+    protected function call_private_method($class, $method, $object, $params) {
+        $method = new \ReflectionMethod($class, $method);
+
+        $method->setAccessible(TRUE);
+
+        return $method->invokeArgs($object, $params);
+    }
+
     /**
      * @var Negotiator
      */
@@ -83,8 +91,7 @@ class NegotiatorTest extends TestCase
      */
     public function testParseAcceptHeader($header, $expected)
     {
-        $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseHeader($header);
+        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
         $this->assertCount(count($expected), $accepts);
         $this->assertEquals($expected, array_map(function ($result) {
@@ -97,8 +104,7 @@ class NegotiatorTest extends TestCase
      */
     public function testParseAcceptHeaderWithQualities($header, $expected)
     {
-        $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseHeader($header);
+        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
         $this->assertEquals(count($expected), count($accepts));
 
@@ -110,34 +116,15 @@ class NegotiatorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider dataProviderForTestParseAcceptHeaderEnsuresPrecedence
-     */
-    public function testParseAcceptHeaderEnsuresPrecedence($header, $expected)
-    {
-        $negotiator = new TestableNegotiator();
-        $accepts    = $negotiator->parseHeader($header);
-
-        $this->assertCount(count($expected), $accepts);
-
-        $i = 0;
-        foreach ($expected as $value => $quality) {
-            $this->assertEquals($value, $accepts[$i]->getValue());
-            $this->assertEquals($quality, $accepts[$i]->getQuality());
-
-            $i++;
-        }
-    }
-
     public static function dataProviderForTestParseAcceptHeader()
     {
         return array(
             array('gzip,deflate,sdch', array('gzip', 'deflate', 'sdch')),
             array("gzip, deflate\t,sdch", array('gzip', 'deflate', 'sdch')),
             array('"this;should,not=matter"', array('"this;should,not=matter"')),
-            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
-            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('ISO-8859-1', 'utf-8', '*')),
-            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('utf-8', 'ISO-8859-1', '*')),
+            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
+            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
+            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('*', 'utf-8', 'ISO-8859-1')),
         );
     }
 
@@ -246,42 +233,51 @@ class NegotiatorTest extends TestCase
         );
     }
 
-    public static function dataProviderForTestParseAcceptHeaderEnsuresPrecedence()
-    {
-        return array(
-            array(
-                'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
-                array(
-                    'text/html;level=1' => 1,
-                    'text/html;level=2' => 0.4,
-                    'text/html'         => 0.7,
-                    'text/*'            => 0.3,
-                    '*/*'               => 0.5,
-                )
-            ),
-            array(
-                'text/html,application/xhtml+xml,application/xml;q=0.9,text/*;q=0.7,*/*,image/gif; q=0.8, image/jpeg; q=0.6, image/*',
-                array(
-                    'text/html'             => 1,
-                    'application/xhtml+xml' => 1,
-                    'application/xml'       => 0.9,
-                    'image/gif'             => 0.8,
-                    'text/*'                => 0.7,
-                    'image/jpeg'            => 0.6,
-                    'image/*'               => 0.02,
-                    '*/*'                   => 0.01,
-                )
-            ),
+    # https://tools.ietf.org/html/rfc7231#section-5.3.2
+    public function testFindMatches() {
+        $header = 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5';
+        $acceptHeaders = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+
+        $expectedMatches = array(
+            #     value                     quality score
+            array('text/html;level=1',      1.0,    111),   
+            array('text/html',              0.7,    110),
+            array('text/plain',             0.3,    100),
+            array('image/jpeg',             0.5,    0),
+            array('text/html;level=2',      0.4,    111),
+            array('text/html;level=3',      0.7,    110),
         );
+
+        $priorities = array_map(function($x) { return new \Negotiation\AcceptHeader($x[0]); }, $expectedMatches);
+
+        $matches = $this->call_private_method('\Negotiation\Negotiator', 'findMatches', $this->negotiator, array($acceptHeaders, $priorities));
+
+        $reducer = function($c, $new) {
+            $value = $new[0]->getValue();
+
+            if (!isset($c[$value])) {
+                $c[$value] = $new;
+            } else {
+                $current = $c[$value];
+                if (($current[2] < $new[2]) || ($current[2] == $new[2] && $current[1] < $new[1]))
+                    $c[$value] = $new;
+            }
+
+            return $c;
+        };
+
+        # get best score for given value
+        $matches = array_reduce($matches, $reducer, array());
+
+        usort($expectedMatches, function($a, $b) { return strcmp($a[0], $b[0]); });
+        usort($matches, function($a, $b) { return strcmp($a[0]->getValue(), $b[0]->getValue()); });
+
+        $this->assertSame(count($matches), count($expectedMatches));
+
+        for ($i = 0; $i < count($matches); $i++) {
+            $this->assertSame($expectedMatches[$i][0], $matches[$i][0]->getValue());
+            $this->assertSame($expectedMatches[$i][1], $matches[$i][1]);
+            $this->assertSame($expectedMatches[$i][2], $matches[$i][2]);
+        }
     }
-
-}
-
-class TestableNegotiator extends Negotiator
-{
-    public function parseHeader($acceptHeader)
-    {
-        return parent::parseHeader($acceptHeader);
-    }
-
 }
