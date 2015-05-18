@@ -3,28 +3,30 @@
 namespace Negotiation\Tests;
 
 use Negotiation\AcceptHeader;
-use Negotiation\Negotiator;
 
 class AcceptHeaderTest extends TestCase
 {
-    protected function call_private_method($class, $method, $object, $params) {
-        $method = new \ReflectionMethod($class, $method);
 
-        $method->setAccessible(TRUE);
+    /**
+     * @var AcceptHeader
+     */
+    private $acceptHeader;
 
-        return $method->invokeArgs($object, $params);
+    protected function setUp()
+    {
+        $this->acceptHeader = new AcceptHeader('foo', 1.0, array(
+            'hello' => 'world',
+        ));
     }
 
     public function testGetParameter()
     {
-        $acceptHeader = new AcceptHeader('foo; q=1; 1.0 ; hello=world');
+        $this->assertTrue($this->acceptHeader->hasParameter('hello'));
+        $this->assertEquals('world', $this->acceptHeader->getParameter('hello'));
 
-        $this->assertTrue($acceptHeader->hasParameter('hello'));
-        $this->assertEquals('world', $acceptHeader->getParameter('hello'));
-
-        $this->assertFalse($acceptHeader->hasParameter('unknown'));
-        $this->assertNull($acceptHeader->getParameter('unknown'));
-        $this->assertFalse($acceptHeader->getParameter('unknown', false));
+        $this->assertFalse($this->acceptHeader->hasParameter('unknown'));
+        $this->assertNull($this->acceptHeader->getParameter('unknown'));
+        $this->assertFalse($this->acceptHeader->getParameter('unknown', false));
     }
 
     /**
@@ -32,7 +34,7 @@ class AcceptHeaderTest extends TestCase
      */
     public function testIsMediaRange($value, $expected)
     {
-        $header = new AcceptHeader($value);
+        $header = new AcceptHeader($value, 1.0);
 
         $this->assertEquals($expected, $header->isMediaRange());
     }
@@ -46,86 +48,14 @@ class AcceptHeaderTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider dataProviderForParseParameters
-     */
-    public function testParseParameters($value, $expected)
-    {
-        $acceptHeader = new AcceptHeader($value);
-        list($media_type, $parameters) = $this->call_private_method('\Negotiation\AcceptHeader', 'parseParameters', null, array($value));
-
-        $this->assertCount(count($expected), $parameters);
-
-        foreach ($expected as $key => $value) {
-            $this->assertArrayHasKey($key, $parameters);
-            $this->assertEquals($value, $parameters[$key]);
-        }
-    }
-
-    public static function dataProviderForParseParameters()
-    {
-        return array(
-            array(
-                'application/json ;q=1.0; level=2;foo= bar',
-                array(
-                    'q' => 1.0,
-                    'level' => 2,
-                    'foo'   => 'bar',
-                ),
-            ),
-            array(
-                'application/json ;q = 1.0; level = 2;     FOO  = bAr',
-                array(
-                    'q' => 1.0,
-                    'level' => 2,
-                    'foo'   => 'bAr',
-                ),
-            ),
-            array(
-                'application/json;q=1.0',
-                array(
-                    'q' => 1.0,
-                ),
-            ),
-            array(
-                'application/json;foo',
-                array(),
-            ),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderBuildParametersString
-     */
-
-    public function testBuildParametersString($value, $expected) {
-        $string = $this->call_private_method('\Negotiation\AcceptHeader', 'buildParametersString', null, array($value));
-
-        $this->assertEquals($string, $expected);
-    }
-
-    public static function dataProviderBuildParametersString()
-    {
-        return array(
-            array(
-                array(
-                    'q' => '1.0',
-                    'level' => '2',
-                    'foo'   => 'bar',
-                ),
-                'q=1.0;level=2;foo=bar',
-            ),
-        );
-    }
-
     public function testGetMediaType() {
         # with param
-        $acceptHeader = new AcceptHeader('text/html;hello=world');
+        $acceptHeader = new AcceptHeader('text/html;hello=world', 1.0, array( 'hello' => 'world',));
         $mt = $acceptHeader->getMediaType();
         $this->assertEquals($mt, 'text/html');
 
         # without param
-        $acceptHeader = new AcceptHeader('application/pdf');
+        $acceptHeader = new AcceptHeader('application/pdf', 1.0, array());
         $mt = $acceptHeader->getMediaType();
         $this->assertEquals($mt, 'application/pdf');
     }
