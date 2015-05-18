@@ -7,68 +7,59 @@ namespace Negotiation;
  */
 class LanguageNegotiator extends Negotiator
 {
-    #/**
-    # * {@inheritDoc}
-    # */
-    #protected function parseHeader($header)
-    #{
-    #    $acceptHeaders = array();
 
-    #    $header      = preg_replace('/\s+/', '', $header);
-    #    $acceptParts = explode(',', $header);
-
-    #    $index    = 0;
-    #    $catchAll = null;
-    #    foreach ($acceptParts as $acceptPart) {
-    #        if (!$acceptPart)
-    #            continue;
-
-    #        $acceptHeader = new AcceptHeader($acceptPart);
-
-    #        if ('*' === $acceptHeader->getValue()) {
-    #            $catchAll = $acceptHeader;
-    #        } else {
-    #            $acceptHeaders[] = array(
-    #                'item'  => $acceptHeader,
-    #                'index' => $index
-    #            );
-    #        }
-
-    #        $index++;
-    #    }
-
-    #    return $this->sortAcceptHeaders($acceptHeaders, $catchAll);
-    #}
-
-    /**
+    /** 
      * {@inheritDoc}
      */
-    protected function match(array $acceptHeaders, array $priorities = array())
-    {
-        $wildcardAccept  = null;
+    public function getBest($header, array $priorities = array()) {
+        $best = parent::getBest($header, $priorities);
 
-        $prioritiesSet   = array();
-        $prioritiesSet[] = $priorities;
-        $prioritiesSet[] = array_map(function ($priority) {
-            return strtok($priority, '-');
-        }, $priorities);
+        if ($best === null)
+            return $best;
 
-        foreach ($acceptHeaders as $accept) {
-            foreach ($prioritiesSet as $availablePriorities) {
-                $sanitizedPriorities = $this->sanitize($availablePriorities);
+        return new AcceptHeader($best->getValue(), $best->getQuality());
+    }
 
-                if (false !== $found = array_search(strtolower($accept->getValue()), $sanitizedPriorities)) {
-                    return $priorities[$found];
-                }
+    /**
+     * @param AcceptHeader[] $languageHeaders Sorted by quality
+     * @param AcceptHeader[] $priorities    Configured priorities
+     *
+     * @return AcceptHeader[] Headers matched
+     */
+    protected static function findMatches(array $languageHeaders, array $priorities) {
+        $matches = array();
+        $index = 0;
 
-                if ('*' === $accept->getValue()) {
-                    $wildcardAccept = $accept;
+        foreach ($priorities as $p) {
+            foreach ($languageHeaders as $a) {
+                $ab = $a->getBaseType();
+                $pb = $p->getBaseType();
+
+                $as = $a->getSubType();
+                $ps = $p->getSubType();
+
+                $baseEqual = !strcasecmp($ab, $pb);
+                $subEqual = !strcasecmp($as, $ps);
+
+                if ($baseEqual && ($as === null || $subEqual)) {
+                    $score = 10 * $baseEqual + ($as !== null && $subEqual);
+                    $matches[] = array($p, $a->getQuality(), $score, $index);
                 }
             }
+
+            $index++;
         }
 
-        if (null !== $wildcardAccept) {
-            return reset($priorities);
-        }
+        return $matches;
     }
+
+    /**
+     * @param string $header A string that contains an `Accept|Accept-*` header.
+     *
+     * @return AcceptHeader[]
+     */
+    protected static function headerFactory($header) {
+        return new AcceptLanguageHeader($header);
+    }
+
 }

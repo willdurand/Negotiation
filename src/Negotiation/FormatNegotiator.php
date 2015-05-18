@@ -109,6 +109,19 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
      */
     private function isCatchAllEnabled(array $priorities)
     {
-        return 0 === count($priorities) || in_array(self::CATCH_ALL_VALUE, $priorities);
+        return 0 === count($priorities) || in_array('*/*', $priorities);
     }
+
+    /**
+     * @param array $values
+     *
+     * @return array
+     */
+    protected function sanitize(array $values)
+    {
+        return array_map(function ($value) {
+            return preg_replace('/\s+/', '', strtolower($value));
+        }, $values);
+    }
+
 }
