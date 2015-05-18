@@ -47,20 +47,20 @@ class LanguageNegotiatorTest extends TestCase
         $this->assertEquals('fr', $acceptHeader->getValue());
     }
 
-    /**
-     * @dataProvider dataProviderForGetBest
-     */
-    public function testGetBest($acceptLanguageHeader, $expected)
-    {
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
-
-        if (null === $expected) {
-            $this->assertNull($acceptHeader);
-        } else {
-            $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-            $this->assertEquals($expected, $acceptHeader->getValue());
-        }
-    }
+#    /**
+#     * @dataProvider dataProviderForGetBest
+#     */
+#    public function testGetBest($acceptLanguageHeader, $expected)
+#    {
+#        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
+#
+#        if (null === $expected) {
+#            $this->assertNull($acceptHeader);
+#        } else {
+#            $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+#            $this->assertEquals($expected, $acceptHeader->getValue());
+#        }
+#    }
 
     /**
      * Given a accept header containing a generic language (here 'en')

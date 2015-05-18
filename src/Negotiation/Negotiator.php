@@ -7,24 +7,25 @@ namespace Negotiation;
  */
 class Negotiator implements NegotiatorInterface
 {
-    const CATCH_ALL_VALUE = '*/*';
-
     /**
      * {@inheritDoc}
      */
     public function getBest($header, array $priorities = array())
     {
-        $acceptHeaders = $this->parseHeader($header);
+        $parts = $this->parseHeader($header);
 
-        if (empty($acceptHeaders)) {
+        if (empty($parts)) {
             return null;
         } elseif (empty($priorities)) {
-            return reset($acceptHeaders);
+            return reset($parts);
         }
 
-        $priorities = array_map(function($p) { return new AcceptHeader($p); }, $priorities);
+        $ps = array();
+        foreach ($priorities as $p) {
+            $ps[] = $this->headerFactory($p);
+        }
 
-        $matches = $this->findMatches($acceptHeaders, $priorities);
+        $matches = $this->findMatches($parts, $ps);
 
         usort($matches, array($this, 'compare'));
 
@@ -33,6 +34,15 @@ class Negotiator implements NegotiatorInterface
         }
 
         return null;
+    }
+
+    /**
+     * @param string $header A string that contains an `Accept|Accept-*` header.
+     *
+     * @return AcceptHeader[]
+     */
+    protected static function headerFactory($header) {
+        return new AcceptHeader($header);
     }
 
     /**
@@ -50,22 +60,10 @@ class Negotiator implements NegotiatorInterface
         );
 
         foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = new AcceptHeader($acceptPart);
+            $acceptHeaders[] = self::headerFactory($acceptPart);
         }
 
         return $acceptHeaders;
-    }
-
-    /**
-     * @param array $values
-     *
-     * @return array
-     */
-    protected function sanitize(array $values)
-    {
-        return array_map(function ($value) {
-            return preg_replace('/\s+/', '', strtolower($value));
-        }, $values);
     }
 
     /**
@@ -74,7 +72,7 @@ class Negotiator implements NegotiatorInterface
      *
      * @return AcceptHeader[] Headers matched
      */
-    private static function findMatches(array $acceptHeaders, array $priorities) {
+    protected static function findMatches(array $acceptHeaders, array $priorities) {
         $matches = array();
         $index = 0;
 
@@ -91,7 +89,6 @@ class Negotiator implements NegotiatorInterface
                 $baseEqual = !strcasecmp($ab, $pb);
                 $subEqual = !strcasecmp($as, $ps);
 
-                $score = 0;
                 if (($ab == '*' || $baseEqual) && ($as === null || $as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
                     $score = 100 * $baseEqual + 10 * ($as !== null && $subEqual) + count($intersection);
 

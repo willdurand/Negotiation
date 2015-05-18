@@ -2,42 +2,17 @@
 
 namespace Negotiation;
 
+require_once(__DIR__ . '/AbstractHeader.php');
+
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class AcceptHeader
+class AcceptHeader extends AbstractHeader
 {
-    /**
-     * @var string
-     */
-    private $value;
-
-    /**
-     * @var string
-     */
-    private $mediaType;
-
-    /**
-     * @var float
-     */
-    private $quality;
-
     /**
      * @var array
      */
-    private $parameters;
-
-    /**
-     * @var string|null
-     */
-    private $baseType = null;
-
-    /**
-     * @var string|null
-     */
-    private $subType = null;
-
-    const CATCH_ALL_VALUE = '*/*';
+    protected $parameters;
 
     /**
      * @param string $value
@@ -60,7 +35,7 @@ class AcceptHeader
             $quality = (float)$parameters['q'];
             unset($parameters['q']);
         } else {
-            if (self::CATCH_ALL_VALUE === $mediaType) {
+            if ('*/*' === $mediaType) {
                 $quality = 0.01;
             } elseif ('*' === substr($mediaType, -1)) {
                 $quality = 0.02;
@@ -131,17 +106,6 @@ class AcceptHeader
     /**
      * @return string
      */
-    public function getMediaType()
-    {
-        $parts     = explode(';', $this->value, 2);
-        $mediaType = trim($parts[0], ' ');
-
-        return $mediaType;
-    }
-
-    /**
-     * @return string
-     */
     public function getValue()
     {
         return $this->value;
@@ -164,22 +128,6 @@ class AcceptHeader
     }
 
     /**
-     * @return string
-     */
-    public function getSubType()
-    {
-        return $this->subType;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBaseType()
-    {
-        return $this->baseType;
-    }
-
-    /**
      * @param string $key
      * @param mixed  $default
      *
@@ -198,6 +146,14 @@ class AcceptHeader
     public function hasParameter($key)
     {
         return isset($this->parameters[$key]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getMediaType()
+    {
+        return $this->mediaType;
     }
 
     /**
