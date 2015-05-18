@@ -40,7 +40,8 @@ class AcceptHeader
     public function getMediaType()
     {
         $parts = explode(';', $this->value, 2);
-        return $parts[0];
+        $mediaType = trim($parts[0], ' ');
+        return $mediaType;
     }
 
     /**
