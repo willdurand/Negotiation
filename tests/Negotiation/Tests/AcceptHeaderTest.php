@@ -6,6 +6,10 @@ use Negotiation\AcceptHeader;
 
 class AcceptHeaderTest extends TestCase
 {
+    /**
+     * @var AcceptHeader
+     */
+    private $acceptHeader;
 
     protected function call_private_method($class, $method, $object, $params) {
         $method = new \ReflectionMethod($class, $method);
@@ -118,15 +122,58 @@ class AcceptHeaderTest extends TestCase
         );
     }
 
-    public function testGetMediaType() {
-        # with param
-        $acceptHeader = new AcceptHeader('text/html;hello=world', 1.0, array( 'hello' => 'world',));
-        $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'text/html');
+    /**
+     * @dataProvider dataProviderForTestGetMediaType
+     */
+    public function testGetMediaType($acceptHeader, $expectedType) {
 
-        # without param
-        $acceptHeader = new AcceptHeader('application/pdf', 1.0, array());
+        $acceptHeader = new AcceptHeader($acceptHeader);
         $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'application/pdf');
+
+        $this->assertEquals($expectedType, $mt);
+
+    }
+
+    /**
+     * @dataProvider dataProviderForTestGetMediaType
+     */
+    public function testGetMediaTypePassingParams($acceptHeader, $expectedType) {
+
+        $parameters = $this->call_private_method('\Negotiation\AcceptHeader', 'parseParameters', null, array($acceptHeader)); 
+        if (isset($parameters['q']))
+            unset($parameters['q']);
+
+        $acceptHeader = new AcceptHeader($acceptHeader, 1.0, $parameters);
+        $mt = $acceptHeader->getMediaType();
+
+        $this->assertEquals($expectedType, $mt);
+
+    }
+
+    public static function dataProviderForTestGetMediaType()
+    {
+        return array(
+            array('text/html;hello=world', 'text/html'), # with param
+            array('application/pdf', 'application/pdf'), # without param
+            array('application/xhtml+xml;q=0.9', 'application/xhtml+xml'),
+            array('text/plain; q=0.5', 'text/plain'),
+            array('text/html;level=2;q=0.4', 'text/html'),
+            array('text/html ; level = 2   ; q = 0.4', 'text/html'),
+            array('text/*', 'text/*'),
+            array('text/* ;q=1 ;level=2', 'text/*'),
+            array('*/*', '*/*'),
+            array('*/* ; param=555', '*/*'),
+            array('TEXT/hTmL;leVel=2; Q=0.4', 'TEXT/hTmL'),
+
+            # language
+            array('da', 'da'),
+            array('en-gb;q=0.8', 'en-gb'),
+            array('en-GB;q=0.8', 'en-GB'),
+            array('es;q=0.7', 'es'),
+            array('fr ; q= 0.1', 'fr'),
+
+            array('', null),
+            array(null, null),
+        );
     }
 }
