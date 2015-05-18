@@ -40,15 +40,21 @@ class AcceptHeader
     const CATCH_ALL_VALUE = '*/*';
 
     /**
-     * @param string $mediaType
-     * @param float  $quality
-     * @param array  $parameters
+     * @param string $value
+     * @param float  $quality       - only here for backwards compatibility
+     * @param array  $parameters    - only here for backwards compatibility
      */
-    public function __construct($acceptPart)
+    public function __construct($value, $quality = null, array $parameters = array())
     {
+        if ($quality !== null) {
+            $this->value = $value;
+            $this->quality = $quality;
+            $this->parameters = $parameters;
+        }
+
         $quality = 1.0;
 
-        list($mediaType, $parameters) = $this->parseParameters($acceptPart);
+        list($mediaType, $parameters) = $this->parseParameters($value);
 
         if (isset($parameters['q'])) {
             $quality = (float)$parameters['q'];
