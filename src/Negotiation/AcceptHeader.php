@@ -34,13 +34,13 @@ class AcceptHeader
      * @param float  $quality
      * @param array  $parameters
      */
-    public function __construct($acceptPart, $quality = 1.0)
+    public function __construct($acceptPart, $quality = 1.0, array $parameters = array())
     {
-        list($mediaType, $parameters) = $this->parseParameters($acceptPart);
+        list($mediaType, $parsedParams) = $this->parseParameters($acceptPart);
 
-        if (isset($parameters['q'])) {
-            $quality = $parameters['q'];
-            unset($parameters['q']);
+        if (isset($parsedParams['q'])) {
+            $quality = $parsedParams['q'];
+            unset($parsedParams['q']);
         } else {
             if (self::CATCH_ALL_VALUE === $mediaType) {
                 $quality = 0.01;
@@ -49,10 +49,10 @@ class AcceptHeader
             }
         }
 
-        $this->value      = $mediaType . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
+        $this->value      = $mediaType . ($parsedParams ? ";" . $this->buildParametersString($parsedParams, null, ';') : '');
         $this->mediaType  = $mediaType;
         $this->quality    = $quality;
-        $this->parameters = $parameters;
+        $this->parameters = ($parameters ? $parameters : $parsedParams);
     }
 
     /**
