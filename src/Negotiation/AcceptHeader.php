@@ -81,26 +81,11 @@ class AcceptHeader extends AbstractHeader
      * @return array
      */
 
-    private static function parseParameters($acceptPart)
+    protected static function parseParameters($acceptPart)
     {
-        $parts = explode(';', preg_replace('/\s+/', '', $acceptPart));
-
-        $mediaType = array_shift($parts);
-
-        $parameters = array();
-
-        foreach ($parts as $part) {
-            $part = explode('=', $part);
-
-            if (2 !== count($part)) {
-                continue;
-            }
-
-            $key = strtolower($part[0]);
-            $parameters[$key] = $part[1];
-        }
-
-        return array($mediaType, $parameters);
+        $parts = explode(';', $this->value, 2);
+        $mediaType = trim($parts[0], ' ');
+        return $mediaType;
     }
 
     /**
