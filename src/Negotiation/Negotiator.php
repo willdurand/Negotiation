@@ -5,45 +5,8 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class Negotiator implements NegotiatorInterface
+class Negotiator extends AbstractNegotiator
 {
-    /**
-     * {@inheritDoc}
-     */
-    public function getBest($header, array $priorities = array())
-    {
-        $parts = $this->parseHeader($header);
-
-        if (empty($parts)) {
-            return null;
-        } elseif (empty($priorities)) {
-            return reset($parts);
-        }
-
-        $ps = array();
-        foreach ($priorities as $p) {
-            $ps[] = $this->headerFactory($p);
-        }
-
-        $matches = $this->findMatches($parts, $ps);
-
-        usort($matches, array($this, 'compare'));
-
-        if (count($matches)) {
-            return $matches[0][0];
-        }
-
-        return null;
-    }
-
-    /**
-     * @param string $header A string that contains an `Accept|Accept-*` header.
-     *
-     * @return AcceptHeader[]
-     */
-    protected static function headerFactory($header) {
-        return new AcceptHeader($header);
-    }
 
     /**
      * @param string $header A string that contains an `Accept|Accept-*` header.
@@ -55,12 +18,10 @@ class Negotiator implements NegotiatorInterface
         $acceptHeaders = array();
 
         $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/',
-            $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE
-        );
+        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
         foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = self::headerFactory($acceptPart);
+            $acceptHeaders[] = new AcceptHeader($acceptPart);
         }
 
         return $acceptHeaders;
@@ -89,10 +50,10 @@ class Negotiator implements NegotiatorInterface
                 $baseEqual = !strcasecmp($ab, $pb);
                 $subEqual = !strcasecmp($as, $ps);
 
-                if (($ab == '*' || $baseEqual) && ($as === null || $as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
-                    $score = 100 * $baseEqual + 10 * ($as !== null && $subEqual) + count($intersection);
+                if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
+                    $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
 
-                    $matches[] = array($p, $a->getQuality(), $score, $index);
+                    $matches[] = array($p->getType(), $a->getQuality(), $score, $index);
                 }
             }
 
@@ -100,43 +61,6 @@ class Negotiator implements NegotiatorInterface
         }
 
         return $matches;
-    }
-
-    /**
-     * @param array $a array(accept header, number of matched params) 
-     * @param array $b array(accept header, number of matched params) 
-     *
-     * @return int
-     */
-    private static function compare(array $a, array $b) {
-        # TODO should we order first according to the more specific match or by the higher q value?
-        # TODO unit tests from rfc https://tools.ietf.org/html/rfc7231#section-5.3.2. call usort() in test case.
-
-        list($acceptHeaderA, $matchedQualityA, $scoreA, $indexA) = $a;
-        list($acceptHeaderB, $matchedQualityB, $scoreB, $indexB) = $b;
-
-        if ($matchedQualityA > $matchedQualityB) {
-            return -1;
-        } else if ($matchedQualityA < $matchedQualityB) {
-            return 1;
-        }
-
-        # priority to more specific match
-        if ($acceptHeaderA->getMediaType() == $acceptHeaderB->getMediaType()) {
-            if ($scoreA < $scoreB) {
-                return 1;
-            } else if ($scoreA > $scoreB) {
-                return -1;
-            }
-        }
-            
-        if ($indexA < $indexB) {
-            return 1;
-        } else if ($indexA > $indexB) {
-            return -1;
-        }
-
-        return 0; # should not occur.
     }
 
 }

@@ -10,17 +10,17 @@ class AbstractHeader
     /**
      * @var string
      */
+    protected $quality;
+
+    /**
+     * @var string
+     */
     protected $value;
 
     /**
      * @var string
      */
-    protected $mediaType;
-
-    /**
-     * @var float
-     */
-    protected $quality;
+    protected $type;
 
     /**
      * @var string|null
@@ -33,7 +33,7 @@ class AbstractHeader
     protected $subType = null;
 
     /**
-     * @param string $mediaType
+     * @param string $type
      *
      * @return array
      */
@@ -42,7 +42,7 @@ class AbstractHeader
     {
         $parts = explode(';', preg_replace('/\s+/', '', $acceptPart));
 
-        $mediaType = array_shift($parts);
+        $type = array_shift($parts);
 
         $parameters = array();
 
@@ -57,7 +57,7 @@ class AbstractHeader
             $parameters[$key] = $part[1];
         }
 
-        return array($mediaType, $parameters);
+        return array($type, $parameters);
     }
 
     /**
@@ -108,5 +108,12 @@ class AbstractHeader
         return $this->baseType;
     }
 
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
 }
