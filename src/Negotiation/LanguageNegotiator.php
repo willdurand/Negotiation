@@ -5,19 +5,26 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class LanguageNegotiator extends Negotiator
+class LanguageNegotiator extends AbstractNegotiator
 {
 
     /**
-     * {@inheritDoc}
+     * @param string $header A string that contains an `Accept|Accept-*` header.
+     *
+     * @return AcceptHeader[]
      */
-    public function getBest($header, array $priorities = array()) {
-        $best = parent::getBest($header, $priorities);
+    private static function parseHeader($header)
+    {
+        $acceptHeaders = array();
 
-        if ($best === null)
-            return $best;
+        $header      = preg_replace('/\s+/', '', $header);
+        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
 
-        return new AcceptHeader($best->getValue(), $best->getQuality());
+        foreach ($acceptParts as $acceptPart) {
+            $acceptHeaders[] = new LanguageAcceptHeader($acceptPart);
+        }
+
+        return $acceptHeaders;
     }
 
     /**
@@ -43,7 +50,7 @@ class LanguageNegotiator extends Negotiator
 
                 if ($baseEqual && ($as === null || $subEqual)) {
                     $score = 10 * $baseEqual + ($as !== null && $subEqual);
-                    $matches[] = array($p, $a->getQuality(), $score, $index);
+                    $matches[] = array($p->getType(), $a->getQuality(), $score, $index);
                 }
             }
 
@@ -51,15 +58,6 @@ class LanguageNegotiator extends Negotiator
         }
 
         return $matches;
-    }
-
-    /**
-     * @param string $header A string that contains an `Accept|Accept-*` header.
-     *
-     * @return AcceptHeader[]
-     */
-    protected static function headerFactory($header) {
-        return new AcceptLanguageHeader($header);
     }
 
 }

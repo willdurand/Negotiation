@@ -5,7 +5,7 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class AcceptHeader extends AbstractHeader
+class PriorityHeader extends AbstractHeader
 {
     /**
      * @var array
@@ -13,29 +13,17 @@ class AcceptHeader extends AbstractHeader
     protected $parameters;
 
     /**
-     * @var float
-     */
-    protected $quality;
-
-    /**
      * @param string $value
      */
     public function __construct($value)
     {
-        list($type, $parameters) = $this->parseParameters($value);
+        list($mediaType, $parameters) = $this->parseParameters($value);
 
-        $quality = 1.0;
-        if (isset($parameters['q'])) {
-            $quality = (float)$parameters['q'];
-            unset($parameters['q']);
-        }
-
-        $this->value      = $type . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
-        $this->type       = $type;
-        $this->quality    = $quality;
+        $this->value      = $mediaType . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
+        $this->mediaType  = $mediaType;
         $this->parameters = $parameters;
 
-        $parts = explode('/', $type);
+        $parts = explode('/', $mediaType);
 
         if (count($parts) == 2) {
             $this->baseType   = $parts[0];

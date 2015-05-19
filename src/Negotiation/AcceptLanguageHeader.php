@@ -9,14 +9,12 @@ class AcceptLanguageHeader extends AbstractHeader
 {
     /**
      * @param string $value
-     * @param float  $quality       - only here for backwards compatibility
-     * @param array  $parameters    - only here for backwards compatibility
      */
-    public function __construct($languageHeader)
+    public function __construct($value)
     {
         $quality = 1.0;
 
-        list($language, $parameters) = $this->parseParameters($languageHeader);
+        list($language, $parameters) = $this->parseParameters($value);
 
         if (isset($parameters['q'])) {
             $quality = (float)$parameters['q'];
@@ -34,16 +32,8 @@ class AcceptLanguageHeader extends AbstractHeader
         } if (count($parts) == 1) {
             $this->baseType   = $parts[0];
         } else {
-            # TODO throw exception
+            throw new Exception('invalid media type in header.');
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getLanguage()
-    {
-        return $this->language;
     }
 
 }
