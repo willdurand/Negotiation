@@ -21,10 +21,11 @@ class AcceptHeader extends AbstractHeader
      */
     public function __construct($value, $quality = null, array $parameters = array())
     {
-        if ($quality !== null) {
+        if ($quality !== null) { # TODO test this
             $this->value = $value;
             $this->quality = $quality;
             $this->parameters = $parameters;
+            return;
         }
 
         $quality = 1.0;
