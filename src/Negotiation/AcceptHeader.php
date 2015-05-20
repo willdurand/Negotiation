@@ -5,46 +5,21 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class AcceptHeader extends AbstractHeader
+class AcceptHeader extends Header
 {
-    /**
-     * @var array
-     */
-    protected $parameters;
 
     /**
-     * @var float
+     * {@inheritdoc }
      */
-    protected $quality;
+    private static function setParts($value)
+        $parts = explode('/', $value);
 
-    /**
-     * @param string $value
-     */
-    public function __construct($value)
-    {
-        list($type, $parameters) = $this->parseParameters($value);
-
-        $quality = 1.0;
-        if (isset($parameters['q'])) {
-            $quality = (float)$parameters['q'];
-            unset($parameters['q']);
-        }
-
-        $this->value      = $type . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
-        $this->type       = $type;
-        $this->quality    = $quality;
-        $this->parameters = $parameters;
-
-        $parts = explode('/', $type);
-
-        if (count($parts) == 2) {
-            $this->baseType   = $parts[0];
-            $this->subType    = $parts[1];
-        } if (count($parts) == 1) {
-            $this->baseType   = $parts[0];
-        } else {
+        if (count($parts) != 2) {
             throw new Exception('invalid media type in header.');
         }
+
+        $this->basePart = $parts[0];
+        $this->subPart  = $parts[1];
     }
 
     /**
@@ -81,7 +56,7 @@ class AcceptHeader extends AbstractHeader
      */
     public function getMediaType()
     {
-        return $this->mediaType;
+        return $this->type;
     }
 
     /**

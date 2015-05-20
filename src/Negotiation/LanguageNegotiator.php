@@ -9,9 +9,9 @@ class LanguageNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param string $header A string that contains an `Accept|Accept-*` header.
+     * @param string $header A string that contains an `Accept-Language` header.
      *
-     * @return AcceptHeader[]
+     * @return AcceptLanguageHeader[]
      */
     private static function parseHeader($header)
     {
@@ -19,6 +19,10 @@ class LanguageNegotiator extends AbstractNegotiator
 
         $header      = preg_replace('/\s+/', '', $header);
         $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        if ($acceptParts) {
+            throw new Exception('failed to parse Accept-Languge header');
+        }
 
         foreach ($acceptParts as $acceptPart) {
             $acceptHeaders[] = new LanguageAcceptHeader($acceptPart);
@@ -28,10 +32,20 @@ class LanguageNegotiator extends AbstractNegotiator
     }
 
     /**
-     * @param AcceptHeader[] $languageHeaders Sorted by quality
-     * @param AcceptHeader[] $priorities    Configured priorities
+     * @param array $priorities list of server priorities
      *
-     * @return AcceptHeader[] Headers matched
+     * @return AcceptLanguageHeader[]
+     */
+    private static function parsePriorities($priorities)
+    {
+        return array_map(function($p) { return new AcceptLanguageHeader($p); }, $priorities);
+    }
+
+    /**
+     * @param AcceptLanguageHeader[] $languageHeaders Sorted by quality
+     * @param Priority[] $priorities    Configured priorities
+     *
+     * @return Match[] Headers matched
      */
     protected static function findMatches(array $languageHeaders, array $priorities) {
         $matches = array();
@@ -39,18 +53,18 @@ class LanguageNegotiator extends AbstractNegotiator
 
         foreach ($priorities as $p) {
             foreach ($languageHeaders as $a) {
-                $ab = $a->getBaseType();
-                $pb = $p->getBaseType();
+                $ab = $a->getBasePart();
+                $pb = $p->getBasePart();
 
-                $as = $a->getSubType();
-                $ps = $p->getSubType();
+                $as = $a->getSubPart();
+                $ps = $p->getSubPart();
 
                 $baseEqual = !strcasecmp($ab, $pb);
                 $subEqual = !strcasecmp($as, $ps);
 
                 if ($baseEqual && ($as === null || $subEqual)) {
                     $score = 10 * $baseEqual + ($as !== null && $subEqual);
-                    $matches[] = array($p->getType(), $a->getQuality(), $score, $index);
+                    $matches[] = new Match($p->getPart(), $a->getQuality(), $score, $index);
                 }
             }
 

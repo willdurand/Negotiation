@@ -9,67 +9,61 @@ abstract class AbstractNegotiator
 {
     /**
      * @param string $header     A string containing an `Accept|Accept-*` header.
-     * @param array  $priorities A set of priorities.
+     * @param array  $priorities A set of server priorities.
      *
-     * @return AbstractHeader
+     * @return Header best matching type
      */
     public function getBest($header, array $priorities)
     {
-        $parts = $this->parseHeader($header);
-
-        if (empty($parts)) {
-            return null;
-        }
-
         if (!$priorities) {
             throw new Exception('no priorities given'); 
         }
 
-        $ps = array();
-        foreach ($priorities as $p) {
-            $ps[] = new PriorityHeader($p);
+        if (!$header) {
+            throw new Exception('empty header given'); 
         }
 
-        $matches = $this->findMatches($parts, $ps);
+        $parts = $this->parseHeader($header);
+
+        $priorities = $this->parsePriorities($priorities);
+
+        $matches = $this->findMatches($parts, $priorities);
 
         usort($matches, array($this, 'compare'));
 
-        if (count($matches)) {
-            $index = $matches[0][3];
-            return $priorities[$index];
+        $match = array_shift($matches);
+        if ($match === null) {
+            return null
         }
 
-        return null;
+        return $priorities[$match->index];
     }
 
     /**
-     * @param array $a array(accept header, number of matched params) 
-     * @param array $b array(accept header, number of matched params) 
+     * @param Match[] $a
+     * @param Match[] $b
      *
      * @return int
      */
     private static function compare(array $a, array $b) {
-        list($typeA, $qualityA, $scoreA, $indexA) = $a;
-        list($typeB, $qualityB, $scoreB, $indexB) = $b;
-
-        if ($qualityA > $qualityB) {
+        if ($a->quality > $b->quality) {
             return -1;
-        } else if ($qualityA < $qualityB) {
+        } else if ($a->quality < $b->quality) {
             return 1;
         }
 
         # priority goes to to more specific match
-        if ($typeA == $typeB) {
-            if ($scoreA < $scoreB) {
+        if ($a->type == $b->type) {
+            if ($a->score < $b->score) {
                 return 1;
-            } else if ($scoreA > $scoreB) {
+            } else if ($a->score > $b->score) {
                 return -1;
             }
         }
             
-        if ($indexA < $indexB) {
+        if ($a->index < $b->index) {
             return 1;
-        } else if ($indexA > $indexB) {
+        } else if ($a->index > $b->index) {
             return -1;
         }
 
@@ -79,15 +73,22 @@ abstract class AbstractNegotiator
     /**
      * @param string $header A string that contains an `Accept|Accept-*` header.
      *
-     * @return AbstractHeader[]
+     * @return Header[]
      */
     abstract protected static function parseHeader($header);
 
     /**
-     * @param AcceptHeader[] $acceptHeaders Sorted by quality
-     * @param AcceptHeader[] $priorities    Configured priorities
+     * @param array $priorities list of server priorities
      *
-     * @return AcceptHeader[] Headers matched
+     * @return Header[]
+     */
+    abstract protected static function parsePriorities($priorities);
+
+    /**
+     * @param Header[] 
+     * @param Header[] 
+     *
+     * @return Match[] Headers matched
      */
     abstract protected static function findMatches(array $acceptHeaders, array $priorities);
 
