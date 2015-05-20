@@ -16,11 +16,11 @@ abstract class AbstractNegotiator
     public function getBest($header, array $priorities)
     {
         if (!$priorities) {
-            throw new Exception('no priorities given'); 
+            throw new \Exception('no priorities given'); 
         }
 
         if (!$header) {
-            throw new Exception('empty header given'); 
+            throw new \Exception('empty header given'); 
         }
 
         $parts = $this->parseHeader($header);
@@ -29,11 +29,12 @@ abstract class AbstractNegotiator
 
         $matches = $this->findMatches($parts, $priorities);
 
+        # TODO what if only 1 or 2 items. will usort() work?
         usort($matches, array($this, 'compare'));
 
         $match = array_shift($matches);
         if ($match === null) {
-            return null
+            return null;
         }
 
         return $priorities[$match->index];
@@ -45,7 +46,7 @@ abstract class AbstractNegotiator
      *
      * @return int
      */
-    private static function compare(array $a, array $b) {
+    private static function compare(Match $a, Match $b) {
         if ($a->quality > $b->quality) {
             return -1;
         } else if ($a->quality < $b->quality) {
@@ -67,7 +68,7 @@ abstract class AbstractNegotiator
             return -1;
         }
 
-        throw new Exception('failed to compare priorities.');
+        throw new \Exception('failed to compare priorities.');
     }
 
     /**
@@ -75,14 +76,14 @@ abstract class AbstractNegotiator
      *
      * @return Header[]
      */
-    abstract protected static function parseHeader($header);
+    abstract protected function parseHeader($header);
 
     /**
      * @param array $priorities list of server priorities
      *
      * @return Header[]
      */
-    abstract protected static function parsePriorities($priorities);
+    abstract protected function parsePriorities($priorities);
 
     /**
      * @param Header[] 
@@ -90,6 +91,6 @@ abstract class AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    abstract protected static function findMatches(array $acceptHeaders, array $priorities);
+    abstract protected function findMatches(array $acceptHeaders, array $priorities);
 
 }

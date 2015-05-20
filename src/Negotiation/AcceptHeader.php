@@ -7,15 +7,17 @@ namespace Negotiation;
  */
 class AcceptHeader extends Header
 {
+    private $basePart = null;
+    private $subPart  = null;
 
-    /**
-     * {@inheritdoc }
-     */
-    private static function setParts($value)
-        $parts = explode('/', $value);
+    function __construct($value)
+    {
+        parent::__construct($value);
+
+        $parts = explode('/', $this->type);
 
         if (count($parts) != 2) {
-            throw new Exception('invalid media type in header.');
+            throw new \Exception('invalid media type.');
         }
 
         $this->basePart = $parts[0];
@@ -60,10 +62,19 @@ class AcceptHeader extends Header
     }
 
     /**
-     * @return boolean
+     * @return string
      */
-    public function isMediaRange()
+    public function getSubPart()
     {
-        return false !== strpos($this->mediaType, '*');
+        return $this->subPart;
     }
+
+    /**
+     * @return string
+     */
+    public function getBasePart()
+    {
+        return $this->basePart;
+    }
+
 }

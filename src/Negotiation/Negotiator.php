@@ -13,7 +13,7 @@ class Negotiator extends AbstractNegotiator
      *
      * @return AcceptHeader[]
      */
-    private static function parseHeader($header)
+    protected function parseHeader($header)
     {
         $acceptHeaders = array();
 
@@ -33,7 +33,7 @@ class Negotiator extends AbstractNegotiator
      *
      * @return AcceptHeader[]
      */
-    private static function parsePriorities($priorities)
+    protected function parsePriorities($priorities)
     {
         return array_map(function($p) { return new AcceptHeader($p); }, $priorities);
     }
@@ -44,7 +44,7 @@ class Negotiator extends AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    protected static function findMatches(array $acceptHeaders, array $priorities) {
+    protected function findMatches(array $acceptHeaders, array $priorities) {
         $matches = array();
         $index = 0;
 
@@ -64,7 +64,7 @@ class Negotiator extends AbstractNegotiator
                 if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
                     $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
 
-                    $matches[] = new Match($p->getPart(), $a->getQuality(), $score, $index);
+                    $matches[] = new Match($p->getMediaType(), $a->getQuality(), $score, $index);
                 }
             }
 
