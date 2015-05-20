@@ -5,13 +5,13 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class LanguageNegotiator extends AbstractNegotiator
+class CharsetNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param string $header A string that contains an `Accept-Language` header.
+     * @param string $header A string that contains an `Accept-Charset` header.
      *
-     * @return AcceptLanguageHeader[]
+     * @return AcceptCharsetHeader[]
      */
     protected function parseHeader($header)
     {
@@ -25,7 +25,7 @@ class LanguageNegotiator extends AbstractNegotiator
         }
 
         foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = new AcceptLanguageHeader($acceptPart);
+            $acceptHeaders[] = new AcceptCharsetHeader($acceptPart);
         }
 
         return $acceptHeaders;
@@ -34,15 +34,15 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * @param array $priorities list of server priorities
      *
-     * @return AcceptLanguageHeader[]
+     * @return AcceptCharsetHeader[]
      */
     protected function parsePriorities($priorities)
     {
-        return array_map(function($p) { return new AcceptLanguageHeader($p); }, $priorities);
+        return array_map(function($p) { return new AcceptCharsetHeader($p); }, $priorities);
     }
 
     /**
-     * @param AcceptLanguageHeader[] $languageHeaders Sorted by quality
+     * @param AcceptCharsetHeader[] $languageHeaders Sorted by quality
      * @param Priority[] $priorities    Configured priorities
      *
      * @return Match[] Headers matched
@@ -53,18 +53,13 @@ class LanguageNegotiator extends AbstractNegotiator
 
         foreach ($priorities as $p) {
             foreach ($languageHeaders as $a) {
-                $ab = $a->getBasePart();
-                $pb = $p->getBasePart();
+                $at = $a->getCharset();
+                $pt = $p->getCharset();
 
-                $as = $a->getSubPart();
-                $ps = $p->getSubPart();
+                $typeEqual = !strcasecmp($at, $pt);
 
-                $baseEqual = !strcasecmp($ab, $pb);
-                $subEqual = !strcasecmp($as, $ps);
-
-                if ($baseEqual && ($as === null || $subEqual)) {
-                    $score = 10 * $baseEqual + ($as !== null && $subEqual);
-                    $matches[] = new Match($p->getLanguage(), $a->getQuality(), $score, $index);
+                if ($typeEqual || $pt == '*') {
+                    $matches[] = new Match($p->getCharset(), $a->getQuality(), 0, $index);
                 }
             }
 

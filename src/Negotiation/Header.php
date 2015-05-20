@@ -25,12 +25,12 @@ class Header
     /**
      * @var string|null
      */
-    private $basePart = null;
+    protected $basePart = null;
 
     /**
      * @var string|null
      */
-    private $subPart = null;
+    protected $subPart = null;
 
     /**
      * @var string|null
@@ -53,16 +53,7 @@ class Header
         $this->type       = $type;
         $this->quality    = $quality;
         $this->parameters = $parameters;
-
-        $this->setParts($type);
     }
-
-    /**
-     * @param string $type
-     *
-     * @return array list($basePart, $subPart)
-     */
-    protected function setParts($type) { }
 
     /**
      * @param string $type
@@ -122,30 +113,6 @@ class Header
     public function getQuality()
     {
         return $this->quality;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSubPart()
-    {
-        return $this->subPart;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBasePart()
-    {
-        return $this->basePart;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPart()
-    {
-        return $this->type;
     }
 
 }

@@ -7,12 +7,14 @@ namespace Negotiation;
  */
 class AcceptLanguageHeader extends Header
 {
-    /**
-     * {@inheritdoc }
-     */
-    private static function setParts($value)
+    private $basePart = null;
+    private $subPart  = null;
+
+    function __construct($value)
     {
-        $parts = explode('-', $language);
+        parent::__construct($value);
+
+        $parts = explode('-', $value);
 
         if (count($parts) == 2) {
             $this->basePart   = $parts[0];
@@ -20,7 +22,7 @@ class AcceptLanguageHeader extends Header
         } if (count($parts) == 1) {
             $this->basePart   = $parts[0];
         } else {
-            throw new Exception('invalid language type in header.');
+            throw new \Exception('invalid language type in header.');
         }
     }
 
@@ -31,4 +33,21 @@ class AcceptLanguageHeader extends Header
     {
         return $this->type;
     }
+
+    /**
+     * @return string
+     */
+    public function getSubPart()
+    {
+        return $this->subPart;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBasePart()
+    {
+        return $this->basePart;
+    }
+
 }
