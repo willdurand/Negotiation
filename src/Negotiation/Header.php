@@ -5,32 +5,64 @@ namespace Negotiation;
 /**
  * @author William Durand <william.durand1@gmail.com>
  */
-class AbstractHeader
+class Header
 {
     /**
-     * @var string
+     * @var float
      */
-    protected $quality;
+    private $quality = 1.0;
 
     /**
      * @var string
      */
-    protected $value;
+    private $value;
 
     /**
      * @var string
      */
-    protected $type;
+    private $type;
 
     /**
      * @var string|null
      */
-    protected $baseType = null;
+    private $basePart = null;
 
     /**
      * @var string|null
      */
-    protected $subType = null;
+    private $subPart = null;
+
+    /**
+     * @var string|null
+     */
+    protected $parameters = null;
+
+    /**
+     * @param string $value
+     */
+    public function __construct($value)
+    {
+        list($type, $parameters) = $this->parseParameters($value);
+
+        $quality = 1.0;
+        if (isset($parameters['q'])) {
+            $quality = (float)$parameters['q'];
+        }
+
+        $this->value      = $type . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
+        $this->type       = $type;
+        $this->quality    = $quality;
+        $this->parameters = $parameters;
+
+        $this->setParts($type);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return array list($basePart, $subPart)
+     */
+    protected function setParts($type) { }
 
     /**
      * @param string $type
@@ -95,23 +127,23 @@ class AbstractHeader
     /**
      * @return string
      */
-    public function getSubType()
+    public function getSubPart()
     {
-        return $this->subType;
+        return $this->subPart;
     }
 
     /**
      * @return string
      */
-    public function getBaseType()
+    public function getBasePart()
     {
-        return $this->baseType;
+        return $this->basePart;
     }
 
     /**
      * @return string
      */
-    public function getType()
+    public function getPart()
     {
         return $this->type;
     }
