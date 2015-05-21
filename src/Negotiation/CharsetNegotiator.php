@@ -9,64 +9,27 @@ class CharsetNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param string $header A string that contains an `Accept-Charset` header.
+     * @param strint $type
      *
-     * @return AcceptCharsetHeader[]
+     * @return AcceptCharsetHeader
      */
-    protected function parseHeader($header)
+    protected function typeFactory($type)
     {
-        $acceptHeaders = array();
-
-        $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
-        if (!$acceptParts) {
-            throw new \Exception('failed to parse Accept-Languge header');
-        }
-
-        foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = new AcceptCharsetHeader($acceptPart);
-        }
-
-        return $acceptHeaders;
+        return new AcceptCharsetHeader($type);
     }
 
     /**
-     * @param array $priorities list of server priorities
-     *
-     * @return AcceptCharsetHeader[]
+     * {@inheritdoc}
      */
-    protected function parsePriorities($priorities)
-    {
-        return array_map(function($p) { return new AcceptCharsetHeader($p); }, $priorities);
-    }
+    protected function match(AcceptCharsetHeader $charsetHeader, AcceptCharsetHeader $priority, $index) {
+        $ac = $charsetHeader->getCharset();
+        $pc = $priority->getCharset();
 
-    /**
-     * @param AcceptCharsetHeader[] $languageHeaders Sorted by quality
-     * @param Priority[] $priorities    Configured priorities
-     *
-     * @return Match[] Headers matched
-     */
-    protected function findMatches(array $languageHeaders, array $priorities) {
-        $matches = array();
-        $index = 0;
-
-        foreach ($priorities as $p) {
-            foreach ($languageHeaders as $a) {
-                $at = $a->getCharset();
-                $pt = $p->getCharset();
-
-                $typeEqual = !strcasecmp($at, $pt);
-
-                if ($typeEqual || $pt == '*') {
-                    $matches[] = new Match($p->getCharset(), $a->getQuality(), 0, $index);
-                }
-            }
-
-            $index++;
+        if (!strcasecmp($ac, $pc) || $pc == '*') {
+            return new Match($pc, $charsetHeader->getQuality(), 0, $index);
         }
 
-        return $matches;
+        return null;
     }
 
 }
