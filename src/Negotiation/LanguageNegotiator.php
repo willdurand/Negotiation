@@ -9,69 +9,34 @@ class LanguageNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param string $header A string that contains an `Accept-Language` header.
+     * @param strint $type
      *
-     * @return AcceptLanguageHeader[]
+     * @return AcceptLanguageHeader
      */
-    protected function parseHeader($header)
+    protected function typeFactory($type)
     {
-        $acceptHeaders = array();
-
-        $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
-        if (!$acceptParts) {
-            throw new \Exception('failed to parse Accept-Languge header');
-        }
-
-        foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = new AcceptLanguageHeader($acceptPart);
-        }
-
-        return $acceptHeaders;
+        return new AcceptLanguageHeader($type);
     }
 
     /**
-     * @param array $priorities list of server priorities
-     *
-     * @return AcceptLanguageHeader[]
+     * {@inheritdoc}
      */
-    protected function parsePriorities($priorities)
-    {
-        return array_map(function($p) { return new AcceptLanguageHeader($p); }, $priorities);
-    }
+    protected function match(AcceptLanguageHeader $acceptLanguageHeader, AcceptLanguageHeader $priority, $index) {
+        $ab = $acceptLanguageHeader->getBasePart();
+        $pb = $priority->getBasePart();
 
-    /**
-     * @param AcceptLanguageHeader[] $languageHeaders Sorted by quality
-     * @param Priority[] $priorities    Configured priorities
-     *
-     * @return Match[] Headers matched
-     */
-    protected function findMatches(array $languageHeaders, array $priorities) {
-        $matches = array();
-        $index = 0;
+        $as = $acceptLanguageHeader->getSubPart();
+        $ps = $priority->getSubPart();
 
-        foreach ($priorities as $p) {
-            foreach ($languageHeaders as $a) {
-                $ab = $a->getBasePart();
-                $pb = $p->getBasePart();
+        $baseEqual = !strcasecmp($ab, $pb);
+        $subEqual = !strcasecmp($as, $ps);
 
-                $as = $a->getSubPart();
-                $ps = $p->getSubPart();
-
-                $baseEqual = !strcasecmp($ab, $pb);
-                $subEqual = !strcasecmp($as, $ps);
-
-                if ($baseEqual && ($as === null || $subEqual)) {
-                    $score = 10 * $baseEqual + ($as !== null && $subEqual);
-                    $matches[] = new Match($p->getLanguage(), $a->getQuality(), $score, $index);
-                }
-            }
-
-            $index++;
+        if ($baseEqual && ($as === null || $subEqual)) {
+            $score = 10 * $baseEqual + ($as !== null && $subEqual);
+            return new Match($priority->getLanguage(), $acceptLanguageHeader->getQuality(), $score, $index);
         }
 
-        return $matches;
+        return null;
     }
 
 }

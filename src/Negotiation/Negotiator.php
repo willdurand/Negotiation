@@ -9,69 +9,36 @@ class Negotiator extends AbstractNegotiator
 {
 
     /**
-     * @param string $header A string that contains an `Accept` header.
+     * @param strint $type
      *
-     * @return AcceptHeader[]
+     * @return AcceptHeader
      */
-    protected function parseHeader($header)
+    protected function typeFactory($type)
     {
-        $acceptHeaders = array();
-
-        $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-
-# TODO exception for empty?
-        foreach ($acceptParts as $acceptPart) {
-            $acceptHeaders[] = new AcceptHeader($acceptPart);
-        }
-
-        return $acceptHeaders;
+        return new AcceptHeader($type);
     }
 
     /**
-     * @param array $priorities list of server priorities
-     *
-     * @return AcceptHeader[]
+     * {@inheritdoc}
      */
-    protected function parsePriorities($priorities)
-    {
-        return array_map(function($p) { return new AcceptHeader($p); }, $priorities);
-    }
+    protected function match(AcceptHeader $acceptHeader, AcceptHeader $priority) {
+        $ab = $acceptHeader->getBasePart();
+        $pb = $priority->getBasePart();
 
-    /**
-     * @param AcceptHeader[] $acceptHeaders Sorted by quality
-     * @param Priority[]     $priorities    Configured priorities
-     *
-     * @return Match[] Headers matched
-     */
-    protected function findMatches(array $acceptHeaders, array $priorities) {
-        $matches = array();
-        $index = 0;
+        $as = $acceptHeader->getSubPart();
+        $ps = $priority->getSubPart();
 
-        foreach ($priorities as $p) {
-            foreach ($acceptHeaders as $a) {
-                $ab = $a->getBasePart();
-                $pb = $p->getBasePart();
+        $intersection = array_intersect_assoc($acceptHeader->getParameters(), $priority->getParameters());
 
-                $as = $a->getSubPart();
-                $ps = $p->getSubPart();
+        $baseEqual = !strcasecmp($ab, $pb);
+        $subEqual = !strcasecmp($as, $ps);
 
-                $intersection = array_intersect_assoc($a->getParameters(), $p->getParameters());
-
-                $baseEqual = !strcasecmp($ab, $pb);
-                $subEqual = !strcasecmp($as, $ps);
-
-                if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($a->getParameters())) {
-                    $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
-
-                    $matches[] = new Match($p->getMediaType(), $a->getQuality(), $score, $index);
-                }
-            }
-
-            $index++;
+        if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($acceptHeader->getParameters())) {
+            $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
+            $matches[] = new Match($priority->getMediaType(), $acceptHeader->getQuality(), $score, $index);
         }
 
-        return $matches;
+        return null;
     }
 
 }

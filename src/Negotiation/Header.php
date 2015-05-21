@@ -44,7 +44,8 @@ class Header
     {
         list($type, $parameters) = $this->parseParameters($value);
 
-        $quality = 1.0;
+        $type = trim($type);
+
         if (isset($parameters['q'])) {
             $quality = (float)$parameters['q'];
         }
@@ -63,7 +64,7 @@ class Header
 
     protected static function parseParameters($acceptPart)
     {
-        $parts = explode(';', preg_replace('/\s+/', '', $acceptPart));
+        $parts = explode(';', $acceptPart);
 
         $type = array_shift($parts);
 
@@ -76,8 +77,8 @@ class Header
                 continue;
             }
 
-            $key = strtolower($part[0]);
-            $parameters[$key] = $part[1];
+            $key = trim(strtolower($part[0])); # TODO technically not allowed space around "=". throw exception?
+            $parameters[$key] = trim($part[1], ' "'); # param values can be quoted, too.
         }
 
         return array($type, $parameters);

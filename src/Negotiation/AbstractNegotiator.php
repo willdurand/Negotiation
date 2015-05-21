@@ -23,13 +23,14 @@ abstract class AbstractNegotiator
             throw new \Exception('empty header given');
         }
 
-        $parts = $this->parseHeader($header);
+        $headers = $this->parseHeader($header);
 
-        $priorities = $this->parsePriorities($priorities);
+        $headers = $this->mapHeaders($headers);
+        $priorities = $this->mapHeaders($priorities);
 
-        $matches = $this->findMatches($parts, $priorities);
+        $matches = $this->findMatches($headers, $priorities);
 
-        # TODO what if only 1 or 2 items. will usort() work?
+        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't.
         usort($matches, array($this, 'compare'));
 
         $match = array_shift($matches);
@@ -38,6 +39,52 @@ abstract class AbstractNegotiator
         }
 
         return $priorities[$match->index];
+    }
+
+    /**
+     * @param string $header A string that contains an `Accept-*` header.
+     *
+     * @return Header[]
+     */
+    private function parseHeader($header)
+    {
+        $header      = preg_replace('/\s+/', '', $header);
+        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE); # TODO quoted param values can contain ",". does this accout for that? unit tests?
+
+        if (!$acceptParts) {
+            throw new \Exception('failed to parse Accept-Languge header');
+        }
+
+        return $acceptParts;
+    }
+
+    /**
+     * @param array $priorities list of server priorities
+     *
+     * @return Header[]
+     */
+    private function mapHeaders($priorities)
+    {
+        return array_map(function($p) { return $this->typeFactory($p); }, $priorities);
+    }
+
+    /**
+     * @param Header[]      $headers
+     * @param Priority[]    $priorities    Configured priorities
+     *
+     * @return Match[] Headers matched
+     */
+    protected function findMatches(array $headerParts, array $priorities) {
+        $matches = array();
+
+        foreach ($priorities as $index => $p) {
+            foreach ($headerParts as $a) {
+                if ($match = $this->match($a, $p, $index))
+                    $matches[] = $match;
+            }
+        }
+
+        return $matches;
     }
 
     /**
@@ -68,29 +115,21 @@ abstract class AbstractNegotiator
             return -1;
         }
 
+        # TODO really? can this never occur? unit test for this?
         throw new \Exception('failed to compare priorities.');
     }
 
     /**
-     * @param string $header A string that contains an `Accept|Accept-*` header.
+     * @param Header $header
+     * @param Header $priority
      *
-     * @return Header[]
+     * @return Match Headers matched
      */
-    abstract protected function parseHeader($header);
+    abstract protected function match(Header $header, Header $priority, $index);
 
     /**
-     * @param array $priorities list of server priorities
-     *
-     * @return Header[]
+     * TODO
      */
-    abstract protected function parsePriorities($priorities);
-
-    /**
-     * @param Header[]
-     * @param Header[]
-     *
-     * @return Match[] Headers matched
-     */
-    abstract protected function findMatches(array $acceptHeaders, array $priorities);
+    abstract protected function typeFactory($header);
 
 }

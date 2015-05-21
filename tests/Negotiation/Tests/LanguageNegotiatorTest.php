@@ -17,6 +17,12 @@ class LanguageNegotiatorTest extends TestCase
         $this->negotiator = new LanguageNegotiator();
     }
 
+
+    public function testGetBestReturnsNullWithUnmatchedHeader()
+    {
+        $this->assertNull($this->negotiator->getBest('foo, bar, yo', array('baz')));
+    }
+
     /**
      * 'fu' has a quality rating of 0.9 which is higher than the rest
      * we expect Negotiator to return the 'fu' content.
@@ -28,7 +34,7 @@ class LanguageNegotiatorTest extends TestCase
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
         $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader);
 
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
         $this->assertEquals('fu', $acceptHeader->getValue());
     }
 
@@ -43,24 +49,27 @@ class LanguageNegotiatorTest extends TestCase
         $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
         $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
 
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
         $this->assertEquals('fr', $acceptHeader->getValue());
     }
 
-#    /**
-#     * @dataProvider dataProviderForGetBest
-#     */
-#    public function testGetBest($acceptLanguageHeader, $expected)
-#    {
-#        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader);
-#
-#        if (null === $expected) {
-#            $this->assertNull($acceptHeader);
-#        } else {
-#            $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-#            $this->assertEquals($expected, $acceptHeader->getValue());
-#        }
-#    }
+    /**
+     * @dataProvider dataProviderForTestGetBest
+     */
+    public function testGetBest($acceptHeader, $priorities, $expected)
+    {
+        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+
+        if (null === $expected) {
+            $this->assertNull($acceptHeader);
+        } else {
+            $this->assertEquals($expected, $acceptHeader->getValue());
+
+            foreach ($parameters as $k => $v) {
+                $this->assertEquals($v, $acceptHeader->getParameter($k));
+            }
+        }
+    }
 
     /**
      * Given a accept header containing a generic language (here 'en')
@@ -74,7 +83,7 @@ class LanguageNegotiatorTest extends TestCase
 
         $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
 
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
         $this->assertEquals('en-US', $acceptHeader->getValue());
     }
 
@@ -85,8 +94,16 @@ class LanguageNegotiatorTest extends TestCase
 
         $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
 
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
         $this->assertEquals('fr', $acceptHeader->getValue());
+    }
+
+    public function testGetBestRespectsPriorities()
+    {
+        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('yo'));
+
+        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertEquals('yo', $acceptHeader->getValue());
     }
 
     public function testGetBestDoesNotMatchPriorities()
@@ -97,15 +114,25 @@ class LanguageNegotiatorTest extends TestCase
         $this->assertNull($this->negotiator->getBest($acceptLanguageHeader, $priorities));
     }
 
-    public static function dataProviderForGetBest()
+    public static function dataProviderForTestGetBest()
     {
-        return array(
-            array('da, en-gb;q=0.8, en;q=0.7', 'da'),
-            array('da, en-gb;q=0.8, en;q=0.7, *', 'da'),
-            array('es-ES;q=0.7, es; q=0.6 ,fr; q=1.0, en; q=0.5,dk , fr-CH', 'fr-CH'),
-            array('fr-FR,fr;q=0.1,en-US;q=0.6,en;q=0.4', 'fr-FR'),
-            array('', null),
-            array(null, null),
-        );
+        return array();
+
+# TODO tests something like this...
+#        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+#        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
+#
+#        return array(
+#            array(
+#                $pearCharsetHeader,
+#                array(
+#                    'utf-8',
+#                    'big5',
+#                    'iso-8859-1',
+#                    'shift-jis',
+#                ),
+#                'iso-8859-1'
+#            ),
+#        );
     }
 }

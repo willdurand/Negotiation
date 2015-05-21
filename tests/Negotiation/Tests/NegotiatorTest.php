@@ -28,62 +28,49 @@ class NegotiatorTest extends TestCase
         $this->negotiator = new Negotiator();
     }
 
-    public function testGetBestReturnsNullWithNullHeader()
-    {
-        $this->assertNull($this->negotiator->getBest(null));
-    }
+#    public function testGetBestReturnsNullWithNullHeader()
+#    {
+#        $this->assertNull($this->negotiator->getBest(null));
+#    }
 
-    public function testGetBestReturnsNullWithEmptyHeader()
+    public function testGetBestThrowsExceptionInvalidMediaType()
     {
-        $this->assertNull($this->negotiator->getBest(''));
+        try {
+            $this->negotiator->getBest('asdf/qwer', array('f'));
+            $this->assertTrue(false, 'exception not thrown');
+        } catch (\Exception $e) {
+            $this->assertSame('invalid media type.', $e->getMessage());
+        }
     }
 
     public function testGetBestReturnsNullWithUnmatchedHeader()
     {
-        $this->assertNull($this->negotiator->getBest('foo, bar, yo', array('baz')));
+        $this->assertNull($this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('baz/asdf')));
     }
 
     public function testGetBestRespectsPriorities()
     {
-        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('yo'));
+        $acceptHeader = $this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('yo/sup'));
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('yo', $acceptHeader->getValue());
+        $this->assertEquals('yo/sup', $acceptHeader->getValue());
     }
 
     public function testGetBestInCaseInsensitive()
     {
-        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('YO'));
+        $acceptHeader = $this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('YO/SuP'));
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('YO', $acceptHeader->getValue());
+        $this->assertEquals('YO/SuP', $acceptHeader->getValue());
     }
 
     public function testGetBestWithQualities()
     {
-        $acceptHeader = $this->negotiator->getBest('foo;q=0.1, bar, yo;q=0.9');
+        $acceptHeader = $this->negotiator->getBest('foo/aaa;q=0.1, bar/yyy, yo/sup;q=0.9', array('foo/aaa', 'bar/yyy', 'yo/sup'));
 
         $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('bar', $acceptHeader->getValue());
+        $this->assertEquals('bar/yyy', $acceptHeader->getValue());
         $this->assertFalse($acceptHeader->hasParameter('q'));
-    }
-
-    /**
-     * @dataProvider dataProviderForTestGetBest
-     */
-    public function testGetBest($acceptHeader, $priorities, $expected, $parameters = array())
-    {
-        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
-
-        if (null === $expected) {
-            $this->assertNull($acceptHeader);
-        } else {
-            $this->assertEquals($expected, $acceptHeader->getValue());
-
-            foreach ($parameters as $k => $v) {
-                $this->assertEquals($v, $acceptHeader->getParameter($k));
-            }
-        }
     }
 
     /**
@@ -139,98 +126,6 @@ class NegotiatorTest extends TestCase
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html' => 1, 'application/json' => 0.8, 'text/csv' => 0.7)),
             array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5' => 1, 'unicode-1-1' => 0.8)),
             array('gzip;q=1.0, identity; q=0.5, *;q=0', array('gzip' => 1, 'identity' => 0.5, '*' => 0)),
-        );
-    }
-
-    public static function dataProviderForTestGetBest()
-    {
-        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
-        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
-
-        return array(
-            array(
-                $pearCharsetHeader,
-                array(
-                    'utf-8',
-                    'big5',
-                    'iso-8859-1',
-                    'shift-jis',
-                ),
-                'iso-8859-1'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'utf-8',
-                    'big5',
-                    'shift-jis',
-                ),
-                'utf-8'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'Big5',
-                    'shift-jis',
-                ),
-                'Big5'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'shift-jis',
-                ),
-                'shift-jis'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'utf-8',
-                    'big5',
-                    'iso-8859-1',
-                    'shift-jis',
-                ),
-                'iso-8859-1'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'utf-8',
-                    'big5',
-                    'shift-jis',
-                ),
-                'utf-8'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'Big5',
-                    'shift-jis',
-                ),
-                'Big5'
-            ),
-            array(
-                'utf-8;q=0.6,iso-8859-5;q=0.9',
-                array(
-                    'iso-8859-5',
-                    'utf-8',
-                ),
-                'iso-8859-5'
-            ),
-            array(
-                '',
-                array(
-                    'iso-8859-5',
-                    'utf-8',
-                ),
-                null
-            ),
-# removed. no priorities makes no sense...
-#            array(
-#                'audio/*; q=0.2, audio/basic',
-#                array(),
-#                'audio/basic',
-#            ),
         );
     }
 
