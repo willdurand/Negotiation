@@ -15,6 +15,11 @@ class Header
     /**
      * @var string
      */
+    private $normalised;
+
+    /**
+     * @var string
+     */
     private $value;
 
     /**
@@ -44,13 +49,14 @@ class Header
     {
         list($type, $parameters) = $this->parseParameters($value);
 
-        $type = trim($type);
+        $type = trim(strtolower($type));
 
         if (isset($parameters['q'])) {
             $quality = (float)$parameters['q'];
         }
 
-        $this->value      = $type . ($parameters ? ";" . $this->buildParametersString($parameters, null, ';') : '');
+        $this->value      = $value;
+        $this->normalised = $type . $this->buildParametersString($parameters);
         $this->type       = $type;
         $this->quality    = $quality;
         $this->parameters = $parameters;
@@ -77,7 +83,7 @@ class Header
                 continue;
             }
 
-            $key = trim(strtolower($part[0])); # TODO technically not allowed space around "=". throw exception?
+            $key = strtolower(trim($part[0])); # TODO technically not allowed space around "=". throw exception?
             $parameters[$key] = trim($part[1], ' "'); # param values can be quoted, too.
         }
 
@@ -98,6 +104,14 @@ class Header
         }
 
         return implode(";", $parts);
+    }
+
+    /**
+     * @return string
+     */
+    public function getNormalised()
+    {
+        return $this->normalised;
     }
 
     /**
