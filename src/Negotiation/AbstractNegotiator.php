@@ -115,8 +115,7 @@ abstract class AbstractNegotiator
             return -1;
         }
 
-        # TODO really? can this never occur? unit test for this?
-        throw new \Exception('failed to compare priorities.');
+        return 0;
     }
 
     /**
