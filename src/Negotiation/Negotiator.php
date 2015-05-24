@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class Negotiator extends AbstractNegotiator
 {
 
@@ -21,7 +18,7 @@ class Negotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptHeader $acceptHeader, AcceptHeader $priority) {
+    protected function match(Header $acceptHeader, Header $priority, $index) {
         $ab = $acceptHeader->getBasePart();
         $pb = $priority->getBasePart();
 
@@ -33,9 +30,11 @@ class Negotiator extends AbstractNegotiator
         $baseEqual = !strcasecmp($ab, $pb);
         $subEqual = !strcasecmp($as, $ps);
 
+//var_dump($acceptHeader->getType(), $priority->getType(), $baseEqual, $subEqual);
+
         if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($acceptHeader->getParameters())) {
             $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
-            $matches[] = new Match($priority->getMediaType(), $acceptHeader->getQuality(), $score, $index);
+            return new Match($priority->getType(), $acceptHeader->getQuality(), $score, $index);
         }
 
         return null;

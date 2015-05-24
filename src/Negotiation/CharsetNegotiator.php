@@ -21,9 +21,9 @@ class CharsetNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptCharsetHeader $charsetHeader, AcceptCharsetHeader $priority, $index) {
-        $ac = $charsetHeader->getCharset();
-        $pc = $priority->getCharset();
+    protected function match(Header $charsetHeader, Header $priority, $index) {
+        $ac = $charsetHeader->getType();
+        $pc = $priority->getType();
 
         if (!strcasecmp($ac, $pc) || $pc == '*') {
             return new Match($pc, $charsetHeader->getQuality(), 0, $index);

@@ -25,17 +25,7 @@ class Header
     /**
      * @var string
      */
-    private $type;
-
-    /**
-     * @var string|null
-     */
-    protected $basePart = null;
-
-    /**
-     * @var string|null
-     */
-    protected $subPart = null;
+    protected $type;
 
     /**
      * @var string|null
@@ -52,13 +42,13 @@ class Header
         $type = trim(strtolower($type));
 
         if (isset($parameters['q'])) {
-            $quality = (float)$parameters['q'];
+            $this->quality = (float)$parameters['q'];
+            unset($parameters['q']);
         }
 
         $this->value      = $value;
         $this->normalised = $type . $this->buildParametersString($parameters);
         $this->type       = $type;
-        $this->quality    = $quality;
         $this->parameters = $parameters;
     }
 
@@ -103,13 +93,13 @@ class Header
             $parts[] = "$key=$val";
         }
 
-        return implode(";", $parts);
+        return implode("; ", $parts);
     }
 
     /**
      * @return string
      */
-    public function getNormalised()
+    public function getNormalisedValue()
     {
         return $this->normalised;
     }
@@ -120,6 +110,14 @@ class Header
     public function getValue()
     {
         return $this->value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
