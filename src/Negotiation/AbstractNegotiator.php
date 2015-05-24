@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 abstract class AbstractNegotiator
 {
     /**
@@ -46,7 +43,7 @@ abstract class AbstractNegotiator
      *
      * @return Header[]
      */
-    private function parseHeader($header)
+    protected function parseHeader($header)
     {
         $header      = preg_replace('/\s+/', '', $header);
         $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE); # TODO quoted param values can contain ",". does this accout for that? unit tests?
@@ -78,8 +75,9 @@ abstract class AbstractNegotiator
         $matches = array();
 
         foreach ($priorities as $index => $p) {
-            foreach ($headerParts as $a) {
-                if ($match = $this->match($a, $p, $index))
+            foreach ($headerParts as $h) {
+//var_dump($p);
+                if ($match = $this->match($h, $p, $index))
                     $matches[] = $match;
             }
         }
@@ -110,9 +108,9 @@ abstract class AbstractNegotiator
         }
             
         if ($a->index < $b->index) {
-            return 1;
-        } else if ($a->index > $b->index) {
             return -1;
+        } else if ($a->index > $b->index) {
+            return 1;
         }
 
         return 0;

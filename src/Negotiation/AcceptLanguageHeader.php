@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class AcceptLanguageHeader extends Header
 {
     private $basePart = null;
@@ -14,7 +11,7 @@ class AcceptLanguageHeader extends Header
     {
         parent::__construct($value);
 
-        $parts = explode('-', $value);
+        $parts = explode('-', $this->type);
 
         if (count($parts) == 2) {
             $this->basePart   = $parts[0];
@@ -24,14 +21,6 @@ class AcceptLanguageHeader extends Header
         } else {
             throw new \Exception('invalid language type in header.');
         }
-    }
-
-    /**
-     * @return string
-     */
-    public function getLanguage()
-    {
-        return $this->type;
     }
 
     /**

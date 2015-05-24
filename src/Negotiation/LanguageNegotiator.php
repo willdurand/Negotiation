@@ -21,7 +21,7 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptLanguageHeader $acceptLanguageHeader, AcceptLanguageHeader $priority, $index) {
+    protected function match(Header $acceptLanguageHeader, Header $priority, $index) {
         $ab = $acceptLanguageHeader->getBasePart();
         $pb = $priority->getBasePart();
 
@@ -33,7 +33,7 @@ class LanguageNegotiator extends AbstractNegotiator
 
         if ($baseEqual && ($as === null || $subEqual)) {
             $score = 10 * $baseEqual + ($as !== null && $subEqual);
-            return new Match($priority->getLanguage(), $acceptLanguageHeader->getQuality(), $score, $index);
+            return new Match($priority->getType(), $acceptLanguageHeader->getQuality(), $score, $index);
         }
 
         return null;

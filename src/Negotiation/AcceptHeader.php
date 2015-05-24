@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class AcceptHeader extends Header
 {
     private $basePart = null;
@@ -40,7 +37,7 @@ class AcceptHeader extends Header
      */
     public function getParameter($key, $default = null)
     {
-        return $this->hasParameter($key) ? $this->parameters[$key] : $default;
+        return isset($this->parameters[$key]) ? $this->parameters[$key] : $default;
     }
 
     /**
@@ -51,14 +48,6 @@ class AcceptHeader extends Header
     public function hasParameter($key)
     {
         return isset($this->parameters[$key]);
-    }
-
-    /**
-     * @return string
-     */
-    public function getMediaType()
-    {
-        return $this->type;
     }
 
     /**
