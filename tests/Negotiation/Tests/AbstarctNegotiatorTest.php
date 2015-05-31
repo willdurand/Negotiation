@@ -4,6 +4,7 @@ namespace Negotiation\Tests;
 
 use Negotiation\AbstractNegotiator;
 use Negotiation\Negotiator;
+use Negotiation\AcceptHeader;
 use Negotiation\Match;
 
 class AbstractNegotiatorTest extends TestCase
@@ -40,18 +41,18 @@ class AbstractNegotiatorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderFindMatches
+     * @dataProvider dataProviderForTestFindMatches
      */
     public function testFindMatches($headerParts, $priorities, $expected)
     {
         $neg = new Negotiator();
 
-        $matches = $neg->findMatches($headerParts, $priorities);
+        $matches = $this->call_private_method('\Negotiation\Negotiator', 'findMatches', $neg, array($headerParts, $priorities));
 
-        $this->assertSame($expected, $matches);
+        $this->assertEquals($expected, $matches);
     }
 
-    public static function dataProviderForFindMatches()
+    public static function dataProviderForTestFindMatches()
     {
         return array(
             array(
@@ -60,11 +61,10 @@ class AbstractNegotiatorTest extends TestCase
                 array(
                     new Match('text/html', 1.0, 111, 0),
                     new Match('image/png', 0.7, 111, 1),
-                    new Match('text/html', 0.4, 0, 0),
                     new Match('image/png', 0.4, 1, 1),
-                    new Match('application/pdf', 0.4, 0, 2),
                 )
             )
         );
     }
+
 }
