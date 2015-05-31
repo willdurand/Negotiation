@@ -41,7 +41,7 @@ class CharsetNegotiatorTest extends TestCase
     /**
      * @dataProvider dataProviderForTestGetBest
      */
-    public function testGetBestxxx($acceptHeader, $priorities, $expected)
+    public function testGetBest($acceptHeader, $priorities, $expected)
     {
         $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
 
