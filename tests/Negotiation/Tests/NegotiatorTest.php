@@ -3,6 +3,9 @@
 namespace Negotiation\Tests;
 
 use Negotiation\Negotiator;
+use Negotiation\AcceptHeader;
+use Negotiation\Match;
+
 
 class NegotiatorTest extends TestCase
 {
@@ -126,51 +129,62 @@ class NegotiatorTest extends TestCase
         );
     }
 
-    # https://tools.ietf.org/html/rfc7231#section-5.3.2
-    public function testFindMatches() {
-        $header = 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5';
-        $acceptHeaders = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+    /**
+     * @dataProvider dataProviderForTestFindMatches
+     */
+    public function testFindMatchesxxx($headerParts, $priorities, $expected)
+    {
+        $neg = new Negotiator();
 
-        $expectedMatches = array(
-            #     value                     quality score
-            array('text/html;level=1',      1.0,    111),
-            array('text/html',              0.7,    110),
-            array('text/plain',             0.3,    100),
-            array('image/jpeg',             0.5,    0),
-            array('text/html;level=2',      0.4,    111),
-            array('text/html;level=3',      0.7,    110),
-        );
+        $matches = $this->call_private_method('\Negotiation\Negotiator', 'findMatches', $neg, array($headerParts, $priorities));
 
-        $priorities = array_map(function($x) { return new \Negotiation\AcceptHeader($x[0]); }, $expectedMatches);
-
-        $matches = $this->call_private_method('\Negotiation\Negotiator', 'findMatches', $this->negotiator, array($acceptHeaders, $priorities));
-
-        $reducer = function($c, $new) {
-            $value = $new[0]->getValue();
-
-            if (!isset($c[$value])) {
-                $c[$value] = $new;
-            } else {
-                $current = $c[$value];
-                if (($current[2] < $new[2]) || ($current[2] == $new[2] && $current[1] < $new[1]))
-                    $c[$value] = $new;
-            }
-
-            return $c;
-        };
-
-        # get best score for given value
-        $matches = array_reduce($matches, $reducer, array());
-
-        usort($expectedMatches, function($a, $b) { return strcmp($a[0], $b[0]); });
-        usort($matches, function($a, $b) { return strcmp($a[0]->getValue(), $b[0]->getValue()); });
-
-        $this->assertSame(count($matches), count($expectedMatches));
-
-        for ($i = 0; $i < count($matches); $i++) {
-            $this->assertSame($expectedMatches[$i][0], $matches[$i][0]->getValue());
-            $this->assertSame($expectedMatches[$i][1], $matches[$i][1]);
-            $this->assertSame($expectedMatches[$i][2], $matches[$i][2]);
-        }
+        $this->assertEquals($expected, $matches);
     }
+
+    public static function dataProviderForTestFindMatches()
+    {
+        return array(
+            array(
+                array(new AcceptHeader('text/html; charset=UTF-8'), new AcceptHeader('image/png; foo=bar; q=0.7'), new AcceptHeader('*/*; foo=bar; q=0.4')),
+                array(new AcceptHeader('text/html; charset=UTF-8'), new AcceptHeader('image/png; foo=bar'), new AcceptHeader('application/pdf')),
+                array(
+                    new Match('text/html', 1.0, 111, 0),
+                    new Match('image/png', 0.7, 111, 1),
+                    new Match('image/png', 0.4, 1,   1),
+                )
+            ),
+            array(
+                array(new AcceptHeader('text/html'), new AcceptHeader('image/*; q=0.7')),
+                array(new AcceptHeader('text/html; asfd=qwer'), new AcceptHeader('image/png'), new AcceptHeader('application/pdf')),
+                array(
+                    new Match('text/html', 1.0, 110, 0),
+                    new Match('image/png', 0.7, 100, 1),
+                )
+            ),
+            array( # https://tools.ietf.org/html/rfc7231#section-5.3.2
+                array(new AcceptHeader('text/*; q=0.3'), new AcceptHeader('text/html; q=0.7'), new AcceptHeader('text/html; level=1'), new AcceptHeader('text/html; level=2; q=0.4'), new AcceptHeader('*/*; q=0.5')),
+                array(new AcceptHeader('text/html; level=1'), new AcceptHeader('text/html'), new AcceptHeader('text/plain'), new AcceptHeader('image/jpeg'), new AcceptHeader('text/html; level=2'), new AcceptHeader('text/html; level=3')),
+                array(
+                    new Match('text/html',      0.3,    100,    0),
+                    new Match('text/html',      0.7,    110,    0),
+                    new Match('text/html',      1.0,    111,    0),
+                    new Match('text/html',      0.5,      0,    0),
+                    new Match('text/html',      0.3,    100,    1),
+                    new Match('text/html',      0.7,    110,    1),
+                    new Match('text/html',      0.5,      0,    1),
+                    new Match('text/plain',     0.3,    100,    2),
+                    new Match('text/plain',     0.5,      0,    2),
+                    new Match('image/jpeg',     0.5,      0,    3),
+                    new Match('text/html',      0.3,    100,    4),
+                    new Match('text/html',      0.7,    110,    4),
+                    new Match('text/html',      0.4,    111,    4),
+                    new Match('text/html',      0.5,      0,    4),
+                    new Match('text/html',      0.3,    100,    5),
+                    new Match('text/html',      0.7,    110,    5),
+                    new Match('text/html',      0.5,      0,    5),
+                )
+            )
+        );
+    }
+
 }
