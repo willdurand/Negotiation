@@ -4,9 +4,6 @@ namespace Negotiation\Tests;
 
 use Negotiation\Negotiator;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class NegotiatorTest extends TestCase
 {
 

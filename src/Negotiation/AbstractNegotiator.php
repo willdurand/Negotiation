@@ -76,7 +76,6 @@ abstract class AbstractNegotiator
 
         foreach ($priorities as $index => $p) {
             foreach ($headerParts as $h) {
-//var_dump($p);
                 if ($match = $this->match($h, $p, $index))
                     $matches[] = $match;
             }
@@ -98,8 +97,8 @@ abstract class AbstractNegotiator
             return 1;
         }
 
-        # priority goes to to more specific match
         if ($a->type == $b->type) {
+            # priority goes to to more specific match
             if ($a->score < $b->score) {
                 return 1;
             } else if ($a->score > $b->score) {

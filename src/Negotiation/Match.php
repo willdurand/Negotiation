@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class Match {
     function __construct($type, $quality, $score, $index) {
         $this->type = $type;
