@@ -28,49 +28,40 @@ class NegotiatorTest extends TestCase
         $this->negotiator = new Negotiator();
     }
 
-#    public function testGetBestReturnsNullWithNullHeader()
-#    {
-#        $this->assertNull($this->negotiator->getBest(null));
-#    }
 
-    public function testGetBestThrowsExceptionInvalidMediaType()
+    /**
+     * @dataProvider dataProviderForTestGetBest
+     */
+    public function testGetBest($header, $priorities, $expected)
     {
+        $acceptHeader = $this->negotiator->getBest($header, $priorities);
+
         try {
-            $this->negotiator->getBest('asdf/qwer', array('f'));
-            $this->assertTrue(false, 'exception not thrown');
+            $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+
+            if ($expected === null) {
+                $this->assertEquals($expected, $acceptHeader);
+            } else {
+                $this->assertEquals($expected[0], $acceptHeader->getValue());
+                $this->assertEquals($expected[1], $acceptHeader->getParameters());
+            }
         } catch (\Exception $e) {
-            $this->assertSame('invalid media type.', $e->getMessage());
+            $this->assertSame($expected, $e->getMessage());
         }
     }
 
-    public function testGetBestReturnsNullWithUnmatchedHeader()
+    private function dataProviderForTestGetBest()
     {
-        $this->assertNull($this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('baz/asdf')));
-    }
-
-    public function testGetBestRespectsPriorities()
-    {
-        $acceptHeader = $this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('yo/sup'));
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('yo/sup', $acceptHeader->getValue());
-    }
-
-    public function testGetBestInCaseInsensitive()
-    {
-        $acceptHeader = $this->negotiator->getBest('foo/aaa, bar/yyy, yo/sup', array('YO/SuP'));
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('YO/SuP', $acceptHeader->getValue());
-    }
-
-    public function testGetBestWithQualities()
-    {
-        $acceptHeader = $this->negotiator->getBest('foo/aaa;q=0.1, bar/yyy, yo/sup;q=0.9', array('foo/aaa', 'bar/yyy', 'yo/sup'));
-
-        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
-        $this->assertEquals('bar/yyy', $acceptHeader->getValue());
-        $this->assertFalse($acceptHeader->hasParameter('q'));
+        array(
+            array('foo/aaa;q=0.1, bar/yyy, yo/sup;q=0.9', array('foo/aaa', 'bar/yyy', 'yo/sup'), array('bar/yyy', array()));
+            array('asdf/qwer', array('f/g'), 'invalid media type.'),
+            array('foo/aaa, bar/yyy, yo/sup', array('baz/asdf'), null),
+            array('foo/aaa, bar/yyy, yo/sup', array('yo/sup'), array('yo/sup', array())),
+            array('foo/aaa, bar/yyy, yo/sup', array('YO/SuP'), array('YO/SuP', array())),
+            array('text/html; charset=UTF-8, application/pdf', array('text/html; charset=UTF-8'), array('text/html', array('charset' => 'UTF-8'))),
+            array('text/html; charset=UTF-8, application/pdf', array('text/html'), null),
+            array('text/html, application/pdf', array('text/html; charset=UTF-8'), array('text/html', array('charset' => 'UTF-8'))),
+        );
     }
 
     /**
@@ -84,6 +75,13 @@ class NegotiatorTest extends TestCase
         $this->assertEquals($expected, array_map(function ($result) {
             return $result->getValue();
         }, $accepts));
+    }
+
+    public static function dataProviderForTestParseAcceptHeader()
+    {
+        return array(
+        #    array('gzip,deflate,sdch', array('gzip', 'deflate', 'sdch')),
+        );
     }
 
     /**
@@ -103,18 +101,6 @@ class NegotiatorTest extends TestCase
         }
     }
 
-    public static function dataProviderForTestParseAcceptHeader()
-    {
-        return array(
-            array('gzip,deflate,sdch', array('gzip', 'deflate', 'sdch')),
-            array("gzip, deflate\t,sdch", array('gzip', 'deflate', 'sdch')),
-            array('"this;should,not=matter"', array('"this;should,not=matter"')),
-            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
-            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
-            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('*', 'utf-8', 'ISO-8859-1')),
-        );
-    }
-
     public static function dataProviderForTestParseAcceptHeaderWithQualities()
     {
         return array(
@@ -124,15 +110,13 @@ class NegotiatorTest extends TestCase
             array('text/html,application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html' => 1.0, 'application/xml' => 0.9, '*/*;charset=utf-8' => 0.8)),
             array('text/html,application/xhtml+xml', array('text/html' => 1, 'application/xhtml+xml' => 1)),
             array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html' => 1, 'application/json' => 0.8, 'text/csv' => 0.7)),
-            array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5' => 1, 'unicode-1-1' => 0.8)),
-            array('gzip;q=1.0, identity; q=0.5, *;q=0', array('gzip' => 1, 'identity' => 0.5, '*' => 0)),
         );
     }
 
     /**
      * @dataProvider dataProviderForTestFindMatches
      */
-    public function testFindMatchesxxx($headerParts, $priorities, $expected)
+    public function testFindMatches($headerParts, $priorities, $expected)
     {
         $neg = new Negotiator();
 

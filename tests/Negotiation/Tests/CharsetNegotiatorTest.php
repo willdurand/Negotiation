@@ -174,4 +174,50 @@ class CharsetNegotiatorTest extends TestCase
 #            ),
         );
     }
+
+    /**
+     * @dataProvider dataProviderForTestParseAcceptHeader
+     */
+    public function testParseAcceptHeader($header, $expected)
+    {
+        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+
+        $this->assertCount(count($expected), $accepts);
+        $this->assertEquals($expected, array_map(function ($result) {
+            return $result->getValue();
+        }, $accepts));
+    }
+
+    public static function dataProviderForTestParseAcceptHeader()
+    {
+        return array(
+            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
+            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
+            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('*', 'utf-8', 'ISO-8859-1')),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderForTestParseAcceptHeaderWithQualities
+     */
+    public function testParseAcceptHeaderWithQualities($header, $expected)
+    {
+        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+
+        $this->assertEquals(count($expected), count($accepts));
+
+        $i = 0;
+        foreach ($expected as $value => $quality) {
+            $this->assertEquals($value, $accepts[$i]->getValue());
+            $this->assertEquals($quality, $accepts[$i]->getQuality());
+            $i++;
+        }
+    }
+
+    public static function dataProviderForTestParseAcceptHeaderWithQualities()
+    {
+        return array(
+            array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5' => 1, 'unicode-1-1' => 0.8)),
+        );
+    }
 }
