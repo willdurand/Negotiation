@@ -124,7 +124,7 @@ abstract class AbstractNegotiator
     abstract protected function match(Header $header, Header $priority, $index);
 
     /**
-     * TODO
+     * TODO doc
      */
     abstract protected function typeFactory($header);
 

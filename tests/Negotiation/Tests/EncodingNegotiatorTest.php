@@ -2,19 +2,19 @@
 
 namespace Negotiation\Tests;
 
-use Negotiation\LanguageNegotiator;
+use Negotiation\EncodingNegotiator;
 
-class LanguageNegotiatorTest extends TestCase
+class EncodingNegotiatorTest extends TestCase
 {
 
     /**
-     * @var LanguageNegotiator
+     * @var EncodingNegotiator
      */
     private $negotiator;
 
     protected function setUp()
     {
-        $this->negotiator = new LanguageNegotiator();
+        $this->negotiator = new EncodingNegotiator();
     }
 
 
@@ -31,10 +31,10 @@ class LanguageNegotiatorTest extends TestCase
      */
     public function testGetBestUsesQuality()
     {
-        $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
-        $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader);
+        $acceptEncodingHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+        $acceptHeader         = $this->negotiator->getBest($acceptEncodingHeader);
 
-        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
         $this->assertEquals('fu', $acceptHeader->getValue());
     }
 
@@ -46,10 +46,10 @@ class LanguageNegotiatorTest extends TestCase
      */
     public function testGetBestIgnoresNonExistentContent()
     {
-        $acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
-        $acceptHeader         = $this->negotiator->getBest($acceptLanguageHeader, array('en', 'fr'));
+        $acceptEncodingHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
+        $acceptHeader         = $this->negotiator->getBest($acceptEncodingHeader, array('en', 'fr'));
 
-        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
         $this->assertEquals('fr', $acceptHeader->getValue());
     }
 
@@ -76,25 +76,25 @@ class LanguageNegotiatorTest extends TestCase
      *  And priorities containing a localized version of that language
      * Then the best language is mapped to 'en'
      */
-    public function testGenericLanguageAreMappedToSpecific()
+    public function testGenericEncodingAreMappedToSpecific()
     {
-        $acceptLanguageHeader = 'fr-FR, en;q=0.8';
+        $acceptEncodingHeader = 'fr-FR, en;q=0.8';
         $priorities           = array('en-US', 'de-DE');
 
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+        $acceptHeader = $this->negotiator->getBest($acceptEncodingHeader, $priorities);
 
-        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
         $this->assertEquals('en-US', $acceptHeader->getValue());
     }
 
     public function testGetBestWithWildcard()
     {
-        $acceptLanguageHeader = 'en, *;q=0.9';
+        $acceptEncodingHeader = 'en, *;q=0.9';
         $priorities           = array('fr');
 
-        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+        $acceptHeader = $this->negotiator->getBest($acceptEncodingHeader, $priorities);
 
-        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
         $this->assertEquals('fr', $acceptHeader->getValue());
     }
 
@@ -102,16 +102,16 @@ class LanguageNegotiatorTest extends TestCase
     {
         $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('yo'));
 
-        $this->assertInstanceOf('Negotiation\AcceptLanguageHeader', $acceptHeader);
+        $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
         $this->assertEquals('yo', $acceptHeader->getValue());
     }
 
     public function testGetBestDoesNotMatchPriorities()
     {
-        $acceptLanguageHeader = 'en, de';
+        $acceptEncodingHeader = 'en, de';
         $priorities           = array('fr');
 
-        $this->assertNull($this->negotiator->getBest($acceptLanguageHeader, $priorities));
+        $this->assertNull($this->negotiator->getBest($acceptEncodingHeader, $priorities));
     }
 
     public static function dataProviderForTestGetBest()
@@ -137,9 +137,9 @@ class LanguageNegotiatorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderForTestParseAcceptLanguageHeader
+     * @dataProvider dataProviderForTestParseAcceptEncodingHeader
      */
-    public function testParseAcceptLanguageHeader($header, $expected)
+    public function testParseAcceptEncodingHeader($header, $expected)
     {
         $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
@@ -149,7 +149,7 @@ class LanguageNegotiatorTest extends TestCase
         }, $accepts));
     }
 
-    public static function dataProviderForTestParseAcceptLanguageHeader()
+    public static function dataProviderForTestParseAcceptEncodingHeader()
     {
         return array(
             array('gzip,deflate,sdch', array('gzip', 'deflate', 'sdch')),
@@ -158,9 +158,9 @@ class LanguageNegotiatorTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderForTestParseAcceptLanguageHeaderWithQualities
+     * @dataProvider dataProviderForTestParseAcceptEncodingHeaderWithQualities
      */
-    public function testParseAcceptLanguageHeaderWithQualities($header, $expected)
+    public function testParseAcceptEncodingHeaderWithQualities($header, $expected)
     {
         $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
@@ -174,15 +174,9 @@ class LanguageNegotiatorTest extends TestCase
         }
     }
 
-    public static function dataProviderForTestParseAcceptLanguageHeaderWithQualities()
+    public static function dataProviderForTestParseAcceptEncodingHeaderWithQualities()
     {
         return array(
-            array('text/html;q=0.8', array('text/html' => 0.8)),
-            array('text/html;foo=bar;q=0.8 ', array('text/html;foo=bar' => 0.8)),
-            array('text/html;charset=utf-8; q=0.8', array('text/html;charset=utf-8' => 0.8)),
-            array('text/html,application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html' => 1.0, 'application/xml' => 0.9, '*/*;charset=utf-8' => 0.8)),
-            array('text/html,application/xhtml+xml', array('text/html' => 1, 'application/xhtml+xml' => 1)),
-            array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html' => 1, 'application/json' => 0.8, 'text/csv' => 0.7)),
             array('gzip;q=1.0, identity; q=0.5, *;q=0', array('gzip' => 1, 'identity' => 0.5, '*' => 0)),
         );
     }
