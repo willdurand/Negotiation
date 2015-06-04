@@ -31,8 +31,8 @@ class LanguageNegotiator extends AbstractNegotiator
         $baseEqual = !strcasecmp($ab, $pb);
         $subEqual = !strcasecmp($as, $ps);
 
-        if ($baseEqual && ($as === null || $subEqual)) {
-            $score = 10 * $baseEqual + ($as !== null && $subEqual);
+        if (($ab == '*' || $baseEqual) && ($as === null || $subEqual)) {
+            $score = 10 * $baseEqual + $subEqual;
             return new Match($priority->getType(), $acceptLanguageHeader->getQuality(), $score, $index);
         }
 

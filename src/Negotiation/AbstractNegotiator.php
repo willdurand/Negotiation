@@ -27,7 +27,7 @@ abstract class AbstractNegotiator
 
         $matches = $this->findMatches($headers, $priorities);
 
-        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't.
+        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't...
         usort($matches, array($this, 'compare'));
 
         $match = array_shift($matches);
@@ -39,20 +39,19 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param string $header A string that contains an `Accept-*` header.
+     * @param string $header A string that contains an `Accept*` header.
      *
      * @return Header[]
      */
     protected function parseHeader($header)
     {
-        $header      = preg_replace('/\s+/', '', $header);
-        $acceptParts = preg_split('/\s*(?:,*("[^"]+"),*|,*(\'[^\']+\'),*|,+)\s*/', $header, 0, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE); # TODO quoted param values can contain ",". does this accout for that? unit tests?
+        $res = preg_match_all('/(?:[^,"]*(?:"[^"]+")?)+[^,"]*/', $header, $matches);
 
-        if (!$acceptParts) {
-            throw new \Exception('failed to parse Accept-Languge header');
+        if (!$res) {
+            throw new \Exception('failed to parse accept header');
         }
 
-        return $acceptParts;
+        return array_values(array_filter(array_map('trim', $matches[0])));
     }
 
     /**

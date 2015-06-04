@@ -13,7 +13,7 @@ class AcceptHeader extends Header
 
         $parts = explode('/', $this->type);
 
-        if (count($parts) != 2) {
+        if (count($parts) != 2 || !$parts[0] || !$parts[1]) {
             throw new \Exception('invalid media type.');
         }
 

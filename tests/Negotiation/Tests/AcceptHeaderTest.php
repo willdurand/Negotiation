@@ -6,57 +6,70 @@ use Negotiation\AcceptHeader;
 
 class AcceptHeaderTest extends TestCase
 {
-
-    /**
-     * @var AcceptHeader
-     */
-    private $acceptHeader;
-
-    protected function setUp()
-    {
-        $this->acceptHeader = new AcceptHeader('foo', 1.0, array(
-            'hello' => 'world',
-        ));
-    }
-
     public function testGetParameter()
     {
-        $this->assertTrue($this->acceptHeader->hasParameter('hello'));
-        $this->assertEquals('world', $this->acceptHeader->getParameter('hello'));
+        $acceptHeader = new AcceptHeader('foo/bar; q=1; hello=world');
 
-        $this->assertFalse($this->acceptHeader->hasParameter('unknown'));
-        $this->assertNull($this->acceptHeader->getParameter('unknown'));
-        $this->assertFalse($this->acceptHeader->getParameter('unknown', false));
+        $this->assertTrue($acceptHeader->hasParameter('hello'));
+        $this->assertEquals('world', $acceptHeader->getParameter('hello'));
+        $this->assertFalse($acceptHeader->hasParameter('unknown'));
+        $this->assertNull($acceptHeader->getParameter('unknown'));
+        $this->assertFalse($acceptHeader->getParameter('unknown', false));
+        $this->assertSame('world', $acceptHeader->getParameter('hello', 'goodbye'));
     }
 
     /**
-     * @dataProvider dataProviderForTestIsMediaRange
+     * @dataProvider dataProviderForTestGetNormalisedValue
      */
-    public function testIsMediaRange($value, $expected)
+    public function testGetNormalisedValue($header, $expected)
     {
-        $header = new AcceptHeader($value, 1.0);
-
-        $this->assertEquals($expected, $header->isMediaRange());
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getNormalisedValue();
+        $this->assertEquals($expected, $actual);
     }
 
-    public static function dataProviderForTestIsMediaRange()
+    public static function dataProviderForTestGetNormalisedValue()
     {
         return array(
-            array('text/*', true),
-            array('*/*', true),
-            array('application/json', false),
+            array('text/html; z=y; a=b; c=d', 'text/html; a=b; c=d; z=y'),
+            array('application/pdf; q=1; param=p',  'application/pdf; param=p')
         );
     }
 
-    public function testGetMediaType() {
-        # with param
-        $acceptHeader = new AcceptHeader('text/html;hello=world', 1.0, array( 'hello' => 'world',));
-        $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'text/html');
+    /**
+     * @dataProvider dataProviderForGetType
+     */
+    public function testGetType($header, $expected)
+    {
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getType();
+        $this->assertEquals($expected, $actual);
+    }
 
-        # without param
-        $acceptHeader = new AcceptHeader('application/pdf', 1.0, array());
-        $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'application/pdf');
+    public static function dataProviderForGetType()
+    {
+        return array(
+           array('text/html;hello=world', 'text/html'),
+           array('application/pdf', 'application/pdf'),
+        );
+    }
+
+    /**
+     * @dataProvider dataProviderForGetValue
+     */
+    public function testGetValue($header, $expected)
+    {
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getValue();
+        $this->assertEquals($expected, $actual);
+
+    }
+
+    public static function dataProviderForGetValue()
+    {
+        return array(
+            array('text/html;hello=world  ;q=0.5', 'text/html;hello=world  ;q=0.5'),
+            array('application/pdf', 'application/pdf'),
+        );
     }
 }

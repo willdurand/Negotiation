@@ -7,19 +7,10 @@ use Negotiation\Match;
 
 class AbstractNegotiatorTest extends TestCase
 {
-
-    protected function call_private_method($class, $method, $object, $params) {
-        $method = new \ReflectionMethod($class, $method);
-
-        $method->setAccessible(TRUE);
-
-        return $method->invokeArgs($object, $params);
-    }
-
     /**
      * @dataProvider dataProviderForTestCompare
      */
-    protected function testCompare($match1, $match2, $expected)
+    public function testCompare($match1, $match2, $expected)
     {
         $return = $this->call_private_method('\Negotiation\AbstractNegotiator', 'compare', null, array($match1, $match2));
 
