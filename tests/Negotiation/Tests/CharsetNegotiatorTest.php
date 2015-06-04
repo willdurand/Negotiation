@@ -43,28 +43,35 @@ class CharsetNegotiatorTest extends TestCase
      */
     public function testGetBest($acceptHeader, $priorities, $expected)
     {
-        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
-
-        if (null === $expected) {
-            $this->assertNull($acceptHeader);
-        } else {
-            $this->assertEquals($expected, $acceptHeader->getValue());
-
-            foreach ($parameters as $k => $v) {
-                $this->assertEquals($v, $acceptHeader->getParameter($k));
+        try {
+            $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+            if (null === $acceptHeader) {
+                $this->assertNull($expected);
+            } else {
+                $this->assertSame($expected, $acceptHeader->getValue());
             }
+        } catch (Exception $e) {
+            $this->assertSame($expected, $e->getMessage());
         }
     }
 
-    public function testGetBestWithWildcard()
+    public static function dataProviderForTestGetBest()
     {
-        $acceptCharsetHeader = 'en, *;q=0.9';
-        $priorities           = array('fr');
+        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
 
-        $acceptHeader = $this->negotiator->getBest($acceptCharsetHeader, $priorities);
-
-        $this->assertInstanceOf('Negotiation\AcceptCharsetHeader', $acceptHeader);
-        $this->assertEquals('fr', $acceptHeader->getValue());
+        return array(
+            array($pearCharsetHeader, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
+            array($pearCharsetHeader, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
+            array($pearCharsetHeader, array( 'Big5', 'shift-jis',), 'Big5'),
+            array($pearCharsetHeader, array( 'shift-jis',), 'shift-jis'),
+            array($pearCharsetHeader2, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
+            array($pearCharsetHeader2, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
+            array($pearCharsetHeader2, array( 'Big5', 'shift-jis',), 'Big5'),
+            array('utf-8;q=0.6,iso-8859-5;q=0.9', array( 'iso-8859-5', 'utf-8',), 'iso-8859-5'),
+            array('', array( 'iso-8859-5', 'utf-8',), 'empty header given'),
+            array('en, *;q=0.9', array('fr'), 'fr') 
+        );
     }
 
     public function testGetBestRespectsPriorities()
@@ -83,141 +90,24 @@ class CharsetNegotiatorTest extends TestCase
         $this->assertNull($this->negotiator->getBest($acceptCharsetHeader, $priorities));
     }
 
-    public static function dataProviderForTestGetBest()
-    {
-        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
-        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
-
-        return array(
-            array(
-                $pearCharsetHeader,
-                array(
-                    'utf-8',
-                    'big5',
-                    'iso-8859-1',
-                    'shift-jis',
-                ),
-                'iso-8859-1'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'utf-8',
-                    'big5',
-                    'shift-jis',
-                ),
-                'utf-8'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'Big5',
-                    'shift-jis',
-                ),
-                'Big5'
-            ),
-            array(
-                $pearCharsetHeader,
-                array(
-                    'shift-jis',
-                ),
-                'shift-jis'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'utf-8',
-                    'big5',
-                    'iso-8859-1',
-                    'shift-jis',
-                ),
-                'iso-8859-1'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'utf-8',
-                    'big5',
-                    'shift-jis',
-                ),
-                'utf-8'
-            ),
-            array(
-                $pearCharsetHeader2,
-                array(
-                    'Big5',
-                    'shift-jis',
-                ),
-                'Big5'
-            ),
-            array(
-                'utf-8;q=0.6,iso-8859-5;q=0.9',
-                array(
-                    'iso-8859-5',
-                    'utf-8',
-                ),
-                'iso-8859-5'
-            ),
-            array(
-                '',
-                array(
-                    'iso-8859-5',
-                    'utf-8',
-                ),
-                null
-            ),
-# removed. no priorities makes no sense...
-#            array(
-#                'audio/*; q=0.2, audio/basic',
-#                array(),
-#                'audio/basic',
-#            ),
-        );
-    }
-
     /**
-     * @dataProvider dataProviderForTestParseAcceptHeader
+     * @dataProvider dataProviderForTestParseHeader
      */
-    public function testParseAcceptHeader($header, $expected)
+    public function testParseHeader($header, $expected)
     {
-        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+        $accepts = $this->call_private_method('\Negotiation\CharsetNegotiator', 'parseHeader', $this->negotiator, array($header));
 
-        $this->assertCount(count($expected), $accepts);
-        $this->assertEquals($expected, array_map(function ($result) {
-            return $result->getValue();
-        }, $accepts));
+        $this->assertSame($expected, $accepts);
     }
 
-    public static function dataProviderForTestParseAcceptHeader()
+    public static function dataProviderForTestParseHeader()
     {
         return array(
-            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
-            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('*', 'ISO-8859-1', 'utf-8')),
-            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('*', 'utf-8', 'ISO-8859-1')),
+            array('*;q=0.3,ISO-8859-1,utf-8;q=0.7', array('*;q=0.3', 'ISO-8859-1', 'utf-8;q=0.7')),
+            array('*;q=0.3,ISO-8859-1;q=0.7,utf-8;q=0.7', array('*;q=0.3', 'ISO-8859-1;q=0.7', 'utf-8;q=0.7')),
+            array('*;q=0.3,utf-8;q=0.7,ISO-8859-1;q=0.7', array('*;q=0.3', 'utf-8;q=0.7', 'ISO-8859-1;q=0.7')),
+            array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5', 'unicode-1-1;q=0.8')),
         );
     }
 
-    /**
-     * @dataProvider dataProviderForTestParseAcceptHeaderWithQualities
-     */
-    public function testParseAcceptHeaderWithQualities($header, $expected)
-    {
-        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
-
-        $this->assertEquals(count($expected), count($accepts));
-
-        $i = 0;
-        foreach ($expected as $value => $quality) {
-            $this->assertEquals($value, $accepts[$i]->getValue());
-            $this->assertEquals($quality, $accepts[$i]->getQuality());
-            $i++;
-        }
-    }
-
-    public static function dataProviderForTestParseAcceptHeaderWithQualities()
-    {
-        return array(
-            array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5' => 1, 'unicode-1-1' => 0.8)),
-        );
-    }
 }

@@ -6,127 +6,70 @@ use Negotiation\AcceptHeader;
 
 class AcceptHeaderTest extends TestCase
 {
-
-    protected function call_private_method($class, $method, $object, $params) {
-        $method = new \ReflectionMethod($class, $method);
-
-        $method->setAccessible(TRUE);
-
-        return $method->invokeArgs($object, $params);
-    }
-
     public function testGetParameter()
     {
-        $acceptHeader = new AcceptHeader('foo; q=1; 1.0 ; hello=world');
+        $acceptHeader = new AcceptHeader('foo/bar; q=1; hello=world');
 
         $this->assertTrue($acceptHeader->hasParameter('hello'));
         $this->assertEquals('world', $acceptHeader->getParameter('hello'));
-
         $this->assertFalse($acceptHeader->hasParameter('unknown'));
         $this->assertNull($acceptHeader->getParameter('unknown'));
         $this->assertFalse($acceptHeader->getParameter('unknown', false));
+        $this->assertSame('world', $acceptHeader->getParameter('hello', 'goodbye'));
     }
 
     /**
-     * @dataProvider dataProviderForTestIsMediaRange
+     * @dataProvider dataProviderForTestGetNormalisedValue
      */
-    public function testIsMediaRange($value, $expected)
+    public function testGetNormalisedValue($header, $expected)
     {
-        $header = new AcceptHeader($value);
-
-        $this->assertEquals($expected, $header->isMediaRange());
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getNormalisedValue();
+        $this->assertEquals($expected, $actual);
     }
 
-    public static function dataProviderForTestIsMediaRange()
+    public static function dataProviderForTestGetNormalisedValue()
     {
         return array(
-            array('text/*', true),
-            array('*/*', true),
-            array('application/json', false),
+            array('text/html; z=y; a=b; c=d', 'text/html; a=b; c=d; z=y'),
+            array('application/pdf; q=1; param=p',  'application/pdf; param=p')
         );
     }
 
     /**
-     * @dataProvider dataProviderForParseParameters
+     * @dataProvider dataProviderForGetType
      */
-    public function testParseParameters($value, $expected)
+    public function testGetType($header, $expected)
     {
-        $acceptHeader = new AcceptHeader($value);
-        list($media_type, $parameters) = $this->call_private_method('\Negotiation\AcceptHeader', 'parseParameters', null, array($value));
-
-        $this->assertCount(count($expected), $parameters);
-
-        foreach ($expected as $key => $value) {
-            $this->assertArrayHasKey($key, $parameters);
-            $this->assertEquals($value, $parameters[$key]);
-        }
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getType();
+        $this->assertEquals($expected, $actual);
     }
 
-    public static function dataProviderForParseParameters()
+    public static function dataProviderForGetType()
     {
         return array(
-            array(
-                'application/json ;q=1.0; level=2;foo= bar',
-                array(
-                    'q' => 1.0,
-                    'level' => 2,
-                    'foo'   => 'bar',
-                ),
-            ),
-            array(
-                'application/json ;q = 1.0; level = 2;     FOO  = bAr',
-                array(
-                    'q' => 1.0,
-                    'level' => 2,
-                    'foo'   => 'bAr',
-                ),
-            ),
-            array(
-                'application/json;q=1.0',
-                array(
-                    'q' => 1.0,
-                ),
-            ),
-            array(
-                'application/json;foo',
-                array(),
-            ),
+           array('text/html;hello=world', 'text/html'),
+           array('application/pdf', 'application/pdf'),
         );
     }
 
     /**
-     * @dataProvider dataProviderBuildParametersString
+     * @dataProvider dataProviderForGetValue
      */
+    public function testGetValue($header, $expected)
+    {
+        $acceptHeader = new AcceptHeader($header);
+        $actual = $acceptHeader->getValue();
+        $this->assertEquals($expected, $actual);
 
-    public function testBuildParametersString($value, $expected) {
-        $string = $this->call_private_method('\Negotiation\AcceptHeader', 'buildParametersString', null, array($value));
-
-        $this->assertEquals($string, $expected);
     }
 
-    public static function dataProviderBuildParametersString()
+    public static function dataProviderForGetValue()
     {
         return array(
-            array(
-                array(
-                    'q' => '1.0',
-                    'level' => '2',
-                    'foo'   => 'bar',
-                ),
-                'q=1.0;level=2;foo=bar',
-            ),
+            array('text/html;hello=world  ;q=0.5', 'text/html;hello=world  ;q=0.5'),
+            array('application/pdf', 'application/pdf'),
         );
-    }
-
-    public function testGetMediaType() {
-        # with param
-        $acceptHeader = new AcceptHeader('text/html;hello=world');
-        $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'text/html');
-
-        # without param
-        $acceptHeader = new AcceptHeader('application/pdf');
-        $mt = $acceptHeader->getMediaType();
-        $this->assertEquals($mt, 'application/pdf');
     }
 }

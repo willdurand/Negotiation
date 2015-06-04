@@ -6,17 +6,8 @@ use Negotiation\Negotiator;
 use Negotiation\AcceptHeader;
 use Negotiation\Match;
 
-
 class NegotiatorTest extends TestCase
 {
-
-    protected function call_private_method($class, $method, $object, $params) {
-        $method = new \ReflectionMethod($class, $method);
-
-        $method->setAccessible(TRUE);
-
-        return $method->invokeArgs($object, $params);
-    }
 
     /**
      * @var Negotiator
@@ -28,88 +19,91 @@ class NegotiatorTest extends TestCase
         $this->negotiator = new Negotiator();
     }
 
-
     /**
      * @dataProvider dataProviderForTestGetBest
      */
     public function testGetBest($header, $priorities, $expected)
     {
+        if (is_string($expected))
+            $this->setExpectedException('\Exception', $expected);
+
         $acceptHeader = $this->negotiator->getBest($header, $priorities);
 
-        try {
+        if ($acceptHeader === null) {
+            $this->assertNull($expected);
+        } else {
             $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
 
-            if ($expected === null) {
-                $this->assertEquals($expected, $acceptHeader);
-            } else {
-                $this->assertEquals($expected[0], $acceptHeader->getValue());
-                $this->assertEquals($expected[1], $acceptHeader->getParameters());
-            }
-        } catch (\Exception $e) {
-            $this->assertSame($expected, $e->getMessage());
+            $this->assertSame($expected[0], $acceptHeader->getType());
+            $this->assertSame($expected[1], $acceptHeader->getParameters());
         }
     }
 
-    private function dataProviderForTestGetBest()
+    public static function dataProviderForTestGetBest()
     {
-        array(
-            array('foo/aaa;q=0.1, bar/yyy, yo/sup;q=0.9', array('foo/aaa', 'bar/yyy', 'yo/sup'), array('bar/yyy', array()));
-            array('asdf/qwer', array('f/g'), 'invalid media type.'),
-            array('foo/aaa, bar/yyy, yo/sup', array('baz/asdf'), null),
-            array('foo/aaa, bar/yyy, yo/sup', array('yo/sup'), array('yo/sup', array())),
-            array('foo/aaa, bar/yyy, yo/sup', array('YO/SuP'), array('YO/SuP', array())),
+        $pearAcceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,text/*;q=0.7,*/*,image/gif; q=0.8, image/jpeg; q=0.6, image/*';
+
+        return array(
+            array('image/png;q=0.1, text/plain, audio/ogg;q=0.9', array('image/png', 'text/plain', 'audio/ogg'), array('text/plain', array())),
+            array('/qwer', array('f/g'), 'invalid media type.'),
+            array('image/png, text/plain, audio/ogg', array('baz/asdf'), null),
+            array('image/png, text/plain, audio/ogg', array('audio/ogg'), array('audio/ogg', array())),
+            array('image/png, text/plain, audio/ogg', array('YO/SuP'), null),
             array('text/html; charset=UTF-8, application/pdf', array('text/html; charset=UTF-8'), array('text/html', array('charset' => 'UTF-8'))),
             array('text/html; charset=UTF-8, application/pdf', array('text/html'), null),
             array('text/html, application/pdf', array('text/html; charset=UTF-8'), array('text/html', array('charset' => 'UTF-8'))),
+            // PEAR HTTP2 tests
+            array( $pearAcceptHeader, array('image/gif', 'image/png', 'application/xhtml+xml', 'application/xml', 'text/html', 'image/jpeg', 'text/plain',), array('image/gif', array())),
+            array( $pearAcceptHeader, array('image/png', 'application/xhtml+xml', 'application/xml', 'image/jpeg', 'text/plain',), array('application/xhtml+xml', array())), # TODO what do we really do here!??!??!?
+            array( $pearAcceptHeader, array('image/gif', 'image/png', 'application/xml', 'image/jpeg', 'text/plain',), array('application/xml', array())),
+            array( $pearAcceptHeader, array('image/gif', 'image/png', 'image/jpeg', 'text/plain',), array('image/gif', array())),
+            array( $pearAcceptHeader, array('image/png', 'image/jpeg', 'text/plain',), array('text/plain', array())),
+            array( $pearAcceptHeader, array('image/png', 'image/jpeg',), array('image/jpeg', array())),
+            array( $pearAcceptHeader, array('image/png',), array('image/png', array())),
+            array( $pearAcceptHeader, array('audio/midi',), array('audio/midi', array())),
+            array( 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', array( 'application/rss+xml'), array('application/rss+xml', array())),
+            // See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array(), array('text/html', array('level' => 1))),
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array( 'text/html'), array('text/html', array())),
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array( 'text/plain'), array('text/plain', array())),
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array( 'image/jpeg',), array('image/jpeg', array())),
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array( 'text/html;level=2'), array('text/html', array('level' => '2'))),
+            array( 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5', array( 'text/html;level=3'), array('text/html', array( 'level' => '3'))),
+            // LWS / case sensitivity
+            array( 'text/* ; q=0.3, text/html ;Q=0.7, text/html ; level=1, text/html ;level = 2 ;q=0.4, */* ; q=0.5', array( 'text/html; level=2'), array('text/html', array( 'level' => '2'))),
+            array( 'text/* ; q=0.3, text/html;Q=0.7, text/html ;level=1, text/html; level=2;q=0.4, */*;q=0.5', array( 'text/html; level=3'), array('text/html', array( 'level' => '3'))),
+            array( '*/*', array(), array('no priorities given', array()),),
+            array( '*/*', array('foo', 'bar', 'baz'), array('foo', array())),
+            array( '', array('foo', 'bar', 'baz'), array('empty header given', array())),
+            // Incompatible
+            array( 'text/html', array( 'application/rss'), null),
+            array( 'text/rdf+n3; q=0.8, application/rdf+json; q=0.8, text/turtle; q=1.0, text/n3; q=0.8, application/ld+json; q=0.5, application/rdf+xml; q=0.8', array(), array('text/turtle', array())),
+            // IE8 Accept header
+            array( 'image/jpeg, application/x-ms-application, image/gif, application/xaml+xml, image/pjpeg, application/x-ms-xbap, */*', array( 'text/html', 'application/xhtml+xml'), array('text/html', array())),
         );
     }
 
     /**
-     * @dataProvider dataProviderForTestParseAcceptHeader
+     * @dataProvider dataProviderForTestParseHeader
      */
-    public function testParseAcceptHeader($header, $expected)
+    public function testParseHeader($header, $expected)
     {
         $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
-        $this->assertCount(count($expected), $accepts);
-        $this->assertEquals($expected, array_map(function ($result) {
-            return $result->getValue();
-        }, $accepts));
+        $this->assertSame($expected, $accepts);
     }
 
-    public static function dataProviderForTestParseAcceptHeader()
+    public static function dataProviderForTestParseHeader()
     {
         return array(
-        #    array('gzip,deflate,sdch', array('gzip', 'deflate', 'sdch')),
-        );
-    }
-
-    /**
-     * @dataProvider dataProviderForTestParseAcceptHeaderWithQualities
-     */
-    public function testParseAcceptHeaderWithQualities($header, $expected)
-    {
-        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
-
-        $this->assertEquals(count($expected), count($accepts));
-
-        $i = 0;
-        foreach ($expected as $value => $quality) {
-            $this->assertEquals($value, $accepts[$i]->getValue());
-            $this->assertEquals($quality, $accepts[$i]->getQuality());
-            $i++;
-        }
-    }
-
-    public static function dataProviderForTestParseAcceptHeaderWithQualities()
-    {
-        return array(
-            array('text/html;q=0.8', array('text/html' => 0.8)),
-            array('text/html;foo=bar;q=0.8 ', array('text/html;foo=bar' => 0.8)),
-            array('text/html;charset=utf-8; q=0.8', array('text/html;charset=utf-8' => 0.8)),
-            array('text/html,application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html' => 1.0, 'application/xml' => 0.9, '*/*;charset=utf-8' => 0.8)),
-            array('text/html,application/xhtml+xml', array('text/html' => 1, 'application/xhtml+xml' => 1)),
-            array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html' => 1, 'application/json' => 0.8, 'text/csv' => 0.7)),
+            array('text/html ;   q=0.9', array('text/html ;   q=0.9')),
+            array('text/html,application/xhtml+xml', array('text/html', 'application/xhtml+xml')),
+            array(',,text/html;q=0.8 , , ', array('text/html;q=0.8')),
+            array('text/html;charset=utf-8; q=0.8', array('text/html;charset=utf-8; q=0.8')),
+            array('text/html; foo="bar"; q=0.8 ', array('text/html; foo="bar"; q=0.8')),
+            array('text/html; foo="bar"; qwer="asdf", image/png', array('text/html; foo="bar"; qwer="asdf"', "image/png")),
+            array('text/html ; quoted_comma="a,b  ,c,",application/xml;q=0.9,*/*;charset=utf-8; q=0.8', array('text/html ; quoted_comma="a,b  ,c,"', 'application/xml;q=0.9', '*/*;charset=utf-8; q=0.8')),
+            array('text/html, application/json;q=0.8, text/csv;q=0.7', array('text/html', 'application/json;q=0.8', 'text/csv;q=0.7'))
         );
     }
 

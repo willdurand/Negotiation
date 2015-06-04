@@ -44,7 +44,7 @@ class Header
         }
 
         $this->value      = $value;
-        $this->normalised = $type . $this->buildParametersString($parameters);
+        $this->normalised = $type . "; " . $this->buildParametersString($parameters);
         $this->type       = $type;
         $this->parameters = $parameters;
     }
@@ -85,6 +85,8 @@ class Header
 
     protected static function buildParametersString($params) {
         $parts = array();
+
+        ksort($params);
 
         foreach ($params as $key => $val) {
             $parts[] = "$key=$val";
