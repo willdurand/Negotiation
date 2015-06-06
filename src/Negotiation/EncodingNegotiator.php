@@ -30,7 +30,7 @@ class EncodingNegotiator extends AbstractNegotiator
 
         if ($equal || $ac == '*') {
             $score = 1 * $equal;
-            return new Match($pc, $charsetHeader->getQuality(), $score, $index);
+            return new Match($charsetHeader->getQuality(), $score, $index);
         }
 
         return null;

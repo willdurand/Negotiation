@@ -26,7 +26,7 @@ class CharsetNegotiator extends AbstractNegotiator
         $pc = $priority->getType();
 
         if (!strcasecmp($ac, $pc) || $ac == '*') {
-            return new Match($pc, $charsetHeader->getQuality(), 0, $index);
+            return new Match($charsetHeader->getQuality(), 0, $index);
         }
 
         return null;
