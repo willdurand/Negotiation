@@ -2,7 +2,7 @@
 
 namespace Negotiation\Tests;
 
-class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
     protected function call_private_method($class, $method, $object, $params) {
         $method = new \ReflectionMethod($class, $method);
