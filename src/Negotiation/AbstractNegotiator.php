@@ -27,10 +27,14 @@ abstract class AbstractNegotiator
 
         $matches = $this->findMatches($headers, $priorities);
 
-        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't...
-        usort($matches, array($this, 'compare'));
+        # find most specific match for each priority
+        $preceding_matches = array_reduce($matches, array($this, 'reduce'), array());
 
-        $match = array_shift($matches);
+        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't...
+        usort($preceding_matches, array($this, 'compare'));
+
+        $match = array_shift($preceding_matches);
+
         if ($match === null) {
             return null;
         }
@@ -84,6 +88,20 @@ abstract class AbstractNegotiator
     }
 
     /**
+     * @param array $carry reduced array
+     * @param Match $match match to be reduced
+     *
+     * @return Match[]
+     */
+    private static function reduce(array $carry, Match $match) {
+        if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
+            $carry[$match->index] = $match;
+        }
+
+        return $carry;
+    }
+
+    /**
      * @param Match[] $a
      * @param Match[] $b
      *
@@ -96,15 +114,6 @@ abstract class AbstractNegotiator
             return 1;
         }
 
-        if ($a->type == $b->type) {
-            # priority goes to to more specific match
-            if ($a->score < $b->score) {
-                return 1;
-            } else if ($a->score > $b->score) {
-                return -1;
-            }
-        }
-            
         if ($a->index < $b->index) {
             return -1;
         } else if ($a->index > $b->index) {

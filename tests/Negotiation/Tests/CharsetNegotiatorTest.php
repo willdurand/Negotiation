@@ -43,15 +43,15 @@ class CharsetNegotiatorTest extends TestCase
      */
     public function testGetBest($acceptHeader, $priorities, $expected)
     {
-        try {
-            $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
-            if (null === $acceptHeader) {
-                $this->assertNull($expected);
-            } else {
-                $this->assertSame($expected, $acceptHeader->getValue());
-            }
-        } catch (Exception $e) {
-            $this->assertSame($expected, $e->getMessage());
+        if (is_null($expected))
+            $this->setExpectedException('\Exception');
+
+        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+        if (null === $acceptHeader) {
+            $this->assertNull($expected);
+        } else {
+            $this->assertInstanceOf('Negotiation\AcceptCharsetHeader', $acceptHeader);
+            $this->assertSame($expected, $acceptHeader->getValue());
         }
     }
 
@@ -69,7 +69,7 @@ class CharsetNegotiatorTest extends TestCase
             array($pearCharsetHeader2, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
             array($pearCharsetHeader2, array( 'Big5', 'shift-jis',), 'Big5'),
             array('utf-8;q=0.6,iso-8859-5;q=0.9', array( 'iso-8859-5', 'utf-8',), 'iso-8859-5'),
-            array('', array( 'iso-8859-5', 'utf-8',), 'empty header given'),
+            array('', array( 'iso-8859-5', 'utf-8',), null),
             array('en, *;q=0.9', array('fr'), 'fr') 
         );
     }

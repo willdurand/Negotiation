@@ -33,7 +33,7 @@ class LanguageNegotiator extends AbstractNegotiator
 
         if (($ab == '*' || $baseEqual) && ($as === null || $subEqual)) {
             $score = 10 * $baseEqual + $subEqual;
-            return new Match($priority->getType(), $acceptLanguageHeader->getQuality(), $score, $index);
+            return new Match($acceptLanguageHeader->getQuality(), $score, $index);
         }
 
         return null;
