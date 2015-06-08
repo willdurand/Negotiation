@@ -30,7 +30,6 @@ abstract class AbstractNegotiator
         # find most specific match for each priority
         $preceding_matches = array_reduce($matches, array($this, 'reduce'), array());
 
-        # TODO what if only 1 or 2 items. will usort() work? read somewhere it won't...
         usort($preceding_matches, array($this, 'compare'));
 
         $match = array_shift($preceding_matches);
@@ -47,7 +46,7 @@ abstract class AbstractNegotiator
      *
      * @return Header[]
      */
-    protected function parseHeader($header)
+    private static function parseHeader($header)
     {
         $res = preg_match_all('/(?:[^,"]*(?:"[^"]+")?)+[^,"]*/', $header, $matches);
 
@@ -74,7 +73,7 @@ abstract class AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    protected function findMatches(array $headerParts, array $priorities) {
+    private function findMatches(array $headerParts, array $priorities) {
         $matches = array();
 
         foreach ($priorities as $index => $p) {
@@ -132,7 +131,9 @@ abstract class AbstractNegotiator
     abstract protected function match(Header $header, Header $priority, $index);
 
     /**
-     * TODO doc
+     * @param string $header type string
+     *
+     * @return Header[] parsed header objects
      */
     abstract protected function typeFactory($header);
 
