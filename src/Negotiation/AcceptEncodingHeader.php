@@ -2,6 +2,4 @@
 
 namespace Negotiation;
 
-class AcceptEncodingHeader extends Header
-{
-}
+class AcceptEncodingHeader extends Header { }

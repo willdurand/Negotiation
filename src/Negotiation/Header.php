@@ -71,7 +71,7 @@ class Header
             }
 
             $key = strtolower(trim($part[0])); # TODO technically not allowed space around "=". throw exception?
-            $parameters[$key] = trim($part[1], ' "'); # param values can be quoted, too.
+            $parameters[$key] = trim($part[1], ' "');
         }
 
         return array($type, $parameters);
