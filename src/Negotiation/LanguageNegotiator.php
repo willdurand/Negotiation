@@ -2,9 +2,6 @@
 
 namespace Negotiation;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
 class LanguageNegotiator extends AbstractNegotiator
 {
 
@@ -21,7 +18,7 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(Header $acceptLanguageHeader, Header $priority, $index) {
+    protected static function match(Header $acceptLanguageHeader, Header $priority, $index) {
         $ab = $acceptLanguageHeader->getBasePart();
         $pb = $priority->getBasePart();
 
@@ -33,6 +30,7 @@ class LanguageNegotiator extends AbstractNegotiator
 
         if (($ab == '*' || $baseEqual) && ($as === null || $subEqual)) {
             $score = 10 * $baseEqual + $subEqual;
+
             return new Match($acceptLanguageHeader->getQuality(), $score, $index);
         }
 

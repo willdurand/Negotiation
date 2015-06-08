@@ -18,7 +18,7 @@ class Negotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(Header $acceptHeader, Header $priority, $index) {
+    protected static function match(Header $acceptHeader, Header $priority, $index) {
         $ab = $acceptHeader->getBasePart();
         $pb = $priority->getBasePart();
 

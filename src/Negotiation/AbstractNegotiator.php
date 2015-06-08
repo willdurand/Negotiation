@@ -20,12 +20,12 @@ abstract class AbstractNegotiator
             throw new \Exception('empty header given');
         }
 
-        $headers = $this->parseHeader($header);
+        $headers = self::parseHeader($header);
 
         $headers = $this->mapHeaders($headers);
         $priorities = $this->mapHeaders($priorities);
 
-        $matches = $this->findMatches($headers, $priorities);
+        $matches = self::findMatches($headers, $priorities);
 
         # find most specific match for each priority
         $preceding_matches = array_reduce($matches, array($this, 'reduce'), array());
@@ -73,12 +73,12 @@ abstract class AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    private function findMatches(array $headerParts, array $priorities) {
+    private static function findMatches(array $headerParts, array $priorities) {
         $matches = array();
 
         foreach ($priorities as $index => $p) {
             foreach ($headerParts as $h) {
-                if ($match = $this->match($h, $p, $index))
+                if ($match = static::match($h, $p, $index))
                     $matches[] = $match;
             }
         }
@@ -128,7 +128,20 @@ abstract class AbstractNegotiator
      *
      * @return Match Headers matched
      */
-    abstract protected function match(Header $header, Header $priority, $index);
+    protected static function match(Header $header, Header $priority, $index) {
+        $ac = $header->getType();
+        $pc = $priority->getType();
+
+        $equal = !strcasecmp($ac, $pc);
+
+        if ($equal || $ac == '*') {
+            $score = 1 * $equal;
+
+            return new Match($header->getQuality(), $score, $index);
+        }
+
+        return null;
+    }
 
     /**
      * @param string $header type string
