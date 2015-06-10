@@ -54,7 +54,6 @@ class BaseAccept
      *
      * @return array
      */
-
     protected static function parseParameters($acceptPart)
     {
         $parts = explode(';', $acceptPart);
@@ -67,7 +66,7 @@ class BaseAccept
             $part = explode('=', $part);
 
             if (2 !== count($part)) {
-                continue;
+                continue; # TODO throw exception here?
             }
 
             $key = strtolower(trim($part[0])); # TODO technically not allowed space around "=". throw exception?
@@ -82,7 +81,6 @@ class BaseAccept
      *
      * @return string
      */
-
     protected static function buildParametersString($params) {
         $parts = array();
 
