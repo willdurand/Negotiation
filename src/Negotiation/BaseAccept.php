@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-class Header
+class BaseAccept
 {
     /**
      * @var float

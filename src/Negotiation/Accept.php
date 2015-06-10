@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-class AcceptHeader extends Header
+class Accept extends BaseAccept
 {
     private $basePart = null;
     private $subPart  = null;

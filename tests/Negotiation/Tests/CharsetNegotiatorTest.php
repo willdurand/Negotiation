@@ -31,43 +31,43 @@ class CharsetNegotiatorTest extends TestCase
      */
     public function testGetBestIgnoresNonExistentContent()
     {
-        $acceptCharsetHeader = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
-        $acceptHeader         = $this->negotiator->getBest($acceptCharsetHeader, array('en', 'fr'));
+        $acceptCharset = 'en; q=0.1, fr; q=0.4, bu; q=1.0';
+        $accept        = $this->negotiator->getBest($acceptCharset, array('en', 'fr'));
 
-        $this->assertInstanceOf('Negotiation\AcceptCharsetHeader', $acceptHeader);
-        $this->assertEquals('fr', $acceptHeader->getValue());
+        $this->assertInstanceOf('Negotiation\AcceptCharset', $accept);
+        $this->assertEquals('fr', $accept->getValue());
     }
 
     /**
      * @dataProvider dataProviderForTestGetBest
      */
-    public function testGetBest($acceptHeader, $priorities, $expected)
+    public function testGetBest($accept, $priorities, $expected)
     {
         if (is_null($expected))
             $this->setExpectedException('\Exception');
 
-        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
-        if (null === $acceptHeader) {
+        $accept = $this->negotiator->getBest($accept, $priorities);
+        if (null === $accept) {
             $this->assertNull($expected);
         } else {
-            $this->assertInstanceOf('Negotiation\AcceptCharsetHeader', $acceptHeader);
-            $this->assertSame($expected, $acceptHeader->getValue());
+            $this->assertInstanceOf('Negotiation\AcceptCharset', $accept);
+            $this->assertSame($expected, $accept->getValue());
         }
     }
 
     public static function dataProviderForTestGetBest()
     {
-        $pearCharsetHeader  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
-        $pearCharsetHeader2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
+        $pearCharset  = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5';
+        $pearCharset2 = 'ISO-8859-1, Big5;q=0.6,utf-8;q=0.7';
 
         return array(
-            array($pearCharsetHeader, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
-            array($pearCharsetHeader, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
-            array($pearCharsetHeader, array( 'Big5', 'shift-jis',), 'Big5'),
-            array($pearCharsetHeader, array( 'shift-jis',), 'shift-jis'),
-            array($pearCharsetHeader2, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
-            array($pearCharsetHeader2, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
-            array($pearCharsetHeader2, array( 'Big5', 'shift-jis',), 'Big5'),
+            array($pearCharset, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
+            array($pearCharset, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
+            array($pearCharset, array( 'Big5', 'shift-jis',), 'Big5'),
+            array($pearCharset, array( 'shift-jis',), 'shift-jis'),
+            array($pearCharset2, array( 'utf-8', 'big5', 'iso-8859-1', 'shift-jis',), 'iso-8859-1'),
+            array($pearCharset2, array( 'utf-8', 'big5', 'shift-jis',), 'utf-8'),
+            array($pearCharset2, array( 'Big5', 'shift-jis',), 'Big5'),
             array('utf-8;q=0.6,iso-8859-5;q=0.9', array( 'iso-8859-5', 'utf-8',), 'iso-8859-5'),
             array('', array( 'iso-8859-5', 'utf-8',), null),
             array('en, *;q=0.9', array('fr'), 'fr') 
@@ -76,18 +76,18 @@ class CharsetNegotiatorTest extends TestCase
 
     public function testGetBestRespectsPriorities()
     {
-        $acceptHeader = $this->negotiator->getBest('foo, bar, yo', array('yo'));
+        $accept = $this->negotiator->getBest('foo, bar, yo', array('yo'));
 
-        $this->assertInstanceOf('Negotiation\AcceptCharsetHeader', $acceptHeader);
-        $this->assertEquals('yo', $acceptHeader->getValue());
+        $this->assertInstanceOf('Negotiation\AcceptCharset', $accept);
+        $this->assertEquals('yo', $accept->getValue());
     }
 
     public function testGetBestDoesNotMatchPriorities()
     {
-        $acceptCharsetHeader = 'en, de';
+        $acceptCharset = 'en, de';
         $priorities           = array('fr');
 
-        $this->assertNull($this->negotiator->getBest($acceptCharsetHeader, $priorities));
+        $this->assertNull($this->negotiator->getBest($acceptCharset, $priorities));
     }
 
     /**

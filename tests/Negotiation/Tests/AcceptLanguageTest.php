@@ -2,9 +2,9 @@
 
 namespace Negotiation\Tests;
 
-use Negotiation\AcceptLanguageHeader;
+use Negotiation\AcceptLanguage;
 
-class AcceptLanguageHeaderTest extends TestCase
+class AcceptLanguageTest extends TestCase
 {
 
     /**
@@ -12,8 +12,8 @@ class AcceptLanguageHeaderTest extends TestCase
      */
     public function testGetType($header, $expected)
     {
-        $acceptHeader = new AcceptLanguageHeader($header);
-        $actual = $acceptHeader->getType();
+        $accept = new AcceptLanguage($header);
+        $actual = $accept->getType();
         $this->assertEquals($expected, $actual);
     }
 
@@ -30,8 +30,8 @@ class AcceptLanguageHeaderTest extends TestCase
      */
     public function testGetValue($header, $expected)
     {
-        $acceptHeader = new AcceptLanguageHeader($header);
-        $actual = $acceptHeader->getValue();
+        $accept = new AcceptLanguage($header);
+        $actual = $accept->getValue();
         $this->assertEquals($expected, $actual);
 
     }

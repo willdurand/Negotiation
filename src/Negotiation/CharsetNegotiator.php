@@ -6,13 +6,13 @@ class CharsetNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param strint $type
+     * @param strint $accept
      *
-     * @return AcceptCharsetHeader
+     * @return AcceptCharset
      */
-    protected function typeFactory($type)
+    protected function acceptFactory($accept)
     {
-        return new AcceptCharsetHeader($type);
+        return new AcceptCharset($accept);
     }
 
 }

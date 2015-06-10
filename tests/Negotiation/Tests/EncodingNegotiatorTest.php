@@ -26,15 +26,15 @@ class EncodingNegotiatorTest extends TestCase
     /**
      * @dataProvider dataProviderForTestGetBest
      */
-    public function testGetBest($acceptHeader, $priorities, $expected)
+    public function testGetBest($accept, $priorities, $expected)
     {
-        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+        $accept = $this->negotiator->getBest($accept, $priorities);
 
-        if (null === $acceptHeader) {
+        if (null === $accept) {
             $this->assertNull($expected);
         } else {
-            $this->assertInstanceOf('Negotiation\AcceptEncodingHeader', $acceptHeader);
-            $this->assertEquals($expected, $acceptHeader->getValue());
+            $this->assertInstanceOf('Negotiation\AcceptEncoding', $accept);
+            $this->assertEquals($expected, $accept->getValue());
         }
     }
 

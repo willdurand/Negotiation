@@ -20,18 +20,18 @@ class LanguageNegotiatorTest extends TestCase
     /**
      * @dataProvider dataProviderForTestGetBest
      */
-    public function testGetBestxxx($acceptHeader, $priorities, $expected)
+    public function testGetBest($accept, $priorities, $expected)
     {
         if ('empty header given' == $expected)
             $this->setExpectedException('\Exception');
 
-        $acceptHeader = $this->negotiator->getBest($acceptHeader, $priorities);
+        $accept = $this->negotiator->getBest($accept, $priorities);
 
-        if (null === $acceptHeader) {
+        if (null === $accept) {
             $this->assertNull($expected);
         } else {
-            $this->assertInstanceOf('\Negotiation\AcceptLanguageHeader', $acceptHeader);
-            $this->assertEquals($expected, $acceptHeader->getValue());
+            $this->assertInstanceOf('\Negotiation\AcceptLanguage', $accept);
+            $this->assertEquals($expected, $accept->getValue());
         }
     }
 
