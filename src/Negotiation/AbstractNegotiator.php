@@ -8,7 +8,7 @@ abstract class AbstractNegotiator
      * @param string $header     A string containing an `Accept|Accept-*` header.
      * @param array  $priorities A set of server priorities.
      *
-     * @return Header best matching type
+     * @return BaseAccept best matching type
      */
     public function getBest($header, array $priorities)
     {
@@ -44,7 +44,7 @@ abstract class AbstractNegotiator
     /**
      * @param string $header A string that contains an `Accept*` header.
      *
-     * @return Header[]
+     * @return BaseAccept[]
      */
     private static function parseHeader($header)
     {
@@ -60,15 +60,15 @@ abstract class AbstractNegotiator
     /**
      * @param array $priorities list of server priorities
      *
-     * @return Header[]
+     * @return BaseAccept[]
      */
     private function mapHeaders($priorities)
     {
-        return array_map(function($p) { return $this->typeFactory($p); }, $priorities);
+        return array_map(function($p) { return $this->acceptFactory($p); }, $priorities);
     }
 
     /**
-     * @param Header[]      $headers
+     * @param BaseAccept[]      $headers
      * @param Priority[]    $priorities    Configured priorities
      *
      * @return Match[] Headers matched
@@ -123,12 +123,12 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param Header $header
-     * @param Header $priority
+     * @param BaseAccept $header
+     * @param BaseAccept $priority
      *
      * @return Match Headers matched
      */
-    protected static function match(Header $header, Header $priority, $index) {
+    protected static function match(BaseAccept $header, BaseAccept $priority, $index) {
         $ac = $header->getType();
         $pc = $priority->getType();
 
@@ -146,8 +146,8 @@ abstract class AbstractNegotiator
     /**
      * @param string $header type string
      *
-     * @return Header[] parsed header objects
+     * @return BaseAccept[] parsed header objects
      */
-    abstract protected function typeFactory($header);
+    abstract protected function acceptFactory($header);
 
 }

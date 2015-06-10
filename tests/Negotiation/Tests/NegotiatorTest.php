@@ -3,7 +3,7 @@
 namespace Negotiation\Tests;
 
 use Negotiation\Negotiator;
-use Negotiation\AcceptHeader;
+use Negotiation\Accept;
 use Negotiation\Match;
 
 class NegotiatorTest extends TestCase
@@ -32,7 +32,7 @@ class NegotiatorTest extends TestCase
         if ($acceptHeader === null) {
             $this->assertNull($expected);
         } else {
-            $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+            $this->assertInstanceOf('Negotiation\Accept', $acceptHeader);
 
             $this->assertSame($expected[0], $acceptHeader->getType());
             $this->assertSame($expected[1], $acceptHeader->getParameters());
@@ -126,8 +126,8 @@ class NegotiatorTest extends TestCase
     {
         return array(
             array(
-                array(new AcceptHeader('text/html; charset=UTF-8'), new AcceptHeader('image/png; foo=bar; q=0.7'), new AcceptHeader('*/*; foo=bar; q=0.4')),
-                array(new AcceptHeader('text/html; charset=UTF-8'), new AcceptHeader('image/png; foo=bar'), new AcceptHeader('application/pdf')),
+                array(new Accept('text/html; charset=UTF-8'), new Accept('image/png; foo=bar; q=0.7'), new Accept('*/*; foo=bar; q=0.4')),
+                array(new Accept('text/html; charset=UTF-8'), new Accept('image/png; foo=bar'), new Accept('application/pdf')),
                 array(
                     new Match(1.0, 111, 0),
                     new Match(0.7, 111, 1),
@@ -135,16 +135,16 @@ class NegotiatorTest extends TestCase
                 )
             ),
             array(
-                array(new AcceptHeader('text/html'), new AcceptHeader('image/*; q=0.7')),
-                array(new AcceptHeader('text/html; asfd=qwer'), new AcceptHeader('image/png'), new AcceptHeader('application/pdf')),
+                array(new Accept('text/html'), new Accept('image/*; q=0.7')),
+                array(new Accept('text/html; asfd=qwer'), new Accept('image/png'), new Accept('application/pdf')),
                 array(
                     new Match(1.0, 110, 0),
                     new Match(0.7, 100, 1),
                 )
             ),
             array( # https://tools.ietf.org/html/rfc7231#section-5.3.2
-                array(new AcceptHeader('text/*; q=0.3'), new AcceptHeader('text/html; q=0.7'), new AcceptHeader('text/html; level=1'), new AcceptHeader('text/html; level=2; q=0.4'), new AcceptHeader('*/*; q=0.5')),
-                array(new AcceptHeader('text/html; level=1'), new AcceptHeader('text/html'), new AcceptHeader('text/plain'), new AcceptHeader('image/jpeg'), new AcceptHeader('text/html; level=2'), new AcceptHeader('text/html; level=3')),
+                array(new Accept('text/*; q=0.3'), new Accept('text/html; q=0.7'), new Accept('text/html; level=1'), new Accept('text/html; level=2; q=0.4'), new Accept('*/*; q=0.5')),
+                array(new Accept('text/html; level=1'), new Accept('text/html'), new Accept('text/plain'), new Accept('image/jpeg'), new Accept('text/html; level=2'), new Accept('text/html; level=3')),
                 array(
                     new Match(0.3,    100,    0),
                     new Match(0.7,    110,    0),

@@ -2,20 +2,20 @@
 
 namespace Negotiation\Tests;
 
-use Negotiation\AcceptHeader;
+use Negotiation\Accept;
 
-class AcceptHeaderTest extends TestCase
+class AcceptTest extends TestCase
 {
     public function testGetParameter()
     {
-        $acceptHeader = new AcceptHeader('foo/bar; q=1; hello=world');
+        $accept = new Accept('foo/bar; q=1; hello=world');
 
-        $this->assertTrue($acceptHeader->hasParameter('hello'));
-        $this->assertEquals('world', $acceptHeader->getParameter('hello'));
-        $this->assertFalse($acceptHeader->hasParameter('unknown'));
-        $this->assertNull($acceptHeader->getParameter('unknown'));
-        $this->assertFalse($acceptHeader->getParameter('unknown', false));
-        $this->assertSame('world', $acceptHeader->getParameter('hello', 'goodbye'));
+        $this->assertTrue($accept->hasParameter('hello'));
+        $this->assertEquals('world', $accept->getParameter('hello'));
+        $this->assertFalse($accept->hasParameter('unknown'));
+        $this->assertNull($accept->getParameter('unknown'));
+        $this->assertFalse($accept->getParameter('unknown', false));
+        $this->assertSame('world', $accept->getParameter('hello', 'goodbye'));
     }
 
     /**
@@ -23,8 +23,8 @@ class AcceptHeaderTest extends TestCase
      */
     public function testGetNormalisedValue($header, $expected)
     {
-        $acceptHeader = new AcceptHeader($header);
-        $actual = $acceptHeader->getNormalisedValue();
+        $accept = new Accept($header);
+        $actual = $accept->getNormalisedValue();
         $this->assertEquals($expected, $actual);
     }
 
@@ -41,8 +41,8 @@ class AcceptHeaderTest extends TestCase
      */
     public function testGetType($header, $expected)
     {
-        $acceptHeader = new AcceptHeader($header);
-        $actual = $acceptHeader->getType();
+        $accept = new Accept($header);
+        $actual = $accept->getType();
         $this->assertEquals($expected, $actual);
     }
 
@@ -59,8 +59,8 @@ class AcceptHeaderTest extends TestCase
      */
     public function testGetValue($header, $expected)
     {
-        $acceptHeader = new AcceptHeader($header);
-        $actual = $acceptHeader->getValue();
+        $accept = new Accept($header);
+        $actual = $accept->getValue();
         $this->assertEquals($expected, $actual);
 
     }

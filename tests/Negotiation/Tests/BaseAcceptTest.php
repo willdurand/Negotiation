@@ -2,16 +2,16 @@
 
 namespace Negotiation\Tests;
 
-use Negotiation\Header;
+use Negotiation\BaseAccept;
 
-class HeaderTest extends TestCase
+class BaseAcceptTest extends TestCase
 {
     /**
      * @dataProvider dataProviderForParseParameters
      */
     public function testParseParameters($value, $expected)
     {
-        list($media_type, $parameters) = $this->call_private_method('\Negotiation\Header', 'parseParameters', null, array($value));
+        list($media_type, $parameters) = $this->call_private_method('\Negotiation\BaseAccept', 'parseParameters', null, array($value));
 
         $this->assertCount(count($expected), $parameters);
 
@@ -58,7 +58,7 @@ class HeaderTest extends TestCase
      */
 
     public function testBuildParametersString($value, $expected) {
-        $string = $this->call_private_method('\Negotiation\Header', 'buildParametersString', null, array($value));
+        $string = $this->call_private_method('\Negotiation\BaseAccept', 'buildParametersString', null, array($value));
 
         $this->assertEquals($string, $expected);
     }

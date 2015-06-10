@@ -6,13 +6,13 @@ class EncodingNegotiator extends AbstractNegotiator
 {
 
     /**
-     * @param strint $type
+     * @param strint $accept
      *
-     * @return AcceptEncodingHeader
+     * @return AcceptEncoding
      */
-    protected function typeFactory($type)
+    protected function acceptFactory($accept)
     {
-        return new AcceptEncodingHeader($type);
+        return new AcceptEncoding($accept);
     }
 
 }
