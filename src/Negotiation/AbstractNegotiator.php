@@ -45,7 +45,7 @@ abstract class AbstractNegotiator
      *
      * @return BaseAccept[]
      */
-    private static function parseHeader($header)
+    protected static function parseHeader($header)
     {
         $res = preg_match_all('/(?:[^,"]*(?:"[^"]+")?)+[^,"]*/', $header, $matches);
 
@@ -62,7 +62,7 @@ abstract class AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    private static function findMatches(array $headerParts, array $priorities) {
+    protected static function findMatches(array $headerParts, array $priorities) {
         $matches = array();
 
         foreach ($priorities as $index => $p) {
@@ -81,7 +81,7 @@ abstract class AbstractNegotiator
      *
      * @return Match[]
      */
-    private static function reduce(array $carry, Match $match) {
+    protected static function reduce(array $carry, Match $match) {
         if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
             $carry[$match->index] = $match;
         }
@@ -95,7 +95,7 @@ abstract class AbstractNegotiator
      *
      * @return int
      */
-    private static function compare(Match $a, Match $b) {
+    protected static function compare(Match $a, Match $b) {
         if ($a->quality != $b->quality) {
             return $a->quality > $b->quality ? -1 : 1;
         }
@@ -129,7 +129,7 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param string $header type string
+     * @param string $header accept header part or server priority
      *
      * @return BaseAccept[] parsed header objects
      */

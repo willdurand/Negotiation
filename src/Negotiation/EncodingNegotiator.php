@@ -4,11 +4,8 @@ namespace Negotiation;
 
 class EncodingNegotiator extends AbstractNegotiator
 {
-
     /**
-     * @param strint $accept
-     *
-     * @return AcceptEncoding
+     * {@inheritdoc}
      */
     protected function acceptFactory($accept)
     {
