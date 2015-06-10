@@ -22,17 +22,17 @@ abstract class AbstractNegotiator
 
         $headers = self::parseHeader($header);
 
-        $headers = $this->mapHeaders($headers);
-        $priorities = $this->mapHeaders($priorities);
+        $headers = array_map(array($this, 'acceptFactory'), $headers);
+        $priorities  = array_map(array($this, 'acceptFactory'), $priorities);
 
         $matches = self::findMatches($headers, $priorities);
 
         # find most specific match for each priority
-        $preceding_matches = array_reduce($matches, array($this, 'reduce'), array());
+        $specific_matches = array_reduce($matches, array($this, 'reduce'), array());
 
-        usort($preceding_matches, array($this, 'compare'));
+        usort($specific_matches, array($this, 'compare'));
 
-        $match = array_shift($preceding_matches);
+        $match = array_shift($specific_matches);
 
         if ($match === null) {
             return null;
@@ -55,16 +55,6 @@ abstract class AbstractNegotiator
         }
 
         return array_values(array_filter(array_map('trim', $matches[0])));
-    }
-
-    /**
-     * @param array $priorities list of server priorities
-     *
-     * @return BaseAccept[]
-     */
-    private function mapHeaders($priorities)
-    {
-        return array_map(function($p) { return $this->acceptFactory($p); }, $priorities);
     }
 
     /**
