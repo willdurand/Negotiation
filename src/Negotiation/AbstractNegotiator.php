@@ -27,7 +27,6 @@ abstract class AbstractNegotiator
 
         $matches = self::findMatches($headers, $priorities);
 
-        # find most specific match for each priority
         $specific_matches = array_reduce($matches, array($this, 'reduce'), array());
 
         usort($specific_matches, array($this, 'compare'));
@@ -97,16 +96,12 @@ abstract class AbstractNegotiator
      * @return int
      */
     private static function compare(Match $a, Match $b) {
-        if ($a->quality > $b->quality) {
-            return -1;
-        } else if ($a->quality < $b->quality) {
-            return 1;
+        if ($a->quality != $b->quality) {
+            return $a->quality > $b->quality ? -1 : 1;
         }
 
-        if ($a->index < $b->index) {
-            return -1;
-        } else if ($a->index > $b->index) {
-            return 1;
+        if ($a->index != $b->index) {
+            return $a->index > $b->index ? 1 : -1;
         }
 
         return 0;
