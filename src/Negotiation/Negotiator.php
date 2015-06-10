@@ -4,11 +4,8 @@ namespace Negotiation;
 
 class Negotiator extends AbstractNegotiator
 {
-
     /**
-     * @param strint $accept
-     *
-     * @return Accept
+     * {@inheritdoc}
      */
     protected function acceptFactory($accept)
     {

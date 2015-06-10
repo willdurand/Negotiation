@@ -4,11 +4,8 @@ namespace Negotiation;
 
 class CharsetNegotiator extends AbstractNegotiator
 {
-
     /**
-     * @param strint $accept
-     *
-     * @return AcceptCharset
+     * {@inheritdoc}
      */
     protected function acceptFactory($accept)
     {
