@@ -44,7 +44,7 @@ class BaseAccept
         }
 
         $this->value      = $value;
-        $this->normalised = $type . "; " . $this->buildParametersString($parameters);
+        $this->normalised = $type . ($parameters ? "; " . $this->buildParametersString($parameters) : '');
         $this->type       = $type;
         $this->parameters = $parameters;
     }
