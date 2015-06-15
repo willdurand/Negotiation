@@ -24,18 +24,19 @@ class NegotiatorTest extends TestCase
      */
     public function testGetBest($header, $priorities, $expected)
     {
-        if (is_string($expected))
-            $this->setExpectedException('\Exception', $expected);
+        try {
+            $acceptHeader = $this->negotiator->getBest($header, $priorities);
 
-        $acceptHeader = $this->negotiator->getBest($header, $priorities);
+            if ($acceptHeader === null) {
+                $this->assertNull($expected);
+            } else {
+                $this->assertInstanceOf('Negotiation\Accept', $acceptHeader);
 
-        if ($acceptHeader === null) {
-            $this->assertNull($expected);
-        } else {
-            $this->assertInstanceOf('Negotiation\Accept', $acceptHeader);
-
-            $this->assertSame($expected[0], $acceptHeader->getType());
-            $this->assertSame($expected[1], $acceptHeader->getParameters());
+                $this->assertSame($expected[0], $acceptHeader->getType());
+                $this->assertSame($expected[1], $acceptHeader->getParameters());
+            }
+        } catch (\Exception $e) {
+            $this->assertEquals($expected, $e);
         }
     }
 
@@ -46,9 +47,9 @@ class NegotiatorTest extends TestCase
 
         return array(
             # exceptions
-            array('/qwer', array('f/g'), 'invalid media type.'),
-            array('', array('foo/bar'), 'empty header given'),
-            array('*/*', array(), 'no priorities given'),
+            array('/qwer', array('f/g'), new \Negotiation\ParseTypeException('invalid media type.')),
+            array('', array('foo/bar'), new \InvalidArgumentException('empty header given')),
+            array('*/*', array(), new \InvalidArgumentException('no priorities given')),
 
             # See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             array($rfcHeader, array('text/html;level=1'), array('text/html', array('level' => '1'))),

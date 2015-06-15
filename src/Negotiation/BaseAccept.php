@@ -25,7 +25,7 @@ class BaseAccept
     protected $type;
 
     /**
-     * @var string|null
+     * @var array
      */
     protected $parameters = null;
 

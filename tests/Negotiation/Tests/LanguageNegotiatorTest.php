@@ -22,16 +22,17 @@ class LanguageNegotiatorTest extends TestCase
      */
     public function testGetBest($accept, $priorities, $expected)
     {
-        if ('empty header given' == $expected)
-            $this->setExpectedException('\Exception');
+        try {
+            $accept = $this->negotiator->getBest($accept, $priorities);
 
-        $accept = $this->negotiator->getBest($accept, $priorities);
-
-        if (null === $accept) {
-            $this->assertNull($expected);
-        } else {
-            $this->assertInstanceOf('\Negotiation\AcceptLanguage', $accept);
-            $this->assertEquals($expected, $accept->getValue());
+            if (null === $accept) {
+                $this->assertNull($expected);
+            } else {
+                $this->assertInstanceOf('\Negotiation\AcceptLanguage', $accept);
+                $this->assertEquals($expected, $accept->getValue());
+            }
+        } catch (\Exception $e) {
+            $this->assertEquals($expected, $e);
         }
     }
 
@@ -45,7 +46,7 @@ class LanguageNegotiatorTest extends TestCase
             array('foo, bar, yo', array('yo'), 'yo'),
             array('en; q=0.1, fr; q=0.4, bu; q=1.0', array('en', 'fr'), 'fr'),
             array('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2', array('en', 'fu'), 'fu'),
-            array('', array('en', 'fu'), 'empty header given'),
+            array('', array('en', 'fu'), new \InvalidArgumentException('empty header given')),
         );
     }
 

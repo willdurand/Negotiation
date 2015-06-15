@@ -19,7 +19,7 @@ class AcceptLanguage extends BaseAccept
         } else if (count($parts) == 1) {
             $this->basePart   = $parts[0];
         } else {
-            throw new \Exception('invalid language type in header.');
+            throw new \ParseTypeException('invalid language');
         }
     }
 
