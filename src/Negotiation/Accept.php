@@ -14,7 +14,7 @@ class Accept extends BaseAccept
         $parts = explode('/', $this->type);
 
         if (count($parts) != 2 || !$parts[0] || !$parts[1]) {
-            throw new \Exception('invalid media type.');
+            throw new ParseTypeException('invalid media type.');
         }
 
         $this->basePart = $parts[0];

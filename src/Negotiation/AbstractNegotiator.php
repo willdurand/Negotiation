@@ -13,11 +13,11 @@ abstract class AbstractNegotiator
     public function getBest($header, array $priorities)
     {
         if (!$priorities) {
-            throw new \Exception('no priorities given');
+            throw new \InvalidArgumentException('no priorities given');
         }
 
         if (!$header) {
-            throw new \Exception('empty header given');
+            throw new \InvalidArgumentException('empty header given');
         }
 
         $headers = self::parseHeader($header);
@@ -47,10 +47,10 @@ abstract class AbstractNegotiator
      */
     protected static function parseHeader($header)
     {
-        $res = preg_match_all('/(?:[^,"]*(?:"[^"]+")?)+[^,"]*/', $header, $matches);
+        $res = preg_match_all('/(?:[^,"]*+(?:"[^"]*+")?)+[^,"]*+/', $header, $matches);
 
         if (!$res) {
-            throw new \Exception('failed to parse accept header');
+            throw new ParseHeaderException('failed to parse accept header');
         }
 
         return array_values(array_filter(array_map('trim', $matches[0])));
