@@ -20,17 +20,12 @@ Installation
 The recommended way to install Negotiation is through
 [Composer](http://getcomposer.org/):
 
-``` json
-{
-    "require": {
-        "willdurand/negotiation": "@stable"
-    }
-}
+```bash
+$ composer require willdurand/negotiation
 ```
 
-**Protip:** you should browse the
-[`willdurand/negotiation`](https://packagist.org/packages/willdurand/negotiation)
-page to choose a stable version to use, avoid the `@stable` meta constraint.
+**Protip:** you can also choose the correct version via
+[`willdurand/negotiation`](https://packagist.org/packages/willdurand/negotiation).
 
 
 Usage
