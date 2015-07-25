@@ -14,6 +14,7 @@ class FormatNegotiator extends Negotiator implements FormatNegotiatorInterface
         'js'   => array('application/javascript', 'application/x-javascript', 'text/javascript'),
         'css'  => array('text/css'),
         'json' => array('application/json', 'application/x-json'),
+        'jsonld' => array('application/ld+json'),
         'xml'  => array('text/xml', 'application/xml', 'application/x-xml'),
         'rdf'  => array('application/rdf+xml'),
         'atom' => array('application/atom+xml'),
