@@ -15,7 +15,7 @@ interface FormatNegotiatorInterface extends NegotiatorInterface
      * @param string $acceptHeader A string containing an `Accept` header.
      * @param array  $priorities   A set of priorities.
      *
-     * @return string
+     * @return string|null
      */
     public function getBestFormat($acceptHeader, array $priorities = array());
 
