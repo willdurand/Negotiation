@@ -36,12 +36,12 @@ class BaseAccept
     {
         list($type, $parameters) = $this->parseParameters($value);
 
-        $type = trim(strtolower($type));
-
         if (isset($parameters['q'])) {
             $this->quality = (float) $parameters['q'];
             unset($parameters['q']);
         }
+
+        $type = trim(strtolower($type));
 
         $this->value      = $value;
         $this->normalised = $type . ($parameters ? "; " . $this->buildParametersString($parameters) : '');
@@ -57,19 +57,17 @@ class BaseAccept
     protected static function parseParameters($acceptPart)
     {
         $parts = explode(';', $acceptPart);
+        $type  = array_shift($parts);
 
-        $type = array_shift($parts);
-
-        $parameters = array();
-
+        $parameters = [];
         foreach ($parts as $part) {
             $part = explode('=', $part);
 
             if (2 !== count($part)) {
-                continue; # TODO throw exception here?
+                continue; // TODO: throw exception here?
             }
 
-            $key = strtolower(trim($part[0])); # TODO technically not allowed space around "=". throw exception?
+            $key = strtolower(trim($part[0])); // TODO: technically not allowed space around "=". throw exception?
             $parameters[$key] = trim($part[1], ' "');
         }
 
@@ -83,15 +81,14 @@ class BaseAccept
      */
     protected static function buildParametersString($params)
     {
-        $parts = array();
+        $parts = [];
 
         ksort($params);
-
         foreach ($params as $key => $val) {
-            $parts[] = "$key=$val";
+            $parts[] = sprintf('%s=%s', $key, $val);
         }
 
-        return implode("; ", $parts);
+        return implode('; ', $parts);
     }
 
     /**
@@ -125,5 +122,4 @@ class BaseAccept
     {
         return $this->quality;
     }
-
 }

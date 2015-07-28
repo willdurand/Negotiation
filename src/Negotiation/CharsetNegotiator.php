@@ -11,5 +11,4 @@ class CharsetNegotiator extends AbstractNegotiator
     {
         return new AcceptCharset($accept);
     }
-
 }

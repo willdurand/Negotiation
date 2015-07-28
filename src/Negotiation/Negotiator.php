@@ -26,7 +26,7 @@ class Negotiator extends AbstractNegotiator
         $intersection = array_intersect_assoc($accept->getParameters(), $priority->getParameters());
 
         $baseEqual = !strcasecmp($ab, $pb);
-        $subEqual = !strcasecmp($as, $ps);
+        $subEqual  = !strcasecmp($as, $ps);
 
         if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($accept->getParameters())) {
             $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
@@ -36,5 +36,4 @@ class Negotiator extends AbstractNegotiator
 
         return null;
     }
-
 }

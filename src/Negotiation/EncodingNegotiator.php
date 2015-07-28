@@ -11,5 +11,4 @@ class EncodingNegotiator extends AbstractNegotiator
     {
         return new AcceptEncoding($accept);
     }
-
 }
