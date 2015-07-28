@@ -4,8 +4,9 @@ namespace Negotiation;
 
 class AcceptLanguage extends BaseAccept
 {
-    private $basePart = null;
-    private $subPart  = null;
+    private $basePart;
+
+    private $subPart;
 
     public function __construct($value)
     {
@@ -13,13 +14,14 @@ class AcceptLanguage extends BaseAccept
 
         $parts = explode('-', $this->type);
 
-        if (count($parts) == 2) {
+        if (2 === count($parts)) {
             $this->basePart   = $parts[0];
             $this->subPart    = $parts[1];
-        } elseif (count($parts) == 1) {
+        } elseif (1 === count($parts)) {
             $this->basePart   = $parts[0];
         } else {
-            throw new \ParseTypeException('invalid language');
+            // TODO: this part is never reached...
+            throw new InvalidLanguage();
         }
     }
 
@@ -38,5 +40,4 @@ class AcceptLanguage extends BaseAccept
     {
         return $this->basePart;
     }
-
 }

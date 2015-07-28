@@ -2,10 +2,13 @@
 
 namespace Negotiation;
 
+use Negotiation\Exception\InvalidMediaType;
+
 class Accept extends BaseAccept
 {
-    private $basePart = null;
-    private $subPart  = null;
+    private $basePart;
+
+    private $subPart;
 
     public function __construct($value)
     {
@@ -14,7 +17,7 @@ class Accept extends BaseAccept
         $parts = explode('/', $this->type);
 
         if (count($parts) != 2 || !$parts[0] || !$parts[1]) {
-            throw new ParseTypeException('invalid media type.');
+            throw new InvalidMediaType();
         }
 
         $this->basePart = $parts[0];
@@ -65,5 +68,4 @@ class Accept extends BaseAccept
     {
         return $this->basePart;
     }
-
 }

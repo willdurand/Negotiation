@@ -2,6 +2,8 @@
 
 namespace Negotiation;
 
+use Negotiation\Exception\InvalidHeader;
+
 abstract class AbstractNegotiator
 {
     /**
@@ -50,7 +52,7 @@ abstract class AbstractNegotiator
         $res = preg_match_all('/(?:[^,"]*+(?:"[^"]*+")?)+[^,"]*+/', $header, $matches);
 
         if (!$res) {
-            throw new ParseHeaderException('failed to parse accept header');
+            throw new InvalidHeader(sprintf('Failed to parse accept header: "%s"', $header));
         }
 
         return array_values(array_filter(array_map('trim', $matches[0])));

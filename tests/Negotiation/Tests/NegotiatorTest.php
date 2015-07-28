@@ -47,7 +47,7 @@ class NegotiatorTest extends TestCase
 
         return array(
             # exceptions
-            array('/qwer', array('f/g'), new \Negotiation\ParseTypeException('invalid media type.')),
+            array('/qwer', array('f/g'), new \Negotiation\Exception\InvalidMediaType()),
             array('', array('foo/bar'), new \InvalidArgumentException('empty header given')),
             array('*/*', array(), new \InvalidArgumentException('no priorities given')),
 
