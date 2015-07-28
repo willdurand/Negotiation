@@ -22,11 +22,11 @@ abstract class AbstractNegotiator
             throw new \InvalidArgumentException('The header string should not be empty.');
         }
 
-        $headers    = self::parseHeader($header);
+        $headers    = $this->parseHeader($header);
         $headers    = array_map(array($this, 'acceptFactory'), $headers);
         $priorities = array_map(array($this, 'acceptFactory'), $priorities);
 
-        $matches         = self::findMatches($headers, $priorities);
+        $matches         = $this->findMatches($headers, $priorities);
         $specificMatches = array_reduce($matches, 'Negotiation\Match::reduce', []);
 
         usort($specificMatches, 'Negotiation\Match::compare');
@@ -37,49 +37,13 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param string $header A string that contains an `Accept*` header.
-     *
-     * @return AcceptHeader[]
-     */
-    protected static function parseHeader($header)
-    {
-        $res = preg_match_all('/(?:[^,"]*+(?:"[^"]*+")?)+[^,"]*+/', $header, $matches);
-
-        if (!$res) {
-            throw new InvalidHeader(sprintf('Failed to parse accept header: "%s"', $header));
-        }
-
-        return array_values(array_filter(array_map('trim', $matches[0])));
-    }
-
-    /**
-     * @param AcceptHeader[] $headerParts
-     * @param Priority[]     $priorities  Configured priorities
-     *
-     * @return Match[] Headers matched
-     */
-    protected static function findMatches(array $headerParts, array $priorities)
-    {
-        $matches = [];
-        foreach ($priorities as $index => $p) {
-            foreach ($headerParts as $h) {
-                if ($match = static::match($h, $p, $index)) {
-                    $matches[] = $match;
-                }
-            }
-        }
-
-        return $matches;
-    }
-
-    /**
      * @param AcceptHeader $header
      * @param AcceptHeader $priority
      * @param integer      $index
      *
      * @return Match|null Headers matched
      */
-    protected static function match(AcceptHeader $header, AcceptHeader $priority, $index)
+    protected function match(AcceptHeader $header, AcceptHeader $priority, $index)
     {
         $ac = $header->getType();
         $pc = $priority->getType();
@@ -101,4 +65,40 @@ abstract class AbstractNegotiator
      * @return AcceptHeader Parsed header object
      */
     abstract protected function acceptFactory($header);
+
+    /**
+     * @param string $header A string that contains an `Accept*` header.
+     *
+     * @return AcceptHeader[]
+     */
+    private function parseHeader($header)
+    {
+        $res = preg_match_all('/(?:[^,"]*+(?:"[^"]*+")?)+[^,"]*+/', $header, $matches);
+
+        if (!$res) {
+            throw new InvalidHeader(sprintf('Failed to parse accept header: "%s"', $header));
+        }
+
+        return array_values(array_filter(array_map('trim', $matches[0])));
+    }
+
+    /**
+     * @param AcceptHeader[] $headerParts
+     * @param Priority[]     $priorities  Configured priorities
+     *
+     * @return Match[] Headers matched
+     */
+    private function findMatches(array $headerParts, array $priorities)
+    {
+        $matches = [];
+        foreach ($priorities as $index => $p) {
+            foreach ($headerParts as $h) {
+                if ($match = $this->match($h, $p, $index)) {
+                    $matches[] = $match;
+                }
+            }
+        }
+
+        return $matches;
+    }
 }

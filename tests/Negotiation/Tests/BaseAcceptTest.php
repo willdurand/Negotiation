@@ -11,7 +11,14 @@ class BaseAcceptTest extends TestCase
      */
     public function testParseParameters($value, $expected)
     {
-        list($media_type, $parameters) = $this->call_private_method('\Negotiation\BaseAccept', 'parseParameters', null, array($value));
+        $accept     = new DummyAccept($value);
+        $parameters = $accept->getParameters();
+
+        // TODO: hack-ish... this is needed because logic in BaseAccept
+        //constructor drops the quality from the parameter set.
+        if (false !== strpos($value, 'q')) {
+            $parameters['q'] = $accept->getQuality();
+        }
 
         $this->assertCount(count($expected), $parameters);
 
@@ -59,23 +66,19 @@ class BaseAcceptTest extends TestCase
 
     public function testBuildParametersString($value, $expected)
     {
-        $string = $this->call_private_method('\Negotiation\BaseAccept', 'buildParametersString', null, array($value));
+        $accept = new DummyAccept($value);
 
-        $this->assertEquals($string, $expected);
+        $this->assertEquals($expected, $accept->getNormalizedValue());
     }
 
     public static function dataProviderBuildParametersString()
     {
         return array(
-            array(
-                array(
-                    'xxx' => '1.0',
-                    'level' => '2',
-                    'foo'   => 'bar',
-                ),
-                'foo=bar; level=2; xxx=1.0',
-            ),
+            array('media/type; xxx = 1.0;level=2;foo=bar', 'media/type; foo=bar; level=2; xxx=1.0'),
         );
     }
+}
 
+class DummyAccept extends BaseAccept
+{
 }

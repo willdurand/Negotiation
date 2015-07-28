@@ -50,48 +50,6 @@ abstract class BaseAccept
     }
 
     /**
-     *
-     * @param  string $acceptPart
-     * @return array
-     */
-    protected static function parseParameters($acceptPart)
-    {
-        $parts = explode(';', $acceptPart);
-        $type  = array_shift($parts);
-
-        $parameters = [];
-        foreach ($parts as $part) {
-            $part = explode('=', $part);
-
-            if (2 !== count($part)) {
-                continue; // TODO: throw exception here?
-            }
-
-            $key = strtolower(trim($part[0])); // TODO: technically not allowed space around "=". throw exception?
-            $parameters[$key] = trim($part[1], ' "');
-        }
-
-        return [ $type, $parameters ];
-    }
-
-    /**
-     * @param string $params
-     *
-     * @return string
-     */
-    protected static function buildParametersString($params)
-    {
-        $parts = [];
-
-        ksort($params);
-        foreach ($params as $key => $val) {
-            $parts[] = sprintf('%s=%s', $key, $val);
-        }
-
-        return implode('; ', $parts);
-    }
-
-    /**
      * @return string
      */
     public function getNormalizedValue()
@@ -150,5 +108,47 @@ abstract class BaseAccept
     public function hasParameter($key)
     {
         return isset($this->parameters[$key]);
+    }
+
+    /**
+     *
+     * @param  string $acceptPart
+     * @return array
+     */
+    private function parseParameters($acceptPart)
+    {
+        $parts = explode(';', $acceptPart);
+        $type  = array_shift($parts);
+
+        $parameters = [];
+        foreach ($parts as $part) {
+            $part = explode('=', $part);
+
+            if (2 !== count($part)) {
+                continue; // TODO: throw exception here?
+            }
+
+            $key = strtolower(trim($part[0])); // TODO: technically not allowed space around "=". throw exception?
+            $parameters[$key] = trim($part[1], ' "');
+        }
+
+        return [ $type, $parameters ];
+    }
+
+    /**
+     * @param string $parameters
+     *
+     * @return string
+     */
+    private function buildParametersString($parameters)
+    {
+        $parts = [];
+
+        ksort($parameters);
+        foreach ($parameters as $key => $val) {
+            $parts[] = sprintf('%s=%s', $key, $val);
+        }
+
+        return implode('; ', $parts);
     }
 }
