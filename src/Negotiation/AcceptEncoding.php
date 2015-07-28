@@ -2,4 +2,6 @@
 
 namespace Negotiation;
 
-class AcceptEncoding extends BaseAccept { }
+final class AcceptEncoding extends BaseAccept implements AcceptHeader
+{
+}

@@ -15,8 +15,12 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected static function match(BaseAccept $acceptLanguage, BaseAccept $priority, $index)
+    protected static function match(AcceptHeader $acceptLanguage, AcceptHeader $priority, $index)
     {
+        if (!$acceptLanguage instanceof AcceptLanguage || !$priority instanceof AcceptLanguage) {
+            return null;
+        }
+
         $ab = $acceptLanguage->getBasePart();
         $pb = $priority->getBasePart();
 

@@ -19,16 +19,16 @@ class AcceptTest extends TestCase
     }
 
     /**
-     * @dataProvider dataProviderForTestGetNormalisedValue
+     * @dataProvider dataProviderForTestGetNormalizedValue
      */
-    public function testGetNormalisedValue($header, $expected)
+    public function testGetNormalizedValue($header, $expected)
     {
         $accept = new Accept($header);
-        $actual = $accept->getNormalisedValue();
+        $actual = $accept->getNormalizedValue();
         $this->assertEquals($expected, $actual);
     }
 
-    public static function dataProviderForTestGetNormalisedValue()
+    public static function dataProviderForTestGetNormalizedValue()
     {
         return array(
             array('text/html; z=y; a=b; c=d', 'text/html; a=b; c=d; z=y'),

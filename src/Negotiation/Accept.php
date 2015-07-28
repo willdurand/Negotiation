@@ -4,7 +4,7 @@ namespace Negotiation;
 
 use Negotiation\Exception\InvalidMediaType;
 
-class Accept extends BaseAccept
+final class Accept extends BaseAccept implements AcceptHeader
 {
     private $basePart;
 
@@ -22,35 +22,6 @@ class Accept extends BaseAccept
 
         $this->basePart = $parts[0];
         $this->subPart  = $parts[1];
-    }
-
-    /**
-     * @return array
-     */
-    public function getParameters()
-    {
-        return $this->parameters;
-    }
-
-    /**
-     * @param string $key
-     * @param mixed  $default
-     *
-     * @return string|null
-     */
-    public function getParameter($key, $default = null)
-    {
-        return isset($this->parameters[$key]) ? $this->parameters[$key] : $default;
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return boolean
-     */
-    public function hasParameter($key)
-    {
-        return isset($this->parameters[$key]);
     }
 
     /**

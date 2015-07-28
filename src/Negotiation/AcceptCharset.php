@@ -2,4 +2,6 @@
 
 namespace Negotiation;
 
-class AcceptCharset extends BaseAccept { }
+final class AcceptCharset extends BaseAccept implements AcceptHeader
+{
+}

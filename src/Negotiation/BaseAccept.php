@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-class BaseAccept
+abstract class BaseAccept
 {
     /**
      * @var float
@@ -12,7 +12,7 @@ class BaseAccept
     /**
      * @var string
      */
-    private $normalised;
+    private $normalized;
 
     /**
      * @var string
@@ -20,14 +20,14 @@ class BaseAccept
     private $value;
 
     /**
+     * @var array
+     */
+    private $parameters;
+
+    /**
      * @var string
      */
     protected $type;
-
-    /**
-     * @var array
-     */
-    protected $parameters = null;
 
     /**
      * @param string $value
@@ -44,14 +44,14 @@ class BaseAccept
         $type = trim(strtolower($type));
 
         $this->value      = $value;
-        $this->normalised = $type . ($parameters ? "; " . $this->buildParametersString($parameters) : '');
+        $this->normalized = $type . ($parameters ? "; " . $this->buildParametersString($parameters) : '');
         $this->type       = $type;
         $this->parameters = $parameters;
     }
 
     /**
      *
-     * @param string $acceptPart
+     * @param  string $acceptPart
      * @return array
      */
     protected static function parseParameters($acceptPart)
@@ -71,7 +71,7 @@ class BaseAccept
             $parameters[$key] = trim($part[1], ' "');
         }
 
-        return array($type, $parameters);
+        return [ $type, $parameters ];
     }
 
     /**
@@ -94,9 +94,9 @@ class BaseAccept
     /**
      * @return string
      */
-    public function getNormalisedValue()
+    public function getNormalizedValue()
     {
-        return $this->normalised;
+        return $this->normalized;
     }
 
     /**
@@ -121,5 +121,34 @@ class BaseAccept
     public function getQuality()
     {
         return $this->quality;
+    }
+
+    /**
+     * @return array
+     */
+    public function getParameters()
+    {
+        return $this->parameters;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $default
+     *
+     * @return string|null
+     */
+    public function getParameter($key, $default = null)
+    {
+        return isset($this->parameters[$key]) ? $this->parameters[$key] : $default;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return boolean
+     */
+    public function hasParameter($key)
+    {
+        return isset($this->parameters[$key]);
     }
 }
