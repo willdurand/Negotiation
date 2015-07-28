@@ -39,7 +39,7 @@ class BaseAccept
         $type = trim(strtolower($type));
 
         if (isset($parameters['q'])) {
-            $this->quality = (float)$parameters['q'];
+            $this->quality = (float) $parameters['q'];
             unset($parameters['q']);
         }
 
@@ -81,7 +81,8 @@ class BaseAccept
      *
      * @return string
      */
-    protected static function buildParametersString($params) {
+    protected static function buildParametersString($params)
+    {
         $parts = array();
 
         ksort($params);

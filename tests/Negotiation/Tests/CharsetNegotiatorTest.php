@@ -17,7 +17,6 @@ class CharsetNegotiatorTest extends TestCase
         $this->negotiator = new CharsetNegotiator();
     }
 
-
     public function testGetBestReturnsNullWithUnmatchedHeader()
     {
         $this->assertNull($this->negotiator->getBest('foo, bar, yo', array('baz')));

@@ -57,7 +57,8 @@ class BaseAcceptTest extends TestCase
      * @dataProvider dataProviderBuildParametersString
      */
 
-    public function testBuildParametersString($value, $expected) {
+    public function testBuildParametersString($value, $expected)
+    {
         $string = $this->call_private_method('\Negotiation\BaseAccept', 'buildParametersString', null, array($value));
 
         $this->assertEquals($string, $expected);

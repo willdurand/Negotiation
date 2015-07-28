@@ -57,12 +57,13 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param BaseAccept[]      $headers
-     * @param Priority[]    $priorities    Configured priorities
+     * @param BaseAccept[] $headers
+     * @param Priority[]   $priorities Configured priorities
      *
      * @return Match[] Headers matched
      */
-    protected static function findMatches(array $headerParts, array $priorities) {
+    protected static function findMatches(array $headerParts, array $priorities)
+    {
         $matches = array();
 
         foreach ($priorities as $index => $p) {
@@ -81,7 +82,8 @@ abstract class AbstractNegotiator
      *
      * @return Match[]
      */
-    protected static function reduce(array $carry, Match $match) {
+    protected static function reduce(array $carry, Match $match)
+    {
         if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
             $carry[$match->index] = $match;
         }
@@ -95,7 +97,8 @@ abstract class AbstractNegotiator
      *
      * @return int
      */
-    protected static function compare(Match $a, Match $b) {
+    protected static function compare(Match $a, Match $b)
+    {
         if ($a->quality != $b->quality) {
             return $a->quality > $b->quality ? -1 : 1;
         }
@@ -113,7 +116,8 @@ abstract class AbstractNegotiator
      *
      * @return Match Headers matched
      */
-    protected static function match(BaseAccept $header, BaseAccept $priority, $index) {
+    protected static function match(BaseAccept $header, BaseAccept $priority, $index)
+    {
         $ac = $header->getType();
         $pc = $priority->getType();
 

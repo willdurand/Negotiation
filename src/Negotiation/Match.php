@@ -2,8 +2,10 @@
 
 namespace Negotiation;
 
-class Match {
-    function __construct($quality, $score, $index) {
+class Match
+{
+    public function __construct($quality, $score, $index)
+    {
         $this->quality = $quality;
         $this->score = $score;
         $this->index = $index;

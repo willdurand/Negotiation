@@ -7,7 +7,7 @@ class Accept extends BaseAccept
     private $basePart = null;
     private $subPart  = null;
 
-    function __construct($value)
+    public function __construct($value)
     {
         parent::__construct($value);
 

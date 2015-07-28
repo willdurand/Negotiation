@@ -5,7 +5,7 @@ namespace Negotiation\Tests;
 use Negotiation\AbstractNegotiator;
 use Negotiation\Match;
 
-class AbstractNegotiatorTest extends TestCase
+class AbstarctNegotiatorTest extends TestCase
 {
     /**
      * @dataProvider dataProviderForTestCompare

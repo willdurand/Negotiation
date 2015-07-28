@@ -17,7 +17,6 @@ class EncodingNegotiatorTest extends TestCase
         $this->negotiator = new EncodingNegotiator();
     }
 
-
     public function testGetBestReturnsNullWithUnmatchedHeader()
     {
         $this->assertNull($this->negotiator->getBest('foo, bar, yo', array('baz')));
