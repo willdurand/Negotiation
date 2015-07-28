@@ -50,8 +50,8 @@ class BaseAccept
     }
 
     /**
-     * @param string $type
      *
+     * @param string $acceptPart
      * @return array
      */
     protected static function parseParameters($acceptPart)
@@ -77,7 +77,7 @@ class BaseAccept
     }
 
     /**
-     * @param string $parameters
+     * @param string $params
      *
      * @return string
      */

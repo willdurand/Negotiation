@@ -57,7 +57,7 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param BaseAccept[] $headers
+     * @param BaseAccept[] $headerParts
      * @param Priority[]   $priorities Configured priorities
      *
      * @return Match[] Headers matched
@@ -92,8 +92,8 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param Match[] $a
-     * @param Match[] $b
+     * @param Match $a
+     * @param Match $b
      *
      * @return int
      */
@@ -113,6 +113,7 @@ abstract class AbstractNegotiator
     /**
      * @param BaseAccept $header
      * @param BaseAccept $priority
+     * @param integer $index
      *
      * @return Match Headers matched
      */
