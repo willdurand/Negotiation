@@ -44,4 +44,19 @@ class Match
 
         return 0;
     }
+
+    /**
+     * @param array $carry reduced array
+     * @param Match $match match to be reduced
+     *
+     * @return Match[]
+     */
+    public static function reduce(array $carry, Match $match)
+    {
+        if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
+            $carry[$match->index] = $match;
+        }
+
+        return $carry;
+    }
 }

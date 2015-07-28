@@ -27,7 +27,7 @@ abstract class AbstractNegotiator
         $priorities = array_map(array($this, 'acceptFactory'), $priorities);
 
         $matches         = self::findMatches($headers, $priorities);
-        $specificMatches = array_reduce($matches, array($this, 'reduce'), []);
+        $specificMatches = array_reduce($matches, 'Negotiation\Match::reduce', []);
 
         usort($specificMatches, 'Negotiation\Match::compare');
 
@@ -70,21 +70,6 @@ abstract class AbstractNegotiator
         }
 
         return $matches;
-    }
-
-    /**
-     * @param array $carry reduced array
-     * @param Match $match match to be reduced
-     *
-     * @return Match[]
-     */
-    protected static function reduce(array $carry, Match $match)
-    {
-        if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
-            $carry[$match->index] = $match;
-        }
-
-        return $carry;
     }
 
     /**

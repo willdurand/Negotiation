@@ -24,4 +24,33 @@ class MatchTest extends TestCase
             array(new Match(0.6, 110, 1), new Match(0.4, 111, 3),   -1),
         );
     }
+
+    /**
+     * @dataProvider dataProviderForTestReduce
+     */
+    public function testReduce($carry, $match, $expected)
+    {
+        $this->assertEquals($expected, Match::reduce($carry, $match));
+    }
+
+    public static function dataProviderForTestReduce()
+    {
+        return array(
+            array(
+                array(1 => new Match(1.0, 10, 1)),
+                new Match(0.5, 111, 1),
+                array(1 => new Match(0.5, 111, 1)),
+            ),
+            array(
+                array(1 => new Match(1.0, 110, 1)),
+                new Match(0.5, 11, 1),
+                array(1 => new Match(1.0, 110, 1)),
+            ),
+            array(
+                array(0 => new Match(1.0, 10, 1)),
+                new Match(0.5, 111, 1),
+                array(0 => new Match(1.0, 10, 1), 1 => new Match(0.5, 111, 1)),
+            ),
+        );
+    }
 }
