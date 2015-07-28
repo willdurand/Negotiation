@@ -1,3 +1,4 @@
+sudo: false
 language: php
 
 php:
@@ -13,6 +14,6 @@ matrix:
 
 before_script:
     - composer self-update
-    - composer install --dev --prefer-dist --no-interaction
+    - composer install --prefer-dist --no-interaction
 
 script: phpunit --coverage-text
