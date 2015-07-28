@@ -14,32 +14,26 @@ abstract class AbstractNegotiator
      */
     public function getBest($header, array $priorities)
     {
-        if (!$priorities) {
-            throw new \InvalidArgumentException('no priorities given');
+        if (empty($priorities)) {
+            throw new \InvalidArgumentException('A set of server priorities should be given.');
         }
 
         if (!$header) {
-            throw new \InvalidArgumentException('empty header given');
+            throw new \InvalidArgumentException('The header string should not be empty.');
         }
 
-        $headers = self::parseHeader($header);
+        $headers    = self::parseHeader($header);
+        $headers    = array_map(array($this, 'acceptFactory'), $headers);
+        $priorities = array_map(array($this, 'acceptFactory'), $priorities);
 
-        $headers = array_map(array($this, 'acceptFactory'), $headers);
-        $priorities  = array_map(array($this, 'acceptFactory'), $priorities);
+        $matches         = self::findMatches($headers, $priorities);
+        $specificMatches = array_reduce($matches, array($this, 'reduce'), []);
 
-        $matches = self::findMatches($headers, $priorities);
+        usort($specificMatches, 'Negotiation\Match::compare');
 
-        $specific_matches = array_reduce($matches, array($this, 'reduce'), array());
+        $match = array_shift($specificMatches);
 
-        usort($specific_matches, array($this, 'compare'));
-
-        $match = array_shift($specific_matches);
-
-        if ($match === null) {
-            return null;
-        }
-
-        return $priorities[$match->index];
+        return null === $match ? null : $priorities[$match->index];
     }
 
     /**
@@ -66,12 +60,12 @@ abstract class AbstractNegotiator
      */
     protected static function findMatches(array $headerParts, array $priorities)
     {
-        $matches = array();
-
+        $matches = [];
         foreach ($priorities as $index => $p) {
             foreach ($headerParts as $h) {
-                if ($match = static::match($h, $p, $index))
+                if ($match = static::match($h, $p, $index)) {
                     $matches[] = $match;
+                }
             }
         }
 
@@ -94,30 +88,11 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param Match $a
-     * @param Match $b
-     *
-     * @return int
-     */
-    protected static function compare(Match $a, Match $b)
-    {
-        if ($a->quality != $b->quality) {
-            return $a->quality > $b->quality ? -1 : 1;
-        }
-
-        if ($a->index != $b->index) {
-            return $a->index > $b->index ? 1 : -1;
-        }
-
-        return 0;
-    }
-
-    /**
      * @param BaseAccept $header
      * @param BaseAccept $priority
      * @param integer $index
      *
-     * @return Match Headers matched
+     * @return Match|null Headers matched
      */
     protected static function match(BaseAccept $header, BaseAccept $priority, $index)
     {
@@ -141,5 +116,4 @@ abstract class AbstractNegotiator
      * @return BaseAccept[] parsed header objects
      */
     abstract protected function acceptFactory($header);
-
 }
