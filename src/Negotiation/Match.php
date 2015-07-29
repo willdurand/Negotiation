@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-class Match
+final class Match
 {
     /**
      * @var float
