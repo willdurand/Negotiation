@@ -2,6 +2,7 @@
 
 namespace Negotiation;
 
+use Negotiation\Exception\InvalidArgument;
 use Negotiation\Exception\InvalidHeader;
 
 abstract class AbstractNegotiator
@@ -15,11 +16,11 @@ abstract class AbstractNegotiator
     public function getBest($header, array $priorities)
     {
         if (empty($priorities)) {
-            throw new \InvalidArgumentException('A set of server priorities should be given.');
+            throw new InvalidArgument('A set of server priorities should be given.');
         }
 
         if (!$header) {
-            throw new \InvalidArgumentException('The header string should not be empty.');
+            throw new InvalidArgument('The header string should not be empty.');
         }
 
         $headers    = $this->parseHeader($header);
@@ -35,6 +36,13 @@ abstract class AbstractNegotiator
 
         return null === $match ? null : $priorities[$match->index];
     }
+
+    /**
+     * @param string $header accept header part or server priority
+     *
+     * @return AcceptHeader Parsed header object
+     */
+    abstract protected function acceptFactory($header);
 
     /**
      * @param AcceptHeader $header
@@ -58,13 +66,6 @@ abstract class AbstractNegotiator
 
         return null;
     }
-
-    /**
-     * @param string $header accept header part or server priority
-     *
-     * @return AcceptHeader Parsed header object
-     */
-    abstract protected function acceptFactory($header);
 
     /**
      * @param string $header A string that contains an `Accept*` header.

@@ -16,7 +16,7 @@ final class Accept extends BaseAccept implements AcceptHeader
 
         $parts = explode('/', $this->type);
 
-        if (count($parts) != 2 || !$parts[0] || !$parts[1]) {
+        if (count($parts) !== 2 || !$parts[0] || !$parts[1]) {
             throw new InvalidMediaType();
         }
 

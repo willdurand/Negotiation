@@ -43,7 +43,7 @@ class CharsetNegotiatorTest extends TestCase
     public function testGetBest($accept, $priorities, $expected)
     {
         if (is_null($expected))
-            $this->setExpectedException('\InvalidArgumentException');
+            $this->setExpectedException('Negotiation\Exception\InvalidArgument');
 
         $accept = $this->negotiator->getBest($accept, $priorities);
         if (null === $accept) {

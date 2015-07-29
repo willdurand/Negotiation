@@ -2,6 +2,8 @@
 
 namespace Negotiation\Tests;
 
+use Negotiation\Exception\InvalidArgument;
+use Negotiation\Exception\InvalidMediaType;
 use Negotiation\Negotiator;
 use Negotiation\Accept;
 use Negotiation\Match;
@@ -47,9 +49,9 @@ class NegotiatorTest extends TestCase
 
         return array(
             # exceptions
-            array('/qwer', array('f/g'), new \Negotiation\Exception\InvalidMediaType()),
-            array('', array('foo/bar'), new \InvalidArgumentException('The header string should not be empty.')),
-            array('*/*', array(), new \InvalidArgumentException('A set of server priorities should be given.')),
+            array('/qwer', array('f/g'), new InvalidMediaType()),
+            array('', array('foo/bar'), new InvalidArgument('The header string should not be empty.')),
+            array('*/*', array(), new InvalidArgument('A set of server priorities should be given.')),
 
             # See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
             array($rfcHeader, array('text/html;level=1'), array('text/html', array('level' => '1'))),

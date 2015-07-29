@@ -32,7 +32,7 @@ class Negotiator extends AbstractNegotiator
         $baseEqual = !strcasecmp($ab, $pb);
         $subEqual  = !strcasecmp($as, $ps);
 
-        if (($ab == '*' || $baseEqual) && ($as == '*' || $subEqual) && count($intersection) == count($accept->getParameters())) {
+        if (($ab === '*' || $baseEqual) && ($as === '*' || $subEqual) && count($intersection) === count($accept->getParameters())) {
             $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
 
             return new Match($accept->getQuality(), $score, $index);
