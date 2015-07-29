@@ -58,7 +58,7 @@ abstract class AbstractNegotiator
 
         $equal = !strcasecmp($ac, $pc);
 
-        if ($equal || $ac == '*') {
+        if ($equal || $ac === '*') {
             $score = 1 * $equal;
 
             return new Match($header->getQuality(), $score, $index);
@@ -94,7 +94,7 @@ abstract class AbstractNegotiator
         $matches = [];
         foreach ($priorities as $index => $p) {
             foreach ($headerParts as $h) {
-                if ($match = $this->match($h, $p, $index)) {
+                if (null !== $match = $this->match($h, $p, $index)) {
                     $matches[] = $match;
                 }
             }
