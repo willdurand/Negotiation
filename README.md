@@ -1,15 +1,24 @@
 Negotiation
 ===========
 
-[![Build Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
-[![Total Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
-[![Latest Stable Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
+[![Build
+Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
+[![Total
+Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
+[![Latest Stable
+Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
 
 **Negotiation** is a standalone library without any dependencies that allows you
-to implement [content negotiation](https://tools.ietf.org/html/rfc7231#section-5.3) in your application, whatever framework you use.
-This library is based on [RFC 7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and extensively unit tested.
+to implement [content
+negotiation](https://tools.ietf.org/html/rfc7231#section-5.3) in your
+application, whatever framework you use.  This library is based on [RFC
+7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and
+extensively unit tested!
 
-TODO link to version 1
+> **Important:** You are browsing the documentation of Negotiation **2.x**.
+Documentation for version **1.x** is available here: [Negotiation 1.x
+documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
+
 
 Installation
 ------------
@@ -21,31 +30,15 @@ The recommended way to install Negotiation is through
 $ composer require willdurand/negotiation
 ```
 
-**Protip:** you can also choose the correct version via
-[`willdurand/negotiation`](https://packagist.org/packages/willdurand/negotiation).
-
 
 Usage Examples
 --------------
 
-Language negotiation:
-
-``` php
-<?php
-
-$negotiator = new \Negotiation\LanguageNegotiator();
-$priorities = array('de', 'fu', 'en');
-$acceptLangageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
-$best = $negotiator->getBest($acceptLangageHeader, $priorities);
-
-$type = $best->getType();
-// $type == 'fu';
-```
-
-Media Type negotiation:
+### Media Type Negotiation
 
 ``` php
 $negotiator = new \Negotiation\Negotiator();
+
 $acceptHeader = 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8';
 $priorities   = array('text/html; charset=UTF-8', 'application/json');
 
@@ -55,30 +48,63 @@ $value = $mediaType->getValue();
 // $value == 'text/html; charset=UTF-8'
 ```
 
-The `getBest()` method, part of the `AbstractNegotiator` class, returns the best matching priority (`AcceptLanguage` instance) or `null` when no match is made.
+The `Negotiator` returns an instance of `Accept`, or `null` if negotiating the
+best media type has failed.
 
+### Language Negotiation
 
-### Class Hierarchy
+``` php
+<?php
 
-  * `BaseAccept`
+$negotiator = new \Negotiation\LanguageNegotiator();
 
-    - `Accept`
-    - `AcceptLanguage`
-    - `AcceptCharset`
-    - `AcceptEncoding`
+$acceptLangageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+$priorities          = array('de', 'fu', 'en');
 
+$bestLanguage = $negotiator->getBest($acceptLangageHeader, $priorities);
 
-  * `AbstractNegotiator`
+$type = $bestLanguage->getType();
+// $type == 'fu';
 
-    - `Negotiator`
-    - `LanguageNegotiator`
-    - `CharsetNegotiator`
-    - `EncodingNegotiator`
+$quality = $bestLanguage->getQuality();
+// $quality == 0.9
+```
 
+The `LanguageNegotiator` returns an instance of `AcceptLanguage`.
 
-  * `Match`
+### Encoding Negotiation
 
-TODO document methods
+``` php
+<?php
+
+$negotiator = new \Negotiation\EncodingNegotiator();
+$encoding   = $negotiator->getBest($acceptHeader, $priorities);
+```
+
+The `EncodingNegotiator` returns an instance of `AcceptEncoding`.
+
+### Charset Negotiation
+
+``` php
+<?php
+
+$negotiator = new \Negotiation\CharsetNegotiator();
+$charset    = $negotiator->getBest($acceptHeader, $priorities);
+```
+
+The `CharsetNegotiator` returns an instance of `AcceptCharset`.
+
+### `Accept*` Classes
+
+`Accept` and `Accept*` classes share common methods such as:
+
+* `getValue()`
+* `getNormalizedValue()`
+* `getQuality()`
+* `getType()`
+* `getParameters()`
+* `getParameter()`
+* `hasParameter()`
 
 
 Unit Tests
@@ -108,10 +134,12 @@ Credits
     * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
     * [PEAR HTTP2](https://github.com/pear/HTTP2).
 
-* William Durand <william.durand1@gmail.com>
+* William Durand <will+git@drnd.me>
+* [@neural-wetware](https://github.com/neural-wetware)
 
 
 License
 -------
 
-Negotiation is released under the MIT License. See the bundled LICENSE file for details.
+Negotiation is released under the MIT License. See the bundled LICENSE file for
+details.
