@@ -64,5 +64,4 @@ class EncodingNegotiatorTest extends TestCase
             array('gzip;q=1.0, identity; q=0.5, *;q=0', array('gzip;q=1.0', 'identity; q=0.5', '*;q=0')),
         );
     }
-
 }

@@ -22,7 +22,13 @@ class AcceptLanguageTest extends TestCase
         return array(
            array('en;q=0.7', 'en'),
            array('en-GB;q=0.8', 'en-gb'),
-        );
+           array('da', 'da'),
+           array('en-gb;q=0.8', 'en-gb'),
+           array('es;q=0.7', 'es'),
+           array('fr ; q= 0.1', 'fr'),
+           array('', null),
+           array(null, null),
+       );
     }
 
     /**

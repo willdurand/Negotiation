@@ -170,5 +170,4 @@ class NegotiatorTest extends TestCase
             )
         );
     }
-
 }

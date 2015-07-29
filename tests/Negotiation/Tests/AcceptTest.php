@@ -49,8 +49,17 @@ class AcceptTest extends TestCase
     public static function dataProviderForGetType()
     {
         return array(
-           array('text/html;hello=world', 'text/html'),
-           array('application/pdf', 'application/pdf'),
+            array('text/html;hello=world', 'text/html'),
+            array('application/pdf', 'application/pdf'),
+            array('application/xhtml+xml;q=0.9', 'application/xhtml+xml'),
+            array('text/plain; q=0.5', 'text/plain'),
+            array('text/html;level=2;q=0.4', 'text/html'),
+            array('text/html ; level = 2   ; q = 0.4', 'text/html'),
+            array('text/*', 'text/*'),
+            array('text/* ;q=1 ;level=2', 'text/*'),
+            array('*/*', '*/*'),
+            array('*/* ; param=555', '*/*'),
+            array('TEXT/hTmL;leVel=2; Q=0.4', 'text/html'),
         );
     }
 

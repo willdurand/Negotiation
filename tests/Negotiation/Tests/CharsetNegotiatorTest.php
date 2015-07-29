@@ -108,5 +108,4 @@ class CharsetNegotiatorTest extends TestCase
             array('iso-8859-5, unicode-1-1;q=0.8', array('iso-8859-5', 'unicode-1-1;q=0.8')),
         );
     }
-
 }
