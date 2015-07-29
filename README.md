@@ -98,13 +98,16 @@ The `CharsetNegotiator` returns an instance of `AcceptCharset`.
 
 `Accept` and `Accept*` classes share common methods such as:
 
-* `getValue()`
-* `getNormalizedValue()`
-* `getQuality()`
-* `getType()`
-* `getParameters()`
-* `getParameter()`
-* `hasParameter()`
+* `getValue()` returns the accept value (e.g. `text/html; z=y; a=b; c=d`)
+* `getNormalizedValue()` returns the value with parameters sorted (e.g.
+  `text/html; a=b; c=d; z=y`)
+* `getQuality()` returns the quality if available (`q` parameter)
+* `getType()` returns the accept type (e.g. `text/html`)
+* `getParameters()` returns the set of parameters (excluding the `q` parameter
+  if provided)
+* `getParameter()` allows to retrieve a given parameter by its name. Fallback to
+  a `$default` (nullable) value otherwise.
+* `hasParameter()` indicates whether a parameter exists.
 
 
 Unit Tests
