@@ -29,7 +29,7 @@ class LanguageNegotiatorTest extends TestCase
             if (null === $accept) {
                 $this->assertNull($expected);
             } else {
-                $this->assertInstanceOf('\Negotiation\AcceptLanguage', $accept);
+                $this->assertInstanceOf('Negotiation\AcceptLanguage', $accept);
                 $this->assertEquals($expected, $accept->getValue());
             }
         } catch (\Exception $e) {
@@ -56,7 +56,7 @@ class LanguageNegotiatorTest extends TestCase
      */
     public function testParseHeader($header, $expected)
     {
-        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+        $accepts = $this->call_private_method('Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
         $this->assertSame($expected, $accepts);
     }

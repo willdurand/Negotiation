@@ -94,7 +94,7 @@ class CharsetNegotiatorTest extends TestCase
      */
     public function testParseHeader($header, $expected)
     {
-        $accepts = $this->call_private_method('\Negotiation\CharsetNegotiator', 'parseHeader', $this->negotiator, array($header));
+        $accepts = $this->call_private_method('Negotiation\CharsetNegotiator', 'parseHeader', $this->negotiator, array($header));
 
         $this->assertSame($expected, $accepts);
     }

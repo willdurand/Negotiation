@@ -51,7 +51,7 @@ class EncodingNegotiatorTest extends TestCase
      */
     public function testParseAcceptHeader($header, $expected)
     {
-        $accepts = $this->call_private_method('\Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
+        $accepts = $this->call_private_method('Negotiation\Negotiator', 'parseHeader', $this->negotiator, array($header));
 
         $this->assertSame($expected, $accepts);
     }
