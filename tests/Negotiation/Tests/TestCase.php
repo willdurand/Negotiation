@@ -2,9 +2,14 @@
 
 namespace Negotiation\Tests;
 
-/**
- * @author William Durand <william.durand1@gmail.com>
- */
-class TestCase extends \PHPUnit_Framework_TestCase
+abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
+    protected function call_private_method($class, $method, $object, $params)
+    {
+        $method = new \ReflectionMethod($class, $method);
+
+        $method->setAccessible(true);
+
+        return $method->invokeArgs($object, $params);
+    }
 }

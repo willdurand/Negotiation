@@ -1,17 +1,23 @@
 Negotiation
 ===========
 
-[![Build Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
-[![Total Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
-[![Latest Stable Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
+[![Build
+Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
+[![Total
+Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
+[![Latest Stable
+Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
 
 **Negotiation** is a standalone library without any dependencies that allows you
 to implement [content
-negotiation](http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html) in your
-application, whatever framework you use.
-This library is based on [RFC
-2616](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html). Negotiation is
-easy to use, and extensively unit tested.
+negotiation](https://tools.ietf.org/html/rfc7231#section-5.3) in your
+application, whatever framework you use.  This library is based on [RFC
+7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and
+extensively unit tested!
+
+> **Important:** You are browsing the documentation of Negotiation **2.x**.
+Documentation for version **1.x** is available here: [Negotiation 1.x
+documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
 
 
 Installation
@@ -24,101 +30,84 @@ The recommended way to install Negotiation is through
 $ composer require willdurand/negotiation
 ```
 
-**Protip:** you can also choose the correct version via
-[`willdurand/negotiation`](https://packagist.org/packages/willdurand/negotiation).
 
+Usage Examples
+--------------
 
-Usage
------
-
-In a nutshell:
+### Media Type Negotiation
 
 ``` php
-<?php
-
 $negotiator = new \Negotiation\Negotiator();
-$bestHeader = $negotiator->getBest('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2');
-// $bestHeader = 'fu';
+
+$acceptHeader = 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8';
+$priorities   = array('text/html; charset=UTF-8', 'application/json');
+
+$mediaType = $negotiator->getBest($acceptHeader, $priorities);
+
+$value = $mediaType->getValue();
+// $value == 'text/html; charset=UTF-8'
 ```
 
-The `getBest()` method, part of the `NegotiatorInterface`, returns either `null`
-or `AcceptHeader` instances. An `AcceptHeader` object owns a `value` and a
-`quality`.
-
-
-### Format Negotiation
-
-The **Format Negotiation** is handled by the `FormatNegotiator` class.
-Basically, pass an `Accept` header and optionally a set of preferred media types
-to the `getBest()` method in order to retrieve the best **media type**:
-
-``` php
-<?php
-
-$negotiator   = new \Negotiation\FormatNegotiator();
-
-$acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-$priorities   = array('text/html', 'application/json', '*/*');
-
-$format = $negotiator->getBest($acceptHeader, $priorities);
-// $format->getValue() = text/html
-```
-
-The `FormatNegotiator` class also provides a `getBestFormat()` method that
-returns the best format given an `Accept` header string and a set of
-preferred/allowed formats or mime types:
-
-``` php
-<?php
-
-$negotiator   = new \Negotiation\FormatNegotiator();
-
-$acceptHeader = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-$priorities   = array('html', 'application/json', '*/*');
-
-$format = $negotiator->getBestFormat($acceptHeader, $priorities);
-// $format = html
-```
-
-#### Other Methods
-
-* `registerFormat($format, array $mimeTypes, $override = false)`: registers a new
-  format with its mime types;
-* `getFormat($mimeType)`: returns the format for a given mime type, or null if
-not found;
-* `normalizePriorities($priorities)`: ensures that any formats are converted to
-  mime types.
+The `Negotiator` returns an instance of `Accept`, or `null` if negotiating the
+best media type has failed.
 
 ### Language Negotiation
-
-Language negotiation is handled by the `LanguageNegotiator` class:
 
 ``` php
 <?php
 
 $negotiator = new \Negotiation\LanguageNegotiator();
-$language   = $negotiator->getBest('da, en-gb;q=0.8, en;q=0.7');
-// $language = da
+
+$acceptLangageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+$priorities          = array('de', 'fu', 'en');
+
+$bestLanguage = $negotiator->getBest($acceptLangageHeader, $priorities);
+
+$type = $bestLanguage->getType();
+// $type == 'fu';
+
+$quality = $bestLanguage->getQuality();
+// $quality == 0.9
 ```
 
+The `LanguageNegotiator` returns an instance of `AcceptLanguage`.
 
-### Charset/Encoding Negotiation
-
-Charset/Encoding negotiation works out of the box using the `Negotiator` class:
+### Encoding Negotiation
 
 ``` php
 <?php
 
-$negotiator = new \Negotiation\Negotiator();
-$priorities = array(
-    'utf-8',
-    'big5',
-    'shift-jis',
-);
-
-$bestHeader = $negotiator->getBest('ISO-8859-1, Big5;q=0.6,utf-8;q=0.7, *;q=0.5', $priorities);
-// $bestHeader = 'utf-8'
+$negotiator = new \Negotiation\EncodingNegotiator();
+$encoding   = $negotiator->getBest($acceptHeader, $priorities);
 ```
+
+The `EncodingNegotiator` returns an instance of `AcceptEncoding`.
+
+### Charset Negotiation
+
+``` php
+<?php
+
+$negotiator = new \Negotiation\CharsetNegotiator();
+$charset    = $negotiator->getBest($acceptHeader, $priorities);
+```
+
+The `CharsetNegotiator` returns an instance of `AcceptCharset`.
+
+### `Accept*` Classes
+
+`Accept` and `Accept*` classes share common methods such as:
+
+* `getValue()` returns the accept value (e.g. `text/html; z=y; a=b; c=d`)
+* `getNormalizedValue()` returns the value with parameters sorted (e.g.
+  `text/html; a=b; c=d; z=y`)
+* `getQuality()` returns the quality if available (`q` parameter)
+* `getType()` returns the accept type (e.g. `text/html`)
+* `getParameters()` returns the set of parameters (excluding the `q` parameter
+  if provided)
+* `getParameter()` allows to retrieve a given parameter by its name. Fallback to
+  a `$default` (nullable) value otherwise.
+* `hasParameter()` indicates whether a parameter exists.
 
 
 Unit Tests
@@ -136,7 +125,7 @@ Run it using PHPUnit:
 Contributing
 ------------
 
-See CONTRIBUTING file.
+See [CONTRIBUTING](CONTRIBUTING.md) file.
 
 
 Credits
@@ -148,10 +137,12 @@ Credits
     * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
     * [PEAR HTTP2](https://github.com/pear/HTTP2).
 
-* William Durand <william.durand1@gmail.com>
+* William Durand <will+git@drnd.me>
+* [@neural-wetware](https://github.com/neural-wetware)
 
 
 License
 -------
 
-Negotiation is released under the MIT License. See the bundled LICENSE file for details.
+Negotiation is released under the MIT License. See the bundled LICENSE file for
+details.
