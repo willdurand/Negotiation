@@ -51,6 +51,7 @@ class LanguageNegotiator extends Negotiator
     protected function match(array $acceptHeaders, array $priorities = array())
     {
         $wildcardAccept  = null;
+        $genericAccept   = null;
 
         $prioritiesSet   = array();
         $prioritiesSet[] = $priorities;
@@ -66,10 +67,21 @@ class LanguageNegotiator extends Negotiator
                     return $priorities[$found];
                 }
 
+                if (null === $genericAccept && false !== strpos($accept->getValue(), '-')) {
+                    $genericValue = explode('-', $accept->getValue());
+                    if ($genericValue && (false !== $found = array_search(strtolower($genericValue[0]), $sanitizedPriorities))) {
+                        $genericAccept = $priorities[$found];
+                    }
+                }
+
                 if ('*' === $accept->getValue()) {
                     $wildcardAccept = $accept;
                 }
             }
+        }
+
+        if ($genericAccept) {
+            return $genericAccept;
         }
 
         if (null !== $wildcardAccept) {
