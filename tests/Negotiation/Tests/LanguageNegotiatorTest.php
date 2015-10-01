@@ -78,6 +78,22 @@ class LanguageNegotiatorTest extends TestCase
         $this->assertEquals('en-US', $acceptHeader->getValue());
     }
 
+    /**
+     * Given a accept header containing specific languages (here 'en-US', 'fr-FR')
+     *  And priorities containing a generic version of that language
+     * Then the best language is mapped to the generic one here 'fr'
+     */
+    public function testSpecificLanguageAreMappedToGeneric()
+    {
+        $acceptLanguageHeader = 'fr-FR, en-US;q=0.8';
+        $priorities           = array('fr');
+
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('fr', $acceptHeader->getValue());
+    }
+
     public function testGetBestWithWildcard()
     {
         $acceptLanguageHeader = 'en, *;q=0.9';
