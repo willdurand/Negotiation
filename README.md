@@ -18,6 +18,7 @@ extensively unit tested!
 > **Important:** You are browsing the documentation of Negotiation **2.x**.
 Documentation for version **1.x** is available here: [Negotiation 1.x
 documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
+You might also be interested in this: [**What's new in Negotiation 2?**](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0-alpha1)
 
 
 Installation
