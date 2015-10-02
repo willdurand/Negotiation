@@ -2,6 +2,8 @@
 
 namespace Negotiation;
 
+use Negotiation\Exception\InvalidLanguage;
+
 final class AcceptLanguage extends BaseAccept implements AcceptHeader
 {
     private $basePart;
