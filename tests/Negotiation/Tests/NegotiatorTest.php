@@ -28,18 +28,22 @@ class NegotiatorTest extends TestCase
     {
         try {
             $acceptHeader = $this->negotiator->getBest($header, $priorities);
-
-            if ($acceptHeader === null) {
-                $this->assertNull($expected);
-            } else {
-                $this->assertInstanceOf('Negotiation\Accept', $acceptHeader);
-
-                $this->assertSame($expected[0], $acceptHeader->getType());
-                $this->assertSame($expected[1], $acceptHeader->getParameters());
-            }
         } catch (\Exception $e) {
             $this->assertEquals($expected, $e);
+
+            return;
         }
+
+        if ($acceptHeader === null) {
+            $this->assertNull($expected);
+
+            return;
+        }
+
+        $this->assertInstanceOf('Negotiation\Accept', $acceptHeader);
+
+        $this->assertSame($expected[0], $acceptHeader->getType());
+        $this->assertSame($expected[1], $acceptHeader->getParameters());
     }
 
     public static function dataProviderForTestGetBest()
