@@ -4,6 +4,7 @@ namespace Negotiation\Tests;
 
 use Negotiation\Exception\InvalidArgument;
 use Negotiation\LanguageNegotiator;
+use Negotiation\Exception\InvalidLanguage;
 
 class LanguageNegotiatorTest extends TestCase
 {
@@ -48,6 +49,7 @@ class LanguageNegotiatorTest extends TestCase
             array('en; q=0.1, fr; q=0.4, bu; q=1.0', array('en', 'fr'), 'fr'),
             array('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2', array('en', 'fu'), 'fu'),
             array('', array('en', 'fu'), new InvalidArgument('The header string should not be empty.')),
+            array('zh-Hans-CN', array('fr'), new InvalidLanguage()),
         );
     }
 
