@@ -58,7 +58,9 @@ class AcceptTest extends TestCase
             array('text/*', 'text/*'),
             array('text/* ;q=1 ;level=2', 'text/*'),
             array('*/*', '*/*'),
+            array('*', '*/*'),
             array('*/* ; param=555', '*/*'),
+            array('* ; param=555', '*/*'),
             array('TEXT/hTmL;leVel=2; Q=0.4', 'text/html'),
         );
     }
