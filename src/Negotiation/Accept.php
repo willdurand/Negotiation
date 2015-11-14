@@ -14,6 +14,10 @@ final class Accept extends BaseAccept implements AcceptHeader
     {
         parent::__construct($value);
 
+        if ($this->type === '*') {
+            $this->type = '*/*';
+        }
+
         $parts = explode('/', $this->type);
 
         if (count($parts) !== 2 || !$parts[0] || !$parts[1]) {
