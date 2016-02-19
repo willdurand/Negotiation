@@ -44,7 +44,7 @@ Usage Examples
 $negotiator = new \Negotiation\Negotiator();
 
 $acceptHeader = 'text/html, application/xhtml+xml, application/xml;q=0.9, */*;q=0.8';
-$priorities   = array('text/html; charset=UTF-8', 'application/json');
+$priorities   = array('text/html; charset=UTF-8', 'application/json', 'application/xml;q=0.5');
 
 $mediaType = $negotiator->getBest($acceptHeader, $priorities);
 
@@ -93,7 +93,17 @@ The `EncodingNegotiator` returns an instance of `AcceptEncoding`.
 <?php
 
 $negotiator = new \Negotiation\CharsetNegotiator();
-$charset    = $negotiator->getBest($acceptHeader, $priorities);
+
+$acceptCharsetHeader = 'ISO-8859-1, UTF-8; q=0.9';
+$priorities          = array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0');  
+
+$bestCharset = $negotiator->getBest($acceptCharsetHeader, $priorities);
+
+$type = $bestCharset->getType();
+// $type == 'utf-8';
+
+$quality = $bestCharset->getQuality();
+// $quality == 0.81
 ```
 
 The `CharsetNegotiator` returns an instance of `AcceptCharset`.
