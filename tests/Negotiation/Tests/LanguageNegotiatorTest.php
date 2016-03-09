@@ -25,7 +25,6 @@ class LanguageNegotiatorTest extends TestCase
     {
         try {
             $accept = $this->negotiator->getBest($accept, $priorities);
-
             if (null === $accept) {
                 $this->assertNull($expected);
             } else {
@@ -49,6 +48,8 @@ class LanguageNegotiatorTest extends TestCase
             array('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2', array('en', 'fu'), 'fu'),
             array('', array('en', 'fu'), new InvalidArgument('The header string should not be empty.')),
             array('fr, zh-Hans-CN;q=0.3', array('fr'), 'fr'),
+            array('fr-FR, en-US;q=0.8', array('fr', 'en-US'), 'en-US'),
+            array('fr-FR, en-US;q=0.8', array('fr'), 'fr'),
         );
     }
 
