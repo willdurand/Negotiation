@@ -54,6 +54,7 @@ class NegotiatorTest extends TestCase
         return array(
             # exceptions
             array('/qwer', array('f/g'), new InvalidMediaType()),
+            array('foo/bar', array('/qwer'), new InvalidMediaType()),
             array('', array('foo/bar'), new InvalidArgument('The header string should not be empty.')),
             array('*/*', array(), new InvalidArgument('A set of server priorities should be given.')),
 
