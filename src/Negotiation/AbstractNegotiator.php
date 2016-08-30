@@ -23,18 +23,31 @@ abstract class AbstractNegotiator
             throw new InvalidArgument('The header string should not be empty.');
         }
 
-        $headers    = $this->parseHeader($header);
-        $headers    = array_map(array($this, 'acceptFactory'), $headers);
-        $priorities = array_map(array($this, 'acceptFactory'), $priorities);
-
-        $matches         = $this->findMatches($headers, $priorities);
+        // Once upon a time, two `array_map` calls were sitting there, but for
+        // some reasons, they triggered `E_WARNING` time to time (because of
+        // PHP bug [55416](https://bugs.php.net/bug.php?id=55416). Now, they
+        // are gone.
+        // See: https://github.com/willdurand/Negotiation/issues/81
+        $acceptedHeaders = array();
+        foreach ($this->parseHeader($header) as $h) {
+            try {
+                $acceptedHeaders[] = $this->acceptFactory($h);
+            } catch (Exception\Exception $e) {
+                // silently skip in case of invalid headers coming in from a client
+            }
+        }
+        $acceptedPriorities = array();
+        foreach ($priorities as $p) {
+            $acceptedPriorities[] = $this->acceptFactory($p);
+        }
+        $matches         = $this->findMatches($acceptedHeaders, $acceptedPriorities);
         $specificMatches = array_reduce($matches, 'Negotiation\Match::reduce', []);
 
         usort($specificMatches, 'Negotiation\Match::compare');
 
         $match = array_shift($specificMatches);
 
-        return null === $match ? null : $priorities[$match->index];
+        return null === $match ? null : $acceptedPriorities[$match->index];
     }
 
     /**
