@@ -69,7 +69,10 @@ class CharsetNegotiatorTest extends TestCase
             array($pearCharset2, array( 'Big5', 'shift-jis',), 'Big5'),
             array('utf-8;q=0.6,iso-8859-5;q=0.9', array( 'iso-8859-5', 'utf-8',), 'iso-8859-5'),
             array('', array( 'iso-8859-5', 'utf-8',), null),
-            array('en, *;q=0.9', array('fr'), 'fr')
+            array('en, *;q=0.9', array('fr'), 'fr'),
+            # Quality of source factors
+            array($pearCharset, array('iso-8859-1;q=0.5', 'utf-8', 'utf-16;q=1.0'), 'utf-8'),
+            array($pearCharset, array('iso-8859-1;q=0.8', 'utf-8', 'utf-16;q=1.0'), 'iso-8859-1;q=0.8'),
         );
     }
 
@@ -87,6 +90,13 @@ class CharsetNegotiatorTest extends TestCase
         $priorities           = array('fr');
 
         $this->assertNull($this->negotiator->getBest($acceptCharset, $priorities));
+    }
+
+    public function testGetBestRespectsQualityOfSource()
+    {
+        $accept = $this->negotiator->getBest('utf-8;q=0.5,iso-8859-1', array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0'));
+        $this->assertInstanceOf('Negotiation\AcceptCharset', $accept);
+        $this->assertEquals('utf-8', $accept->getType());
     }
 
     /**

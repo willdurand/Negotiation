@@ -49,7 +49,16 @@ class LanguageNegotiatorTest extends TestCase
             array('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2', array('en', 'fu'), 'fu'),
             array('', array('en', 'fu'), new InvalidArgument('The header string should not be empty.')),
             array('fr, zh-Hans-CN;q=0.3', array('fr'), 'fr'),
+            # Quality of source factors
+            array('en;q=0.5,de', array('de;q=0.3', 'en;q=0.9'), 'en;q=0.9'),
         );
+    }
+
+    public function testGetBestRespectsQualityOfSource()
+    {
+        $accept = $this->negotiator->getBest('en;q=0.5,de', array('de;q=0.3', 'en;q=0.9'));
+        $this->assertInstanceOf('Negotiation\AcceptLanguage', $accept);
+        $this->assertEquals('en', $accept->getType());
     }
 
     /**

@@ -92,7 +92,16 @@ class NegotiatorTest extends TestCase
             array('text/html', array( 'application/rss'), null),
             # IE8 Accept header
             array('image/jpeg, application/x-ms-application, image/gif, application/xaml+xml, image/pjpeg, application/x-ms-xbap, */*', array( 'text/html', 'application/xhtml+xml'), array('text/html', array())),
+            # Quality of source factors
+            array($rfcHeader, array('text/html;q=0.4', 'text/plain'), array('text/plain', array())),
         );
+    }
+
+    public function testGetBestRespectsQualityOfSource()
+    {
+        $accept = $this->negotiator->getBest('text/html,text/*;q=0.7', array('text/html;q=0.5', 'text/plain;q=0.9'));
+        $this->assertInstanceOf('Negotiation\Accept', $accept);
+        $this->assertEquals('text/plain', $accept->getType());
     }
 
     /**

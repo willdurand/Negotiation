@@ -74,7 +74,7 @@ abstract class AbstractNegotiator
         if ($equal || $ac === '*') {
             $score = 1 * $equal;
 
-            return new Match($header->getQuality(), $score, $index);
+            return new Match($header->getQuality() * $priority->getQuality(), $score, $index);
         }
 
         return null;

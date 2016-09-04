@@ -43,7 +43,16 @@ class EncodingNegotiatorTest extends TestCase
             array('gzip;q=1.0, identity; q=0.5, *;q=0', array('identity'), 'identity'),
             array('gzip;q=0.5, identity; q=0.5, *;q=0.7', array('bzip', 'foo'), 'bzip'),
             array('gzip;q=0.7, identity; q=0.5, *;q=0.7', array('gzip', 'foo'), 'gzip'),
+            # Quality of source factors
+            array('gzip;q=0.7,identity', array('identity;q=0.5', 'gzip;q=0.9'), 'gzip;q=0.9'),
         );
+    }
+
+    public function testGetBestRespectsQualityOfSource()
+    {
+        $accept = $this->negotiator->getBest('gzip;q=0.7,identity', array('identity;q=0.5', 'gzip;q=0.9'));
+        $this->assertInstanceOf('Negotiation\AcceptEncoding', $accept);
+        $this->assertEquals('gzip', $accept->getType());
     }
 
     /**
