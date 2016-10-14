@@ -104,6 +104,17 @@ class NegotiatorTest extends TestCase
         $this->assertEquals('text/plain', $accept->getType());
     }
 
+   /**
+    * @expectedException Negotiation\Exception\InvalidMediaType
+    */
+    public function testGetBestInvalidMediaType()
+    {
+        $header = 'sdlfkj20ff; wdf';
+        $priorities = array('foo/qwer');
+
+        $this->negotiator->getBest($header, $priorities, true);
+    }
+
     /**
      * @dataProvider dataProviderForTestParseHeader
      */
