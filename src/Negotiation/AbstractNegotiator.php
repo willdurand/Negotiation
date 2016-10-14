@@ -13,7 +13,7 @@ abstract class AbstractNegotiator
      *
      * @return AcceptHeader|null best matching type
      */
-    public function getBest($header, array $priorities, $strict = false)
+    public function getBest($header, array $priorities)
     {
         if (empty($priorities)) {
             throw new InvalidArgument('A set of server priorities should be given.');
@@ -33,9 +33,7 @@ abstract class AbstractNegotiator
             try {
                 $acceptedHeaders[] = $this->acceptFactory($h);
             } catch (Exception\Exception $e) {
-                if ($strict) {
-                    throw $e;
-                }
+                // silently skip in case of invalid headers coming in from a client
             }
         }
         $acceptedPriorities = array();
