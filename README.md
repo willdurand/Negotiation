@@ -18,7 +18,7 @@ application, whatever framework you use.  This library is based on [RFC
 7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and
 extensively unit tested!
 
-> **Important:** You are browsing the documentation of Negotiation **2.x**.
+> **Important:** You are browsing the documentation of Negotiation **2.x**+.
 Documentation for version **1.x** is available here: [Negotiation 1.x
 documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
 You might also be interested in this: [**What's new in Negotiation 2?**](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0-alpha1)
@@ -144,6 +144,8 @@ anymore, meaning major version `1` reached end of life. Last version is:
 
 Negotiation [2.0](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0)
 has been released on October 1st, 2015. It is the **current stable version**.
+The [`2.x` branch](https://github.com/willdurand/Negotiation/tree/2.x) is used
+to maintain this version.
 
 ### `dev-master`
 
@@ -151,7 +153,7 @@ has been released on October 1st, 2015. It is the **current stable version**.
 
 Version `3.x` is the next major version of Negotiation. This version lives in
 the `master` branch, and should not be used in production yet (even if we try
-to keep it state as stable as we can).
+to keep its state as stable as we can).
 
 
 Unit Tests
