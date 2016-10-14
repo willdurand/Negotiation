@@ -95,7 +95,7 @@ The `EncodingNegotiator` returns an instance of `AcceptEncoding`.
 $negotiator = new \Negotiation\CharsetNegotiator();
 
 $acceptCharsetHeader = 'ISO-8859-1, UTF-8; q=0.9';
-$priorities          = array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0');  
+$priorities          = array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0');
 
 $bestCharset = $negotiator->getBest($acceptCharsetHeader, $priorities);
 
@@ -122,6 +122,36 @@ The `CharsetNegotiator` returns an instance of `AcceptCharset`.
 * `getParameter()` allows to retrieve a given parameter by its name. Fallback to
   a `$default` (nullable) value otherwise.
 * `hasParameter()` indicates whether a parameter exists.
+
+
+Versioning
+----------
+
+Negotiation follows [Semantic Versioning](http://semver.org/).
+
+### End Of Life
+
+#### 1.x
+
+As of October 2016, [branch
+`1.x`](https://github.com/willdurand/Negotiation/tree/1.x) is not supported
+anymore, meaning major version `1` reached end of life. Last version is:
+[1.5.0](https://github.com/willdurand/Negotiation/releases/tag/1.5.0).
+
+### Stable Version
+
+#### 2.x
+
+Negotiation [2.0](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0)
+has been released on October 1st, 2015. It is the **current stable version**.
+
+### `dev-master`
+
+#### 3.x
+
+Version `3.x` is the next major version of Negotiation. This version lives in
+the `master` branch, and should not be used in production yet (even if we try
+to keep it state as stable as we can).
 
 
 Unit Tests
