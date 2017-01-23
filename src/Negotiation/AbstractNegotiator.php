@@ -53,6 +53,35 @@ abstract class AbstractNegotiator
     }
 
     /**
+     * @param string $header  A string containing an `Accept|Accept-*` header.
+     *
+     * @return [AcceptHeader] An ordered list of accept header elements
+     */
+    public function getOrderedElements($header)
+    {
+        if (!$header) {
+            throw new InvalidArgument('The header string should not be empty.');
+        }
+
+        $elements = array();
+        foreach ($this->parseHeader($header) as $h) {
+            try {
+                $elements[] = $this->acceptFactory($h);
+            } catch (Exception\Exception $e) {
+                // silently skip in case of invalid headers coming in from a client
+            }
+        }
+
+        // sort based on quality
+        usort($elements, function (BaseAccept $a, BaseAccept $b) {
+             return $a->getQuality() < $b->getQuality();
+        });
+
+        return $elements;
+    }
+
+
+    /**
      * @param string $header accept header part or server priority
      *
      * @return AcceptHeader Parsed header object
