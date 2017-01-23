@@ -64,20 +64,37 @@ abstract class AbstractNegotiator
         }
 
         $elements = array();
-        foreach ($this->parseHeader($header) as $h) {
+        $orderKeys = array();
+        foreach ($this->parseHeader($header) as $key => $h) {
             try {
-                $elements[] = $this->acceptFactory($h);
+                $element = $this->acceptFactory($h);
+                $elements[] = $element;
+                $orderKeys[] = [$element->getQuality(), $key, $element->getValue()];
             } catch (Exception\Exception $e) {
                 // silently skip in case of invalid headers coming in from a client
             }
         }
-
-        // sort based on quality
-        usort($elements, function (BaseAccept $a, BaseAccept $b) {
-             return $a->getQuality() < $b->getQuality();
+        
+        // sort based on quality and then original order. This is necessary as
+        // to ensure that the first in the list for two items with the same
+        // quality stays in that order in both PHP5 and PHP7.
+        uasort($orderKeys, function ($a, $b) {
+            $qA = $a[0];
+            $qB = $b[0];
+            
+            if ($qA == $qB) {
+                return $a[1] > $b[1];
+            }
+            
+            return ($qA > $qB) ? -1 : 1;
         });
 
-        return $elements;
+        $orderedElements = [];
+        foreach ($orderKeys as $key) {
+            $orderedElements[] = $elements[$key[1]];
+        }
+
+        return $orderedElements;
     }
 
 
