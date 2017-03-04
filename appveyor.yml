@@ -10,6 +10,7 @@ init:
   - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;%PATH%
 
 install:
+  - ps: Set-Service wuauserv -StartupType Manual
   - cinst -y OpenSSL.Light
   - cinst -y php
   - cd c:\tools\php
