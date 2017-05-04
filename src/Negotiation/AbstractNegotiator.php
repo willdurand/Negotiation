@@ -53,7 +53,7 @@ abstract class AbstractNegotiator
     }
 
     /**
-     * @param string $header  A string containing an `Accept|Accept-*` header.
+     * @param string $header A string containing an `Accept|Accept-*` header.
      *
      * @return [AcceptHeader] An ordered list of accept header elements
      */
@@ -74,18 +74,18 @@ abstract class AbstractNegotiator
                 // silently skip in case of invalid headers coming in from a client
             }
         }
-        
+
         // sort based on quality and then original order. This is necessary as
         // to ensure that the first in the list for two items with the same
         // quality stays in that order in both PHP5 and PHP7.
         uasort($orderKeys, function ($a, $b) {
             $qA = $a[0];
             $qB = $b[0];
-            
+
             if ($qA == $qB) {
                 return $a[1] > $b[1];
             }
-            
+
             return ($qA > $qB) ? -1 : 1;
         });
 
@@ -96,7 +96,6 @@ abstract class AbstractNegotiator
 
         return $orderedElements;
     }
-
 
     /**
      * @param string $header accept header part or server priority

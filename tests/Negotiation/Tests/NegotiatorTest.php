@@ -109,11 +109,13 @@ class NegotiatorTest extends TestCase
             $elements = $this->negotiator->getOrderedElements($header);
         } catch (\Exception $e) {
             $this->assertEquals($expected, $e);
+
             return;
         }
 
         if (empty($elements)) {
             $this->assertNull($expected);
+
             return;
         }
 
@@ -133,7 +135,7 @@ class NegotiatorTest extends TestCase
 
             // first one wins as no quality modifiers
             array('text/html, text/xml', array('text/html', 'text/xml')),
-            
+
             // ordered by quality modifier
             array(
                 'text/html;q=0.3, text/html;q=0.7',
