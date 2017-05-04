@@ -94,6 +94,9 @@ class NegotiatorTest extends TestCase
             array('image/jpeg, application/x-ms-application, image/gif, application/xaml+xml, image/pjpeg, application/x-ms-xbap, */*', array( 'text/html', 'application/xhtml+xml'), array('text/html', array())),
             # Quality of source factors
             array($rfcHeader, array('text/html;q=0.4', 'text/plain'), array('text/plain', array())),
+            # Wildcard "plus" parts (e.g., application/vnd.api+json)
+            array('application/vnd.api+json', array('application/json', 'application/*+json'), array('application/*+json', array())),
+            array($pearAcceptHeader, array('application/*+xml'), array('application/*+xml', array())),
         );
     }
 
