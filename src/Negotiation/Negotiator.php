@@ -49,11 +49,18 @@ class Negotiator extends AbstractNegotiator
         list($acceptSub, $acceptPlus) = $this->splitSubPart($acceptSub);
         list($prioritySub, $priorityPlus) = $this->splitSubPart($prioritySub);
 
+        // If no wildcards in either the subtype or + segment, do nothing.
+        if (!($acceptBase === '*' || $baseEqual)
+            || !($acceptSub === '*' || $prioritySub === '*' || $acceptPlus === '*' || $priorityPlus === '*')
+        ) {
+            return null;
+        }
+
         $subEqual  = !strcasecmp($acceptSub, $prioritySub);
         $plusEqual = !strcasecmp($acceptPlus, $priorityPlus);
 
-        if (($acceptBase === '*' || $baseEqual)
-            && ($acceptSub === '*' || $subEqual || $acceptPlus === '*' || $plusEqual)
+        if (($acceptSub === '*' || $prioritySub === '*' || $subEqual)
+            && ($acceptPlus === '*' || $priorityPlus === '*' || $plusEqual)
             && count($intersection) === count($accept->getParameters())
         ) {
             $score = 100 * $baseEqual + 10 * $subEqual + $plusEqual + count($intersection);
