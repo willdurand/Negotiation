@@ -62,10 +62,10 @@ best media type has failed.
 
 $negotiator = new \Negotiation\LanguageNegotiator();
 
-$acceptLangageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+$acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
 $priorities          = array('de', 'fu', 'en');
 
-$bestLanguage = $negotiator->getBest($acceptLangageHeader, $priorities);
+$bestLanguage = $negotiator->getBest($acceptLanguageHeader, $priorities);
 
 $type = $bestLanguage->getType();
 // $type == 'fu';
