@@ -15,7 +15,7 @@ class Negotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptHeader $accept, AcceptHeader $priority, $index): Match
+    protected function match(AcceptHeader $accept, AcceptHeader $priority, $index): ?Match
     {
         if (!$accept instanceof Accept || !$priority instanceof Accept) {
             return null;
