@@ -13,13 +13,13 @@ abstract class AbstractNegotiator
      *
      * @return AcceptHeader|null best matching type
      */
-    public function getBest($header, array $priorities, $strict = false)
+    public function getBest(string $header, array $priorities,bool $strict = false): ?AcceptHeader
     {
-        if (empty($priorities)) {
+        if ($priorities === []) {
             throw new InvalidArgument('A set of server priorities should be given.');
         }
 
-        if (!$header) {
+        if ($header === '') {
             throw new InvalidArgument('The header string should not be empty.');
         }
 
@@ -55,9 +55,9 @@ abstract class AbstractNegotiator
     /**
      * @param string $header A string containing an `Accept|Accept-*` header.
      *
-     * @return [AcceptHeader] An ordered list of accept header elements
+     * @return AcceptHeader[] An ordered list of accept header elements
      */
-    public function getOrderedElements($header)
+    public function getOrderedElements(string $header): array
     {
         if (!$header) {
             throw new InvalidArgument('The header string should not be empty.');
@@ -111,7 +111,7 @@ abstract class AbstractNegotiator
      *
      * @return Match|null Headers matched
      */
-    protected function match(AcceptHeader $header, AcceptHeader $priority, $index)
+    protected function match(AcceptHeader $header, AcceptHeader $priority, $index): ?Match
     {
         $ac = $header->getType();
         $pc = $priority->getType();
@@ -132,7 +132,7 @@ abstract class AbstractNegotiator
      *
      * @return AcceptHeader[]
      */
-    private function parseHeader($header)
+    private function parseHeader($header): array
     {
         $res = preg_match_all('/(?:[^,"]*+(?:"[^"]*+")?)+[^,"]*+/', $header, $matches);
 
@@ -149,7 +149,7 @@ abstract class AbstractNegotiator
      *
      * @return Match[] Headers matched
      */
-    private function findMatches(array $headerParts, array $priorities)
+    private function findMatches(array $headerParts, array $priorities): array
     {
         $matches = [];
         foreach ($priorities as $index => $p) {
