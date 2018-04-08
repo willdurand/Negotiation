@@ -7,7 +7,7 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function acceptFactory($accept)
+    protected function acceptFactory($accept): AccepLanguage
     {
         return new AcceptLanguage($accept);
     }
@@ -15,7 +15,7 @@ class LanguageNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptHeader $acceptLanguage, AcceptHeader $priority, $index)
+    protected function match(AcceptHeader $acceptLanguage, AcceptHeader $priority, $index): ?Match
     {
         if (!$acceptLanguage instanceof AcceptLanguage || !$priority instanceof AcceptLanguage) {
             return null;
