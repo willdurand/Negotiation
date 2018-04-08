@@ -31,7 +31,7 @@ final class Accept extends BaseAccept implements AcceptHeader
     /**
      * @return string
      */
-    public function getSubPart()
+    public function getSubPart(): string
     {
         return $this->subPart;
     }
@@ -39,7 +39,7 @@ final class Accept extends BaseAccept implements AcceptHeader
     /**
      * @return string
      */
-    public function getBasePart()
+    public function getBasePart(): string
     {
         return $this->basePart;
     }
