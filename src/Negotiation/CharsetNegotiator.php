@@ -7,7 +7,7 @@ class CharsetNegotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function acceptFactory($accept)
+    protected function acceptFactory($accept): AcceptCharset
     {
         return new AcceptCharset($accept);
     }

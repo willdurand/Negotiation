@@ -51,7 +51,7 @@ final class Match
      *
      * @return Match[]
      */
-    public static function reduce(array $carry, Match $match)
+    public static function reduce(array $carry, Match $match): array
     {
         if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
             $carry[$match->index] = $match;
