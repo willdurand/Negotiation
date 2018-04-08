@@ -7,7 +7,7 @@ class Negotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function acceptFactory($accept)
+    protected function acceptFactory($accept): Accept
     {
         return new Accept($accept);
     }
@@ -15,7 +15,7 @@ class Negotiator extends AbstractNegotiator
     /**
      * {@inheritdoc}
      */
-    protected function match(AcceptHeader $accept, AcceptHeader $priority, $index)
+    protected function match(AcceptHeader $accept, AcceptHeader $priority, $index): ?Match
     {
         if (!$accept instanceof Accept || !$priority instanceof Accept) {
             return null;
@@ -78,7 +78,7 @@ class Negotiator extends AbstractNegotiator
      * should allow wildcards for either the portion before the "+" or
      * after. This method splits the subpart to allow such matching.
      */
-    protected function splitSubPart($subPart)
+    protected function splitSubPart($subPart): array
     {
         if (!strstr($subPart, '+')) {
             return [$subPart, ''];
