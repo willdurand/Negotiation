@@ -11,10 +11,13 @@
         }
     ],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=7.0.0"
     },
     "autoload": {
         "psr-4": { "Negotiation\\": "src/Negotiation" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Negotiation\\Tests\\": "tests/Negotiation/Tests" }
     },
     "extra": {
         "branch-alias": {
@@ -22,6 +25,6 @@
         }
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.5"
+        "phpunit/phpunit": "^6.5"
     }
 }
