@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0.0"
+        "php": ">=7.3.0"
     },
     "autoload": {
         "psr-4": { "Negotiation\\": "src/Negotiation" }
@@ -24,7 +24,8 @@
             "dev-master": "3.0-dev"
         }
     },
+    "minimum-stability": "dev",
     "require-dev": {
-        "phpunit/phpunit": "^6.5"
+        "phpunit/phpunit": "9.3.x-dev"
     }
 }

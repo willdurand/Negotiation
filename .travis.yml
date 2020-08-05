@@ -2,10 +2,9 @@ sudo: false
 language: php
 
 php:
-    - 7.0
-    - 7.1
-    - 7.2
     - 7.3
+    - 7.4
+    - nightly
     - hhvm
 
 matrix:
@@ -13,7 +12,7 @@ matrix:
         - php: hhvm
 
 before_script:
-    - composer self-update
-    - composer install --prefer-dist --no-interaction
+    - composer self-update --2
+    - composer install --prefer-dist --no-interaction --ignore-platform-req=php
 
 script: vendor/bin/phpunit --coverage-text
