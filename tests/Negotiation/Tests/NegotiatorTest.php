@@ -6,7 +6,7 @@ use Negotiation\Exception\InvalidArgument;
 use Negotiation\Exception\InvalidMediaType;
 use Negotiation\Negotiator;
 use Negotiation\Accept;
-use Negotiation\Matched;
+use Negotiation\AcceptMatch;
 
 class NegotiatorTest extends TestCase
 {
@@ -212,40 +212,40 @@ class NegotiatorTest extends TestCase
                 array(new Accept('text/html; charset=UTF-8'), new Accept('image/png; foo=bar; q=0.7'), new Accept('*/*; foo=bar; q=0.4')),
                 array(new Accept('text/html; charset=UTF-8'), new Accept('image/png; foo=bar'), new Accept('application/pdf')),
                 array(
-                    new Matched(1.0, 111, 0),
-                    new Matched(0.7, 111, 1),
-                    new Matched(0.4, 1,   1),
+                    new AcceptMatch(1.0, 111, 0),
+                    new AcceptMatch(0.7, 111, 1),
+                    new AcceptMatch(0.4, 1,   1),
                 )
             ),
             array(
                 array(new Accept('text/html'), new Accept('image/*; q=0.7')),
                 array(new Accept('text/html; asfd=qwer'), new Accept('image/png'), new Accept('application/pdf')),
                 array(
-                    new Matched(1.0, 110, 0),
-                    new Matched(0.7, 100, 1),
+                    new AcceptMatch(1.0, 110, 0),
+                    new AcceptMatch(0.7, 100, 1),
                 )
             ),
             array( # https://tools.ietf.org/html/rfc7231#section-5.3.2
                 array(new Accept('text/*; q=0.3'), new Accept('text/html; q=0.7'), new Accept('text/html; level=1'), new Accept('text/html; level=2; q=0.4'), new Accept('*/*; q=0.5')),
                 array(new Accept('text/html; level=1'), new Accept('text/html'), new Accept('text/plain'), new Accept('image/jpeg'), new Accept('text/html; level=2'), new Accept('text/html; level=3')),
                 array(
-                    new Matched(0.3,    100,    0),
-                    new Matched(0.7,    110,    0),
-                    new Matched(1.0,    111,    0),
-                    new Matched(0.5,      0,    0),
-                    new Matched(0.3,    100,    1),
-                    new Matched(0.7,    110,    1),
-                    new Matched(0.5,      0,    1),
-                    new Matched(0.3,    100,    2),
-                    new Matched(0.5,      0,    2),
-                    new Matched(0.5,      0,    3),
-                    new Matched(0.3,    100,    4),
-                    new Matched(0.7,    110,    4),
-                    new Matched(0.4,    111,    4),
-                    new Matched(0.5,      0,    4),
-                    new Matched(0.3,    100,    5),
-                    new Matched(0.7,    110,    5),
-                    new Matched(0.5,      0,    5),
+                    new AcceptMatch(0.3,    100,    0),
+                    new AcceptMatch(0.7,    110,    0),
+                    new AcceptMatch(1.0,    111,    0),
+                    new AcceptMatch(0.5,      0,    0),
+                    new AcceptMatch(0.3,    100,    1),
+                    new AcceptMatch(0.7,    110,    1),
+                    new AcceptMatch(0.5,      0,    1),
+                    new AcceptMatch(0.3,    100,    2),
+                    new AcceptMatch(0.5,      0,    2),
+                    new AcceptMatch(0.5,      0,    3),
+                    new AcceptMatch(0.3,    100,    4),
+                    new AcceptMatch(0.7,    110,    4),
+                    new AcceptMatch(0.4,    111,    4),
+                    new AcceptMatch(0.5,      0,    4),
+                    new AcceptMatch(0.3,    100,    5),
+                    new AcceptMatch(0.7,    110,    5),
+                    new AcceptMatch(0.5,      0,    5),
                 )
             )
         );
