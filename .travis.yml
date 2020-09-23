@@ -5,14 +5,10 @@ php:
     - 7.3
     - 7.4
     - nightly
-    - hhvm
-
-matrix:
-    allow_failures:
-        - php: hhvm
 
 before_script:
     - composer self-update --2
+    # --ignore-platform-req is required here to get PHPUnit and all required dependencies to install on PHP 8
     - composer install --prefer-dist --no-interaction --ignore-platform-req=php
 
 script: vendor/bin/phpunit --coverage-text
