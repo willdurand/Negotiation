@@ -1,14 +1,21 @@
 sudo: false
 language: php
 
-php:
-    - 7.3
-    - 7.4
-    - nightly
+matrix:
+    include:
+        - php: 7.1
+          env: SYMFONY_PHPUNIT_VERSION=7.5
+        - php: 7.2
+          env: SYMFONY_PHPUNIT_VERSION=8.5
+        - php: 7.3
+          env: SYMFONY_PHPUNIT_VERSION=9.3
+        - php: 7.4
+          env: SYMFONY_PHPUNIT_VERSION=9.3
+        - php: nightly
+          env: SYMFONY_PHPUNIT_VERSION=9.3
 
 before_script:
     - composer self-update --2
-    # --ignore-platform-req is required here to get PHPUnit and all required dependencies to install on PHP 8
-    - composer install --prefer-dist --no-interaction --ignore-platform-req=php
+    - composer install --prefer-dist --no-interaction
 
-script: vendor/bin/phpunit --coverage-text
+script: vendor/bin/simple-phpunit --coverage-text
