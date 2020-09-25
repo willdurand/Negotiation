@@ -2,14 +2,13 @@ Negotiation
 ===========
 
 [![Build
-Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
+Status](https://travis-ci.org/willdurand/Negotiation.svg?branch=master)](http://travis-ci.org/willdurand/Negotiation)
 [![Build
 status](https://ci.appveyor.com/api/projects/status/6tbe8j3gofdlfm4v?svg=true)](https://ci.appveyor.com/project/willdurand/negotiation)
 [![Total
 Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
 [![Latest Stable
 Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
-![PHP 7 ready](https://img.shields.io/badge/PHP%207-ready-green.svg)
 
 **Negotiation** is a standalone library without any dependencies that allows you
 to implement [content
