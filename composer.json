@@ -24,7 +24,6 @@
             "dev-master": "3.0-dev"
         }
     },
-    "minimum-stability": "dev",
     "require-dev": {
         "symfony/phpunit-bridge": "^5.0"
     }
