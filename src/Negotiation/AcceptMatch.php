@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-final class Match
+final class AcceptMatch
 {
     /**
      * @var float
@@ -27,12 +27,12 @@ final class Match
     }
 
     /**
-     * @param Match $a
-     * @param Match $b
+     * @param AcceptMatch $a
+     * @param AcceptMatch $b
      *
      * @return int
      */
-    public static function compare(Match $a, Match $b)
+    public static function compare(AcceptMatch $a, AcceptMatch $b)
     {
         if ($a->quality !== $b->quality) {
             return $a->quality > $b->quality ? -1 : 1;
@@ -46,12 +46,12 @@ final class Match
     }
 
     /**
-     * @param array $carry reduced array
-     * @param Match $match match to be reduced
+     * @param array   $carry reduced array
+     * @param AcceptMatch $match match to be reduced
      *
-     * @return Match[]
+     * @return AcceptMatch[]
      */
-    public static function reduce(array $carry, Match $match)
+    public static function reduce(array $carry, AcceptMatch $match)
     {
         if (!isset($carry[$match->index]) || $carry[$match->index]->score < $match->score) {
             $carry[$match->index] = $match;

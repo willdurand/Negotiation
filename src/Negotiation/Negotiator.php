@@ -38,7 +38,7 @@ class Negotiator extends AbstractNegotiator
         ) {
             $score = 100 * $baseEqual + 10 * $subEqual + count($intersection);
 
-            return new Match($accept->getQuality() * $priority->getQuality(), $score, $index);
+            return new AcceptMatch($accept->getQuality() * $priority->getQuality(), $score, $index);
         }
 
         if (!strstr($acceptSub, '+') || !strstr($prioritySub, '+')) {
@@ -65,7 +65,7 @@ class Negotiator extends AbstractNegotiator
         ) {
             $score = 100 * $baseEqual + 10 * $subEqual + $plusEqual + count($intersection);
 
-            return new Match($accept->getQuality() * $priority->getQuality(), $score, $index);
+            return new AcceptMatch($accept->getQuality() * $priority->getQuality(), $score, $index);
         }
 
         return null;
