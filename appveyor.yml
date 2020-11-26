@@ -1,30 +1,43 @@
-build: off
-shallow_clone: true
-platform: x86
+version: '{build}'
 clone_folder: c:\projects\willdurand\negotiation
-
-cache:
-  - '%LOCALAPPDATA%\Composer\files'
+cache: '%LOCALAPPDATA%\Composer\files'
+build: off
 
 init:
-  - SET PATH=C:\Program Files\OpenSSL;c:\tools\php;c:\tools\php71;%PATH%
+- cmd: SET PATH=C:\Program Files\OpenSSL;c:\tools\php;c:\tools\php74;%PATH%
 
 install:
-  - ps: Set-Service wuauserv -StartupType Manual
-  - cinst -y OpenSSL.Light
-  - cinst -y php
-  - cd c:\tools\php71
-  - copy php.ini-production php.ini /Y
-  - echo date.timezone="UTC" >> php.ini
-  - echo extension_dir=ext >> php.ini
-  - echo extension=php_openssl.dll >> php.ini
-  - echo extension=php_mbstring.dll >> php.ini
-  - echo extension=php_fileinfo.dll >> php.ini
-  - echo memory_limit=1G >> php.ini
-  - cd c:\projects\willdurand\negotiation
-  - php -r "readfile('http://getcomposer.org/installer');" | php
-  - php composer.phar update --no-interaction --no-progress
+- cmd: >-
+    powershell.exe Set-Service wuauserv -StartupType Manual
+
+    cinst -y OpenSSL.Light
+
+    cinst -y php
+
+    cd c:\tools\php74
+
+    copy php.ini-production php.ini /Y
+
+    echo date.timezone="UTC" >> php.ini
+
+    echo extension_dir=ext >> php.ini
+
+    echo extension=php_openssl.dll >> php.ini
+
+    echo extension=php_mbstring.dll >> php.ini
+
+    echo extension=php_fileinfo.dll >> php.ini
+
+    echo memory_limit=1G >> php.ini
+
+    cd c:\projects\willdurand\negotiation
+
+    php -r "readfile('http://getcomposer.org/installer');" | php
+
+    php composer.phar update --no-interaction --no-progress
 
 test_script:
-  - cd c:\projects\willdurand\negotiation
-  - vendor\bin\phpunit.bat --verbose
+- cmd: >-
+    cd c:\projects\willdurand\negotiation
+
+    php composer.phar exec simple-phpunit --verbose
