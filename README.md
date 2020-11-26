@@ -149,7 +149,7 @@ has been released on October 1st, 2015. As of November 2020, the major version
 
 ### Stable Version
 
-### `3.x`/`dev-master`
+#### 3.x (and `dev-master`)
 
 Negotiation [3.0](https://github.com/willdurand/Negotiation/releases/tag/3.0.0)
 has been released on November 26th, 2020. This is the **current stable version**
