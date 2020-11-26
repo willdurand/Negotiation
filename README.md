@@ -17,10 +17,13 @@ application, whatever framework you use.  This library is based on [RFC
 7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and
 extensively unit tested!
 
-> **Important:** You are browsing the documentation of Negotiation **2.x**+.
-Documentation for version **1.x** is available here: [Negotiation 1.x
-documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
-You might also be interested in this: [**What's new in Negotiation 2?**](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0-alpha1)
+> **Important:** You are browsing the documentation of Negotiation **3.x**+.
+>
+> Documentation for version **1.x** is available here: [Negotiation 1.x
+> documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
+>
+> Documentation for version **2.x** is available here: [Negotiation 2.x
+> documentation](https://github.com/willdurand/Negotiation/blob/2.x/README.md#usage).
 
 
 Installation
@@ -137,23 +140,20 @@ As of October 2016, [branch
 anymore, meaning major version `1` reached end of life. Last version is:
 [1.5.0](https://github.com/willdurand/Negotiation/releases/tag/1.5.0).
 
-### Stable Version
-
 #### 2.x
 
 Negotiation [2.0](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0)
-has been released on October 1st, 2015. It is the **current stable version**.
-The [`2.x` branch](https://github.com/willdurand/Negotiation/tree/2.x) is used
-to maintain this version.
+has been released on October 1st, 2015. As of November 2020, the major version
+`2` reached end of life. Last version is:
+[2.3.1](https://github.com/willdurand/Negotiation/releases/tag/v2.3.1).
 
-### `dev-master`
+### Stable Version
 
-#### 3.x
+### `3.x`/`dev-master`
 
-Version `3.x` is the next major version of Negotiation. This version lives in
-the `master` branch, and should not be used in production yet (even if we try
-to keep its state as stable as we can).
-
+Negotiation [3.0](https://github.com/willdurand/Negotiation/releases/tag/3.0.0)
+has been released on November 26th, 2020. This is the **current stable version**
+and it is in sync with the main branch (a.k.a. `master`).
 
 Unit Tests
 ----------
