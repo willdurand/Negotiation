@@ -142,9 +142,9 @@ anymore, meaning major version `1` reached end of life. Last version is:
 
 #### 2.x
 
-Negotiation [2.0](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0)
-has been released on October 1st, 2015. As of November 2020, the major version
-`2` reached end of life. Last version is:
+As of November 2020, [branch
+`2.x`](https://github.com/willdurand/Negotiation/tree/2.x) is not supported
+anymore, meaning major version `2` reached end of life. Last version is:
 [2.3.1](https://github.com/willdurand/Negotiation/releases/tag/v2.3.1).
 
 ### Stable Version
