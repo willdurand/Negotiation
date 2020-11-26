@@ -1,4 +1,4 @@
-build: false
+build: off
 shallow_clone: true
 platform: x86
 clone_folder: c:\projects\willdurand\negotiation
