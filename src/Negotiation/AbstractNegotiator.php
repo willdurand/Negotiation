@@ -55,7 +55,7 @@ abstract class AbstractNegotiator
     /**
      * @param string $header A string containing an `Accept|Accept-*` header.
      *
-     * @return [AcceptHeader] An ordered list of accept header elements
+     * @return AcceptHeader[] An ordered list of accept header elements
      */
     public function getOrderedElements($header)
     {
