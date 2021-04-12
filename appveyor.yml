@@ -4,7 +4,7 @@ cache: '%LOCALAPPDATA%\Composer\files'
 build: off
 
 init:
-- cmd: SET PATH=C:\Program Files\OpenSSL;c:\tools\php;c:\tools\php74;%PATH%
+- cmd: SET PATH=C:\Program Files\OpenSSL;c:\tools\php;c:\tools\php80;%PATH%
 
 install:
 - cmd: >-
@@ -14,7 +14,7 @@ install:
 
     cinst -y php
 
-    cd c:\tools\php74
+    cd c:\tools\php80
 
     copy php.ini-production php.ini /Y
 
