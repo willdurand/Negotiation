@@ -51,6 +51,10 @@ class LanguageNegotiatorTest extends TestCase
             array('fr, zh-Hans-CN;q=0.3', array('fr'), 'fr'),
             # Quality of source factors
             array('en;q=0.5,de', array('de;q=0.3', 'en;q=0.9'), 'en;q=0.9'),
+            # Generic fallback
+            array('fr-FR, en-US;q=0.8', array('fr'), 'fr'),
+            array('fr-FR, en-US;q=0.8', array('fr', 'en-US'), 'fr'),
+            array('fr-FR, en-US;q=0.8', array('fr-CA', 'en'), 'en'),
         );
     }
 
@@ -77,5 +81,21 @@ class LanguageNegotiatorTest extends TestCase
             array('en; q=0.1, fr; q=0.4, bu; q=1.0', array('en; q=0.1', 'fr; q=0.4', 'bu; q=1.0')),
             array('en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2', array('en; q=0.1', 'fr; q=0.4', 'fu; q=0.9', 'de; q=0.2')),
         );
+    }
+
+    /**
+     * Given a accept header containing specific languages (here 'en-US', 'fr-FR')
+     *  And priorities containing a generic version of that language
+     * Then the best language is mapped to the generic one here 'fr'
+     */
+    public function testSpecificLanguageAreMappedToGeneric()
+    {
+        $acceptLanguageHeader = 'fr-FR, en-US;q=0.8';
+        $priorities           = array('fr');
+
+        $acceptHeader = $this->negotiator->getBest($acceptLanguageHeader, $priorities);
+
+        $this->assertInstanceOf('Negotiation\AcceptHeader', $acceptHeader);
+        $this->assertEquals('fr', $acceptHeader->getValue());
     }
 }
