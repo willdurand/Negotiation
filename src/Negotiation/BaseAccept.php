@@ -112,11 +112,15 @@ abstract class BaseAccept
 
     /**
      *
-     * @param  string $acceptPart
+     * @param  string|null $acceptPart
      * @return array
      */
     private function parseParameters($acceptPart)
     {
+        if ($acceptPart === null) {
+            return ['', []];
+        }
+
         $parts = explode(';', $acceptPart);
         $type  = array_shift($parts);
 
