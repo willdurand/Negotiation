@@ -179,7 +179,7 @@ Credits
     * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
     * [PEAR HTTP2](https://github.com/pear/HTTP2).
 
-* William Durand <will+git@drnd.me>
+* [William Durand](https://github.com/willdurand)
 * [@neural-wetware](https://github.com/neural-wetware)
 
 
