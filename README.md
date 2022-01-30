@@ -1,10 +1,7 @@
 Negotiation
 ===========
 
-[![Build
-Status](https://travis-ci.org/willdurand/Negotiation.svg?branch=master)](http://travis-ci.org/willdurand/Negotiation)
-[![Build
-status](https://ci.appveyor.com/api/projects/status/6tbe8j3gofdlfm4v?svg=true)](https://ci.appveyor.com/project/willdurand/negotiation)
+[![GitHub Actions](https://github.com/willdurand/Negotiation/workflows/ci/badge.svg)](https://github.com/willdurand/Negotiation/actions?query=workflow%3A%22ci%22+branch%3Amaster)
 [![Total
 Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
 [![Latest Stable
