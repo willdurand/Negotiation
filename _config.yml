@@ -1,0 +1,8 @@
+title: Negotiation
+description: Content Negotiation tools for PHP.
+google_analytics: UA-28365039-1
+show_downloads: true
+theme: jekyll-theme-cayman
+
+gems:
+  - jekyll-mentions
