@@ -1,15 +1,11 @@
 Negotiation
 ===========
 
-[![Build
-Status](https://travis-ci.org/willdurand/Negotiation.png?branch=master)](http://travis-ci.org/willdurand/Negotiation)
-[![Build
-status](https://ci.appveyor.com/api/projects/status/6tbe8j3gofdlfm4v?svg=true)](https://ci.appveyor.com/project/willdurand/negotiation)
+[![GitHub Actions](https://github.com/willdurand/Negotiation/workflows/ci/badge.svg)](https://github.com/willdurand/Negotiation/actions?query=workflow%3A%22ci%22+branch%3Amaster)
 [![Total
 Downloads](https://poser.pugx.org/willdurand/Negotiation/downloads.png)](https://packagist.org/packages/willdurand/Negotiation)
 [![Latest Stable
 Version](https://poser.pugx.org/willdurand/Negotiation/v/stable.png)](https://packagist.org/packages/willdurand/Negotiation)
-![PHP 7 ready](https://img.shields.io/badge/PHP%207-ready-green.svg)
 
 **Negotiation** is a standalone library without any dependencies that allows you
 to implement [content
@@ -18,10 +14,13 @@ application, whatever framework you use.  This library is based on [RFC
 7231](https://tools.ietf.org/html/rfc7231). Negotiation is easy to use, and
 extensively unit tested!
 
-> **Important:** You are browsing the documentation of Negotiation **2.x**.
-Documentation for version **1.x** is available here: [Negotiation 1.x
-documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
-You might also be interested in this: [**What's new in Negotiation 2?**](https://github.com/willdurand/Negotiation/releases/tag/v2.0.0-alpha1)
+> **Important:** You are browsing the documentation of Negotiation **3.x**+.
+>
+> Documentation for version **1.x** is available here: [Negotiation 1.x
+> documentation](https://github.com/willdurand/Negotiation/blob/1.x/README.md#usage).
+>
+> Documentation for version **2.x** is available here: [Negotiation 2.x
+> documentation](https://github.com/willdurand/Negotiation/blob/2.x/README.md#usage).
 
 
 Installation
@@ -62,10 +61,10 @@ best media type has failed.
 
 $negotiator = new \Negotiation\LanguageNegotiator();
 
-$acceptLangageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
+$acceptLanguageHeader = 'en; q=0.1, fr; q=0.4, fu; q=0.9, de; q=0.2';
 $priorities          = array('de', 'fu', 'en');
 
-$bestLanguage = $negotiator->getBest($acceptLangageHeader, $priorities);
+$bestLanguage = $negotiator->getBest($acceptLanguageHeader, $priorities);
 
 $type = $bestLanguage->getType();
 // $type == 'fu';
@@ -95,7 +94,7 @@ The `EncodingNegotiator` returns an instance of `AcceptEncoding`.
 $negotiator = new \Negotiation\CharsetNegotiator();
 
 $acceptCharsetHeader = 'ISO-8859-1, UTF-8; q=0.9';
-$priorities          = array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0');  
+$priorities          = array('iso-8859-1;q=0.3', 'utf-8;q=0.9', 'utf-16;q=1.0');
 
 $bestCharset = $negotiator->getBest($acceptCharsetHeader, $priorities);
 
@@ -124,6 +123,35 @@ The `CharsetNegotiator` returns an instance of `AcceptCharset`.
 * `hasParameter()` indicates whether a parameter exists.
 
 
+Versioning
+----------
+
+Negotiation follows [Semantic Versioning](http://semver.org/).
+
+### End Of Life
+
+#### 1.x
+
+As of October 2016, [branch
+`1.x`](https://github.com/willdurand/Negotiation/tree/1.x) is not supported
+anymore, meaning major version `1` reached end of life. Last version is:
+[1.5.0](https://github.com/willdurand/Negotiation/releases/tag/1.5.0).
+
+#### 2.x
+
+As of November 2020, [branch
+`2.x`](https://github.com/willdurand/Negotiation/tree/2.x) is not supported
+anymore, meaning major version `2` reached end of life. Last version is:
+[2.3.1](https://github.com/willdurand/Negotiation/releases/tag/v2.3.1).
+
+### Stable Version
+
+#### 3.x (and `dev-master`)
+
+Negotiation [3.0](https://github.com/willdurand/Negotiation/releases/tag/3.0.0)
+has been released on November 26th, 2020. This is the **current stable version**
+and it is in sync with the main branch (a.k.a. `master`).
+
 Unit Tests
 ----------
 
@@ -151,7 +179,7 @@ Credits
     * [FOSRest](http://github.com/FriendsOfSymfony/FOSRest);
     * [PEAR HTTP2](https://github.com/pear/HTTP2).
 
-* William Durand <will+git@drnd.me>
+* [William Durand](https://github.com/willdurand)
 * [@neural-wetware](https://github.com/neural-wetware)
 
 
