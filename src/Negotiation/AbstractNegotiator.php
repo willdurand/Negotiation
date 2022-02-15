@@ -145,7 +145,7 @@ abstract class AbstractNegotiator
 
     /**
      * @param AcceptHeader[] $headerParts
-     * @param Priority[]     $priorities  Configured priorities
+     * @param AcceptHeader[]     $priorities  Configured priorities
      *
      * @return AcceptMatch[] Headers matched
      */
