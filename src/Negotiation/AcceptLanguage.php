@@ -32,7 +32,7 @@ final class AcceptLanguage extends BaseAccept
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getSubPart()
     {
