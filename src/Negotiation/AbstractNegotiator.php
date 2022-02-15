@@ -105,13 +105,13 @@ abstract class AbstractNegotiator
     abstract protected function acceptFactory($header);
 
     /**
-     * @param AcceptHeader $header
-     * @param AcceptHeader $priority
+     * @param BaseAccept $header
+     * @param BaseAccept $priority
      * @param integer      $index
      *
      * @return AcceptMatch|null Headers matched
      */
-    protected function match(AcceptHeader $header, AcceptHeader $priority, $index)
+    protected function match(BaseAccept $header, BaseAccept $priority, $index)
     {
         $ac = $header->getType();
         $pc = $priority->getType();
