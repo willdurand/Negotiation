@@ -130,7 +130,7 @@ abstract class AbstractNegotiator
     /**
      * @param string $header A string that contains an `Accept*` header.
      *
-     * @return AcceptHeader[]
+     * @return string[]
      */
     private function parseHeader($header)
     {
