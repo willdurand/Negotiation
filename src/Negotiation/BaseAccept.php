@@ -140,14 +140,13 @@ abstract class BaseAccept implements AcceptHeader
     }
 
     /**
-     * @param string $parameters
+     * @param array<string, string> $parameters
      *
      * @return string
      */
     private function buildParametersString($parameters)
     {
         $parts = [];
-
         ksort($parameters);
         foreach ($parameters as $key => $val) {
             $parts[] = sprintf('%s=%s', $key, $val);
