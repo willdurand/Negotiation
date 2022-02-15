@@ -42,6 +42,12 @@ class AcceptLanguageTest extends TestCase
 
     }
 
+    public function testGetScript()
+    {
+        $accept = new AcceptLanguage("zh-Hans-CN;q=0.3");
+        $this->assertSame("hans", $accept->getScript());
+    }
+
     public static function dataProviderForGetValue()
     {
         return array(

@@ -46,4 +46,12 @@ final class AcceptLanguage extends BaseAccept
     {
         return $this->language;
     }
+
+    /**
+     * @return null|string
+     */
+    public function getScript()
+    {
+        return $this->script;
+    }
 }
