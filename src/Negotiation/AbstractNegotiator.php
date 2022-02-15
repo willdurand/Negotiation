@@ -100,7 +100,7 @@ abstract class AbstractNegotiator
     /**
      * @param string $header accept header part or server priority
      *
-     * @return AcceptHeader Parsed header object
+     * @return BaseAccept Parsed header object
      */
     abstract protected function acceptFactory($header);
 
