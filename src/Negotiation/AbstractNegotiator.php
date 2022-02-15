@@ -11,7 +11,7 @@ abstract class AbstractNegotiator
      * @param string $header     A string containing an `Accept|Accept-*` header.
      * @param array  $priorities A set of server priorities.
      *
-     * @return AcceptHeader|null best matching type
+     * @return BaseAccept|null best matching type
      */
     public function getBest($header, array $priorities, $strict = false)
     {

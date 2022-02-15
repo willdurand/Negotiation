@@ -4,7 +4,7 @@ namespace Negotiation;
 
 use Negotiation\Exception\InvalidLanguage;
 
-final class AcceptLanguage extends BaseAccept implements AcceptHeader
+final class AcceptLanguage extends BaseAccept
 {
     private $language;
     private $script;

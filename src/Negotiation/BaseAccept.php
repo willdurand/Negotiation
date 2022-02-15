@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-abstract class BaseAccept
+abstract class BaseAccept implements AcceptHeader
 {
     /**
      * @var float
