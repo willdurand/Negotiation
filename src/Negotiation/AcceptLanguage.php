@@ -4,7 +4,7 @@ namespace Negotiation;
 
 use Negotiation\Exception\InvalidLanguage;
 
-final class AcceptLanguage extends BaseAccept implements AcceptHeader
+final class AcceptLanguage extends BaseAccept
 {
     private $language;
     private $script;
@@ -32,7 +32,7 @@ final class AcceptLanguage extends BaseAccept implements AcceptHeader
     }
 
     /**
-     * @return string
+     * @return null|string
      */
     public function getSubPart()
     {
@@ -45,5 +45,13 @@ final class AcceptLanguage extends BaseAccept implements AcceptHeader
     public function getBasePart()
     {
         return $this->language;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getScript()
+    {
+        return $this->script;
     }
 }

@@ -4,7 +4,7 @@ namespace Negotiation;
 
 use Negotiation\Exception\InvalidMediaType;
 
-final class Accept extends BaseAccept implements AcceptHeader
+final class Accept extends BaseAccept
 {
     private $basePart;
 

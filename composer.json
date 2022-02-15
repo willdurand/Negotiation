@@ -25,6 +25,8 @@
         }
     },
     "require-dev": {
-        "symfony/phpunit-bridge": "^5.0"
+        "symfony/phpunit-bridge": "^5.0",
+        "phpunit/phpunit": "^9.5",
+        "phpstan/phpstan": "^1.4"
     }
 }

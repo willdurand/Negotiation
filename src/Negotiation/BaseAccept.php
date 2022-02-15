@@ -2,7 +2,7 @@
 
 namespace Negotiation;
 
-abstract class BaseAccept
+abstract class BaseAccept implements AcceptHeader
 {
     /**
      * @var float
@@ -140,14 +140,13 @@ abstract class BaseAccept
     }
 
     /**
-     * @param string $parameters
+     * @param array<string, string> $parameters
      *
      * @return string
      */
     private function buildParametersString($parameters)
     {
         $parts = [];
-
         ksort($parameters);
         foreach ($parameters as $key => $val) {
             $parts[] = sprintf('%s=%s', $key, $val);

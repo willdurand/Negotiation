@@ -31,4 +31,30 @@ jobs:
         uses: "ramsey/composer-install@v1"
 
       - name: "Run PHPUnit"
-        run: "vendor/bin/simple-phpunit --coverage-text"
+        run: "vendor/bin/phpunit --coverage-text"
+
+  phpstan:
+    runs-on: "ubuntu-20.04"
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Install PHP ${{ matrix.php-version }}"
+        uses: "shivammathur/setup-php@v2"
+        with:
+          php-version: "${{ matrix.php-version }}"
+          coverage: "pcov"
+
+      - name: "Install dependencies with Composer"
+        uses: "ramsey/composer-install@v1"
+
+      - name: "Run PHPStan"
+        run: "vendor/bin/phpstan analyse src --level 5"
