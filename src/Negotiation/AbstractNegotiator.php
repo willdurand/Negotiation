@@ -111,7 +111,7 @@ abstract class AbstractNegotiator
      *
      * @return AcceptMatch|null Headers matched
      */
-    protected function match(AcceptHeader $header, AcceptHeader $priority, $index)
+    protected function matchHeader(AcceptHeader $header, AcceptHeader $priority, $index)
     {
         $ac = $header->getType();
         $pc = $priority->getType();
@@ -154,7 +154,7 @@ abstract class AbstractNegotiator
         $matches = [];
         foreach ($priorities as $index => $p) {
             foreach ($headerParts as $h) {
-                if (null !== $match = $this->match($h, $p, $index)) {
+                if (null !== $match = $this->matchHeader($h, $p, $index)) {
                     $matches[] = $match;
                 }
             }
